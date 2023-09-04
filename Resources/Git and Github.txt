@@ -1,0 +1,19 @@
+- Create new repository on github
+- Clone the repository:
+copy SSH link of github repo, run command: git clone (paste link of SSH)
+- Now you can work in cloned repo on your computer.
+- After making changes to repo, you can push code on github repo by following next steps
+- Now to let git keep track record of the files in your repo you need to add those files on git by using following command:
+git add .  (to add add files)
+or
+git add <filename> (to add single file)
+- Now your files are added on git.
+- Now you can check status of your files which are modified, newly added or removed files using following command:
+git status
+- Now to upload changes to local git, commit changes with a message and an optional description: 
+git commit -m "commit message title" -m "commit message decription."
+- Now to finally push changes to your repo on github run following command: git push
+
+______FOR SSH keys________
+Visit following link:
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#adding-your-ssh-key-to-the-ssh-agent

@@ -1,0 +1,45 @@
+/* _______GENERAL SETUP________ */
+/* CSS reset: https://andy-bell.co.uk/a-modern-css-reset/ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: 0.3s ease;
+  list-style-type: none;
+  text-decoration: none;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* VARIABLES */
+:root {
+  --dull-blue: #00abb2;
+  --bright-blue: #00cdac;
+  --white: aliceblue;
+  --black: #272044;
+  --grey: #333333;
+  --light-grey: #808080;
+}
+
+/* ________MAIN STYLING________ */
+
+body > section {
+  background-color: var(--white);
+}
+
+/* HERO SECTION */
+.hero {
+  border: 2px solid blue;
+  min-height: 100vh;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+}
+
+.hero-inner {
+}
