@@ -1,3 +1,26 @@
+__________CREATING NEW REPO AND PUSH CODE INTO IT (USING HTTPS METHOD)__________
+- First create new repo on github, set its name and details.
+- Create .gitignore file to ignore pushing the folders/files you don't want to be pushed on github
+- Now come into your project folder on pc and open git bash and run following commands, to push project for the first time:
+
+git init
+git status (optional: to check which changes were not staged)
+git add .
+git status (optional: to check which changes were not staged)
+git commit -m "title of commit" -m "description of commit"
+git branch -M main
+git remote add origin https://github.com/...
+git push -u origin main
+
+- After applying new changes, you want new changes in code and files/folders to be pushed, for that open git bash in project directory and run following commands:
+
+git status (optional)
+git add .
+git status (optional)
+git commit -m "title of commit" -m "description of commit"
+git push
+
+_________CLONING PROJECT AND PUSH THAT PROJECT WITH NEW CODE_________
 - Create new repository on github
 - Clone the repository:
 copy SSH link of github repo, run command: git clone (paste link of SSH)
