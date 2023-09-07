@@ -1,0 +1,31 @@
+.grid {
+  background-color: lightblue;
+  border: 2px solid blue;
+  height: 100vh;
+  width: 1200px;
+  margin-inline: auto;
+
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    minmax(200px, 300px)
+  ); /*2 columns would be made, whose min width is 200 and can go max upto 300px*/
+  gap: 1em;
+
+  /* each row's size would have min size of 100px and max of 150px */
+  grid-auto-rows: minmax(100px, 150px);
+  /* if you using grid-template-columns then you wouldn't be able to use grid-auto-columns and same grid-template-rows*/
+  /* grid-auto-columns: 20px; */
+
+  /* align-items and justify-items aligns items sperately (while being present in their own cell which is provided for each item seperately provided inside the grid box) */
+  /* align-items: stretch;
+  justify-items: end; */
+
+  /* align-content and justify-content aligns all items altogether inside the grid box */
+  /* align-content: center;
+  justify-content: center; */
+}
+
+.grid-item {
+  border: 2px solid red;
+}

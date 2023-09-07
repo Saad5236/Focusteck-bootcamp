@@ -72,6 +72,7 @@ i {
 @media (width > 1500px) {
   :root {
     --fs-400: 1.7rem;
+    --fs-700: clamp(2.5rem, 7vw, 5rem);
   }
 }
 
@@ -125,10 +126,10 @@ i {
     110deg,
     var(--dull-blue),
     var(--bright-blue)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+  ); /*setting background color of text to gradient*/
+  background-clip: text; /* clipping/wrapping background to the text */
+  -webkit-background-clip: text; /* webkit based browsers needs the -webkit prefix. webkit- prefix is used with some css properties, as some CSS features that are not part of the official CSS specification, or they might be used to provide browser-specific styling or behavior. */
+  color: transparent; /*since default color of text is getting in the way that's why we can't see background gradient color which we've clipped to text that's why we've set it to transparent*/
 }
 
 .flex-center {
@@ -173,7 +174,7 @@ body > section {
 .hero-inner button {
   /* font-size: 1.3rem; */
   font-size: var(--fs-400);
-  width: fit-content; /* display: grid on parent spreads the width to 100% */
+  width: fit-content; /* display: grid on parent spreads the width to 100%, to not lett it spread the button accross whole space, we need to specify a width to it */
 }
 
 /* for mobile */
@@ -191,7 +192,7 @@ body > section {
   }
 }
 
-@media (width > 1500px) {
+/* @media (width > 1500px) {
   :root {
     --fs-700: clamp(2.5rem, 7vw, 5rem);
   }
@@ -199,7 +200,7 @@ body > section {
   .hero-inner button {
     font-size: 1.7rem;
   }
-}
+} */
 
 /* ABOUT ME SECTION */
 
@@ -241,7 +242,7 @@ body > section {
 
 .about-me-content picture {
   border-radius: 0.2em;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2); /* box-shadow: [horizontal dist.] [vertical dist.] [blur] [spread of shadow] [color] */
   overflow: hidden;
 }
 
@@ -254,9 +255,6 @@ body > section {
 .about-me-text button {
   width: fit-content;
   font-size: 0.9rem;
-}
-
-.about-me-text button:hover {
 }
 
 @media (width < 1000px) {
@@ -355,7 +353,7 @@ body > section {
 }
 
 .project picture {
-  aspect-ratio: 18/9;
+  aspect-ratio: 18/9; /*to maintain certain aspect ratio*/
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
 }
 
