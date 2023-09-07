@@ -71,8 +71,13 @@ i {
 
 @media (width > 1500px) {
   :root {
-    --fs-400: 1.7rem;
     --fs-700: clamp(2.5rem, 7vw, 5rem);
+    --fs-600: clamp(2.3rem, 4vw, 3rem);
+    --fs-500: clamp(1.7rem, 3vw, 2rem);
+    --fs-400: 1.7rem;
+    --fs-300: 1.5rem;
+    --fs-200: 1.2rem;
+    --fs-100: 1rem;
   }
 }
 
@@ -317,7 +322,7 @@ body > section {
 .projects-inner .all-projects {
   margin-inline: auto;
   display: grid;
-  gap: 5em;
+  gap: 6em;
 }
 
 .all-projects .project {
@@ -359,22 +364,33 @@ body > section {
 
 @media (width > 700px) {
   .projects-inner {
-    max-width: 1800px;
+    max-width: 2200px;
   }
 
   .all-projects .project {
     grid-template-columns: 1fr 1.7fr;
+    /* we'd have to use align-items since otherwise all our grid items which include project img and text would grow out indefinitely (in full size of img) and starts to overflow out of .projects-inner element since we haven't fixed .project element's width yet */
     align-items: flex-start;
   }
 
   .project .project-text {
     order: 1;
     text-align: left;
-    align-items: flex-start;
+    /* align-items: flex-start; */
   }
 
   .project picture {
     order: 2;
+  }
+}
+
+@media (width > 1500px) {
+  .projects-inner .all-projects {
+    gap: 12em;
+  }
+
+  .all-projects .project {
+    gap: 6em;
   }
 }
 
