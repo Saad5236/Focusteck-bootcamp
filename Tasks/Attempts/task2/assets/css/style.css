@@ -313,6 +313,68 @@ body > section {
   width: 95%;
 }
 
+/* #project-modal, #project-modal > * {
+  margin: 0;
+  padding: 0;
+} */
+/* PROJECT MODAL */
+.projects #project-modal-dialog {
+  margin: auto;
+  max-width: 1500px;
+  width: 95%;
+  text-align: center;
+  padding-block: 1.5em;
+
+}
+
+#project-modal-dialog .project-modal {
+  display: grid;
+  /* grid-template-columns: 1fr 1.5fr; */
+  gap: 2em;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
+  max-width: 1500px;
+  width: 95%;
+  margin-inline: auto;
+}
+
+.project-modal h3 {
+  font-size: var(--fs-500);
+  color: var(--black);
+  text-align: center;
+}
+
+.project-modal picture {
+  aspect-ratio: 18/9; /*to maintain certain aspect ratio*/
+  box-shadow: 1px 1px 5px rgba(0, 0, 0.2);
+  width: 95%;
+  max-width: 650px;
+}
+
+.project-modal p {
+  text-align: center;
+}
+
+#project-modal-dialog .project-modal-close-btn {
+  margin-inline: auto;
+  display: inline-block;
+  margin-top: 1em;
+
+  background-color: rgb(167, 12, 12);
+  color: var(--white);
+  font-size: var(--fs-400);
+  border-radius: 1em;
+  padding: 0.3em 0.5em;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+
+}
+
 .projects-inner .projects-header {
   font-size: var(--fs-600);
   text-align: center;
@@ -341,6 +403,14 @@ body > section {
 .project-text h3 {
   /* font-size: 1.4rem; */
   font-size: var(--fs-500);
+}
+
+.project-text p {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .project-text .project-btns {
@@ -423,6 +493,18 @@ body > section {
   font-size: var(--fs-600);
 }
 
+.contact-me-inner .contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+  margin-top: 1em;
+}
+
+.contact-me-inner .contact-links a {
+  color: var(--white);
+  font-size: 1.7rem;
+}
+
 .contact-me-inner button {
   font-size: var(--fs-400);
   margin-top: 1.2em;
@@ -446,21 +528,21 @@ footer .footer {
   gap: 1.2em;
 }
 
-.footer-arrow,
-.social-media-handles {
+.footer .footer-arrow,
+.footer .social-media-handles {
   margin-bottom: 1em;
 }
 
-.social-media-handles {
+.footer .social-media-handles {
   gap: 2.7em;
 }
 
-.footer-icons {
+.footer .footer-icons {
   color: var(--white);
   font-size: 1.7rem;
 }
 
-.copyright-content {
+.footer .copyright-content {
   width: 100%;
   color: var(--light-grey);
   /* border: 2px solid wheat; */
@@ -480,36 +562,36 @@ footer .footer {
   font-size: var(--fs-100);
 }
 
-.copyright-text i,
-.github-stats i {
+.copyright-content .copyright-text i,
+.footer .github-stats i {
   display: inline;
 }
 
-.github-stats {
+.footer .github-stats {
   color: var(--black);
   gap: 1em;
   font-size: var(--fs-100);
   font-weight: bold;
 }
 
-.github-stats,
-.github-stats > div {
+.footer .github-stats,
+.footer .github-stats > div {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-radius: 0.2em;
   overflow: hidden;
 }
 
-.github-stats > div > div {
+.footer .github-stats > div > div {
   padding: 0.4em 0.6em;
   gap: 0.3em;
 }
 
-.github-stats > div > div:nth-child(1) {
+.footer .github-stats > div > div:nth-child(1) {
   background-color: var(--lighter-grey);
 }
 
-.github-stats > div > div:nth-child(2) {
+.footer .github-stats > div > div:nth-child(2) {
   background-color: var(--white);
 }
 

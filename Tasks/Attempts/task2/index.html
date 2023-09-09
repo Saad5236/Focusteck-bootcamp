@@ -6,52 +6,91 @@
     <title>My Portfolio</title>
 
     <!-- css file -->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
     <!-- Fonts: roboto -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div>
-      <!-- ________HERO SECTION________ -->
-      <section class="hero">
-        <div class="hero-inner">
-          <!-- <div class="hero-content"> -->
-            <h1>
-              <div>Hi, my name is <span class="blue-gradient-text">Saad Atif</span></div>
-              <div>I am a Full-stack Developer.</div>
-            </h1>
-            <button class="btn-primary blue-gradient-text">Know more</button>
-          <!-- </div> -->
+    <!-- ________HERO SECTION________ -->
+    <section class="hero">
+      <div class="hero-inner">
+        <!-- <div class="hero-content"> -->
+        <h1>
+          <div>
+            Hi, my name is <span class="blue-gradient-text">Saad Atif</span>
+          </div>
+          <div>I am a Full-stack Developer.</div>
+        </h1>
+        <a href="#about-me"
+          ><button class="btn-primary blue-gradient-text">Know more</button></a
+        >
+        <!-- <button class="btn-primary blue-gradient-text">Know more</button> -->
+        <!-- </div> -->
+      </div>
+    </section>
+
+    <!-- _______REST OF THE MAIN CONTENT________ -->
+    <main>
+      <!-- ABOUT ME SCTION -->
+      <section id="about-me" class="about-me">
+        <div class="about-me-inner">
+          <h2 class="about-me-header">ABOUT ME</h2>
+          <div class="about-me-content">
+            <picture class="flex-center">
+              <img src="assets/images/about-me-img.jpg" alt="" />
+            </picture>
+            <div class="about-me-text">
+              <p>
+                I'm Saad Atif, a software engineer from Lahore, Pakistan, and a
+                proud Muslim. My passion for coding drives me to explore the
+                ever-changing world of computer science, where I aim to
+                introduce innovative ideas. Beyond work, I love reading
+                non-fiction books and playing games. I'm an analytical thinker
+                who enjoys solving complex problems. My goal is to make a mark
+                in the industry.
+              </p>
+              <p>
+                I'm an introvert who values quiet moments but also enjoys making
+                friends and connecting with others. Building relationships
+                enriches both my personal and professional life. This mix of
+                introversion and sociability motivates me to collaborate and
+                innovate, as I work towards a brighter future in computer
+                science.
+              </p>
+              <button class="btn-secondary">View Resume</button>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- _______REST OF THE MAIN CONTENT________ -->
-      <main>
-        <!-- ABOUT ME SCTION -->
-        <section class="about-me">
-          <div class="about-me-inner">
-            <h2 class="about-me-header">ABOUT ME</h2>
-            <div class="about-me-content">
-              <picture class="flex-center">
-                <img src="assets/about-me-img.jpg" alt="">
-              </picture>
-              <div class="about-me-text">
-                <p>I'm Saad Atif, a software engineer from Lahore, Pakistan, and a proud Muslim. My passion for coding drives me to explore the ever-changing world of computer science, where I aim to introduce innovative ideas. Beyond work, I love reading non-fiction books and playing games. I'm an analytical thinker who enjoys solving complex problems. My goal is to make a mark in the industry.</p>
-                <p>I'm an introvert who values quiet moments but also enjoys making friends and connecting with others. Building relationships enriches both my personal and professional life. This mix of introversion and sociability motivates me to collaborate and innovate, as I work towards a brighter future in computer science.</p>
-                <button class="btn-secondary">View Resume</button>
-              </div>
-            </div>
-          </div>
-        </section>
+      <!-- PROJECTS SECTION -->
+      <section class="projects">
+        <dialog id="project-modal-dialog">
+          <article class="project-modal">
+            <picture>
+              <img src="assets/images/kallyas-project-img.PNG" alt="" />
+            </picture>
+            <h3 class="project-modal-heading">HELLO</h3>
+            <p class="project-modal-text">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. At qui
+              maxime corporis dicta cumque fuga nulla quo sequi. Vel, nihil eum
+              tenetur repellat quam blanditiis nesciunt ullam cumque! Labore,
+              autem!
+            </p>
+          </article>
+          <!-- <button class="project-modal-close-btn">close</button> -->
+          <button class="project-modal-close-btn"><i class="fa-solid fa-xmark"></i> close</button>
+        </dialog>
 
-        <!-- PROJECTS SECTION -->
-        <section class="projects">
-          <div class="projects-inner">
-            <h2 class="projects-header">PROJECTS</h2>
-            <div class="all-projects">
-              <article class="project">
+        <div class="projects-inner">
+          <h2 class="projects-header">PROJECTS</h2>
+          <div class="all-projects">
+            <!-- <article class="project">
                 <div class="project-text">
                   <h3>Kallyas Project</h3>
                   <p>The Kallyas project, crafted with HTML and CSS, has been a valuable learning experience. CSS, particularly flexbox, has been a focus, and though I encountered challenges, I overcame them by diligently seeking solutions on YouTube and Stack Overflow.</p>
@@ -61,7 +100,7 @@
                   </div>
                 </div>
                 <picture>
-                  <img src="assets/kallyas-project-img.PNG" alt="">
+                  <img src="assets/images/kallyas-project-img.PNG" alt="">
                 </picture>
               </article>
 
@@ -78,7 +117,7 @@
                   </div>
                 </div>
                 <picture>
-                  <img src="assets/rockpaperscissors-project-img.PNG" alt="">
+                  <img src="assets/images/rockpaperscissors-project-img.PNG" alt="">
                 </picture>
               </article>
 
@@ -96,58 +135,90 @@
                   </div>
                 </div>
                 <picture>
-                  <img src="assets/generalstoresoftware-project-img.jpg" alt="">
+                  <img src="assets/images/generalstoresoftware-project-img.jpg" alt="">
                 </picture>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <!-- CONTACT ME SECTION -->
-        <section class="contact-me">
-          <div class="contact-me-inner flex-center">
-            <h2 class="contact-me-header">CONTACT</h2>
-            <!-- <div class="contact-me-content"> -->
-              <div class="statement">Ready to discuss a project or collaboration? Let's connect!</div>
-              <button class="btn-secondary">Call to Action</button>
-            <!-- </div> -->
-          </div>
-        </section>
-      </main>
-
-      <!-- ________FOOTER________ -->
-      <footer>
-        <div class="footer flex-center">
-          <div class="footer-arrow footer-icons flex-center">
-            <i class="fa-solid fa-arrow-up"></i>
-          </div>
-
-          <div class="social-media-handles flex-center">
-            <div class="footer-icons flex-center"><i class="fa fa-twitter"></i></div>
-            <div class="footer-icons flex-center"><i class="fa-brands fa-linkedin-in"></i></div>
-            <div class="footer-icons flex-center"><i class="fa fa-github"></i></div>
-          </div>
-
-          <div class="copyright-content">
-            <div class="footer-bar"></div>
-            <div class="copyright-text"><span><i class="fa-regular fa-copyright"></i></span> 2023 - Website developed by Saad Atif</div>
-          </div>
-
-          <div class="github-stats">
-            <div class="github-fork">
-              <div class="flex-center"><i class="fa-solid fa-code-fork"></i> Fork</div>
-              <div class="flex-center">5,213</div>
-            </div>
-
-            <div class="github-star">
-              <div class="flex-center"><i class="fa-regular fa-star"></i> Star</div>
-              <div class="flex-center">12,528</div>
-            </div>
+              </article> -->
           </div>
         </div>
-      </footer>
+      </section>
 
-      <!-- Fontawesome icons -->
-      <script src="https://kit.fontawesome.com/72af40638e.js" crossorigin="anonymous"></script>
-    </body>
+      <!-- CONTACT ME SECTION -->
+      <section class="contact-me">
+        <div class="contact-me-inner flex-center">
+          <h2 class="contact-me-header">CONTACT</h2>
+          <!-- <div class="contact-me-content"> -->
+          <div class="contact-statement">
+            Ready to discuss a project or collaboration? Let's connect!
+          </div>
+          <div class="contact-links">
+            <a href="https://wa.me/03344109169"
+              ><i class="fa-brands fa-whatsapp"></i
+            ></a>
+            <a href="mailto://saadatifdev@gmail.com"
+              ><i class="fa-regular fa-envelope"></i
+            ></a>
+          </div>
+          <button class="btn-secondary">Call to Action</button>
+          <!-- </div> -->
+        </div>
+      </section>
+    </main>
+
+    <!-- ________FOOTER________ -->
+    <footer>
+      <div class="footer flex-center">
+        <div class="footer-arrow footer-icons flex-center">
+          <i class="fa-solid fa-arrow-up"></i>
+        </div>
+
+        <div class="social-media-handles flex-center">
+          <a
+            href="https://twitter.com/saadatif5"
+            class="footer-icons flex-center"
+            ><i class="fa fa-twitter"></i
+          ></a>
+          <a
+            href="https://www.linkedin.com/in/saad-atif/"
+            class="footer-icons flex-center"
+            ><i class="fa-brands fa-linkedin-in"></i
+          ></a>
+          <a href="https://github.com/Saad5236" class="footer-icons flex-center"
+            ><i class="fa fa-github"></i
+          ></a>
+        </div>
+
+        <div class="copyright-content">
+          <div class="footer-bar"></div>
+          <div class="copyright-text">
+            <span><i class="fa-regular fa-copyright"></i></span> 2023 - Website
+            developed by Saad Atif
+          </div>
+        </div>
+
+        <div class="github-stats">
+          <div class="github-fork">
+            <div class="flex-center">
+              <i class="fa-solid fa-code-fork"></i> Fork
+            </div>
+            <div class="flex-center">5,213</div>
+          </div>
+
+          <div class="github-star">
+            <div class="flex-center">
+              <i class="fa-regular fa-star"></i> Star
+            </div>
+            <div class="flex-center">12,528</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script src="assets/js/app.js"></script>
+    <!-- Fontawesome icons -->
+    <script
+      src="https://kit.fontawesome.com/72af40638e.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
