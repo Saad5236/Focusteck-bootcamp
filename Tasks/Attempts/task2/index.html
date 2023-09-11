@@ -16,6 +16,24 @@
     />
   </head>
   <body>
+    <!-- NAVBAR -->
+    <nav>
+      <div class="logo">PORTFOLIO</div>
+      <input type="checkbox" id="click" />
+      <label for="click" class="menu-btn">
+        <i class="fas fa-bars"></i>
+      </label>
+      <ul>
+        <li><a class="active" href="#">Home</a></li>
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Logout</a></li>
+      </ul>
+    </nav>
+    <div class="content">
+      <div>Responsive Navigation Menu Bar Design</div>
+      <div>using only HTML & CSS</div>
+    </div>
+
     <!-- ________HERO SECTION________ -->
     <section class="hero">
       <div class="hero-inner">
@@ -82,13 +100,67 @@
               tenetur repellat quam blanditiis nesciunt ullam cumque! Labore,
               autem!
             </p>
+            <div class="project-languages">
+              <h4>Languages</h4>
+              <ul class="languages-container"></ul>
+            </div>
+            <div class="project-frameworks">
+              <h4>Frameworks</h4>
+              <ul class="frameworks-container"></ul>
+            </div>
+            <div class="project-tags">
+              <h4>Tags</h4>
+              <ul class="tags-container"></ul>
+            </div>
           </article>
           <!-- <button class="project-modal-close-btn">close</button> -->
-          <button class="project-modal-close-btn"><i class="fa-solid fa-xmark"></i> close</button>
+          <button class="project-modal-close-btn">
+            <i class="fa-solid fa-xmark"></i> close
+          </button>
         </dialog>
 
         <div class="projects-inner">
           <h2 class="projects-header">PROJECTS</h2>
+          <button class="add-new-project-btn">
+            <i class="fa-solid fa-plus"></i> ADD NEW
+          </button>
+          <dialog id="add-new-project-modal">
+            <article>
+              <section class="add-new-project-inner">
+                <h3>ADD NEW PROJECT</h3>
+                <form action="">
+                  <input type="text" id="add-new-project-title" name="add-new-project-title" placeholder="Project Title" />
+                  <input type="text" id="add-new-project-img-src" name="add-new-project-img-src" placeholder="Project Image Source" />
+                  <textarea name="add-new-project-description" id="add-new-project-description" cols="30" rows="10"></textarea>
+                  <div class="add-new-project-tags">
+                    <div class="add-new-project-tags-input">
+                      <input type="text" id="add-new-project-tags" name="add-new-project-tags" placeholder="Add Project tag">
+                      <a href="#">Add</a>
+                    </div>
+                    <div class="add-new-project-tags-container"></div>
+                  </div>
+
+                  <div class="add-new-project-languages">
+                    <div class="add-new-project-languages-input">
+                      <input type="text" id="add-new-project-languages" name="add-new-project-languages" placeholder="Add Project languages">
+                      <a href="#">Add</a>
+                    </div>
+                    <div class="add-new-project-languages-container"></div>
+                  </div>
+
+                  <div class="add-new-project-frameworks">
+                    <div class="add-new-project-frameworks-input">
+                      <input type="text" id="add-new-project-frameworks" name="add-new-project-frameworks" placeholder="Add Project frameworks">
+                      <a href="#">Add</a>
+                    </div>
+                    <div class="add-new-project-frameworks-container"></div>
+                  </div>
+                  <button>Login</button>
+                </form>
+              </section>
+              <button class="add-new-project-close-btn"><i class="fa-solid fa-xmark"></i> close</button>
+            </article>
+          </dialog>
           <div class="all-projects">
             <!-- <article class="project">
                 <div class="project-text">

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Search</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Project Search</h1>
+    <input type="text" id="searchInput" placeholder="Search projects..." />
+    <div id="resultsContainer"></div>
+
+    <script>
+      const projects = [
+        {
+          title: "Project 1",
+          description: "Description of Project 1",
+          tags: ["Tag1", "Tag2"],
+          languages: ["JavaScript", "HTML"],
+        },
+        {
+          title: "Project 2",
+          description: "Description of Project 2",
+          tags: ["Tag2", "Tag3"],
+          languages: ["Python", "CSS"],
+        },
+        // Add more projects here
+      ];
+
+      const searchInput = document.getElementById("searchInput");
+      const resultsContainer = document.getElementById("resultsContainer");
+
+      searchInput.addEventListener("input", performSearch);
+
+      function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredProjects = projects.filter(
+          (project) =>
+            project.title.toLowerCase().includes(searchTerm) ||
+            project.description.toLowerCase().includes(searchTerm) ||
+            project.tags.some((tag) =>
+              tag.toLowerCase().includes(searchTerm)
+            ) ||
+            project.languages.some((language) =>
+              language.toLowerCase().includes(searchTerm)
+            )
+        );
+
+        displayResults(filteredProjects);
+      }
+
+      function displayResults(projects) {
+        resultsContainer.innerHTML = "";
+
+        projects.forEach((project) => {
+          const projectCard = document.createElement("div");
+          projectCard.classList.add("projectCard");
+          projectCard.innerHTML = `
+            <h2>${project.title}</h2>
+            <p>${project.description}</p>
+            <p><strong>Tags:</strong> ${project.tags.join(", ")}</p>
+            <p><strong>Languages:</strong> ${project.languages.join(", ")}</p>
+        `;
+          resultsContainer.appendChild(projectCard);
+        });
+      }
+    </script>
+  </body>
+</html>
