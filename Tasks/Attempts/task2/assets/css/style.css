@@ -411,21 +411,21 @@ input[type="checkbox"] {
   }
 }
 
-/* PROJECTS SECTION */
 
-.projects {
+.projects, .educations, .experiences, .skills {
   display: flex;
   justify-content: center;
   margin-bottom: 4em;
 }
 
-.projects-inner {
+.projects-inner, .educations-inner, .experiences-inner, .skills-inner {
   margin-inline: auto;
   color: var(--black);
+  max-width: 2000px;
   width: 95%;
   display: grid;
-  justify-content: center;
-  justify-items: center;
+  /* justify-content: flex;
+  justify-items: center; */
   gap: 2em;
 }
 
@@ -452,6 +452,7 @@ input[type="checkbox"] {
   max-width: 1500px;
   width: 95%;
   margin-inline: auto;
+
 }
 
 .project-modal h3 {
@@ -469,9 +470,12 @@ input[type="checkbox"] {
 
 .project-modal p {
   text-align: center;
+  width: 100%;
+  /* text-wrap: wrap; */
+  word-wrap: break-word;
 }
 
-#project-modal-dialog .project-modal-close-btn, #add-new-project-modal .add-new-project-close-btn {
+#project-modal-dialog .project-modal-close-btn, #add-new-project-modal .add-new-project-close-btn, #update-project-modal .update-project-close-btn, #add-new-education-modal .add-new-education-close-btn, #add-new-experience-modal .add-new-experience-close-btn {
   margin-inline: auto;
   display: inline-block;
   margin-top: 1em;
@@ -488,13 +492,13 @@ input[type="checkbox"] {
   gap: 0.3em;
 }
 
-.projects-inner .projects-header {
+.projects-inner .projects-header, .educations-inner .educations-header, .experiences-inner .experiences-header, .skills-inner .skills-header {
   font-size: var(--fs-600);
   text-align: center;
   /* margin-bottom: 2em; */
 }
 
-.projects-inner .add-new-project-btn {
+.projects-inner :is(.add-new-project-btn, .update-project-btn) {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -510,19 +514,19 @@ input[type="checkbox"] {
 
 /* Add new project modal */
 
-.projects-inner #add-new-project-modal {
+.projects-inner :is(#add-new-project-modal, #update-project-modal), .educations-inner #add-new-education-modal, .experiences-inner #add-new-experience-modal {
   margin: auto;
 }
 
-.projects-inner #add-new-project-modal::backdrop {
+.projects-inner #add-new-project-modal::backdrop, #update-project-modal::backdrop, .educations-inner #add-new-education-modal::backdrop, .experiences-inner #add-new-experience-modal::backdrop {
   background-color: rgba(0,0,0,0.6);
 }
 
-#add-new-project-modal article {
+:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #add-new-experience-modal) article {
   padding: 1.5em 1em;
 }
 
-#add-new-project-modal .add-new-project-inner {
+#add-new-project-modal .add-new-project-inner,#update-project-modal .update-project-inner, #add-new-education-modal .add-new-education-inner, #add-new-experience-modal .add-new-experience-inner {
   display: grid;
   text-align: center;
   color: var(--black);
@@ -534,12 +538,12 @@ input[type="checkbox"] {
   color: var(--white);
 }
 
-#add-new-project-modal form{
+:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #add-new-experience-modal) form{
   display: grid;
   gap: 1.5em;
 }
 
-#add-new-project-modal form a {
+:is(#add-new-project-modal, #update-project-modal) form a {
   color: var(--white);
   background-color: #00cdac;
   display: inline-block;
@@ -547,11 +551,11 @@ input[type="checkbox"] {
   border-radius: 0.3em;
 }
 
-#add-new-project-modal form input {
+:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #add-new-experience-modal) form input {
   padding: 1em 0.6em;
 }
 
-#add-new-project-modal form button {
+:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #add-new-experience-modal) form button {
   background-color: var(--bright-blue);
   color: var(--white);
   padding-block: 0.7em;
@@ -561,8 +565,13 @@ input[type="checkbox"] {
 
 .add-new-project-tags .add-new-project-tags-container,
 .add-new-project-languages .add-new-project-languages-container,
-.add-new-project-frameworks .add-new-project-frameworks-container {
+.add-new-project-frameworks .add-new-project-frameworks-container,
+.update-project-tags .update-project-tags-container,
+.update-project-languages .update-project-languages-container,
+.update-project-frameworks .update-project-frameworks-container
+{
   margin-top: 0.5em;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5em;
@@ -570,7 +579,10 @@ input[type="checkbox"] {
 
 .add-new-project-tags .add-new-project-tags-container span, 
 .add-new-project-languages .add-new-project-languages-container span, 
-  .add-new-project-frameworks .add-new-project-frameworks-container span {
+  .add-new-project-frameworks .add-new-project-frameworks-container span,
+  .update-project-tags .update-project-tags-container span, 
+.update-project-languages .update-project-languages-container span, 
+  .update-project-frameworks .update-project-frameworks-container span {
   display: inline-block;
   background-color: var(--dull-blue);
   border-radius: 1em;
@@ -588,6 +600,7 @@ input[type="checkbox"] {
 }
 
 .all-projects .project {
+  width: 100%;
   margin-inline: auto;
   display: grid;
   gap: 2.5em;
@@ -611,6 +624,8 @@ input[type="checkbox"] {
   -webkit-line-clamp: 3; /* number of lines to show */
   line-clamp: 3;
   -webkit-box-orient: vertical;
+  word-break: break-all;
+  /* text-wrap: wrap; */
 }
 
 .project-text .project-btns {
@@ -662,6 +677,80 @@ input[type="checkbox"] {
   .all-projects .project {
     gap: 6em;
   }
+}
+
+/* _________EDUCATION SECTION_________ */
+
+.educations-inner, .experiences-inner, .skills-inner {
+  margin-inline: auto;
+}
+
+.educations-inner .add-new-education-btn, .experiences-inner .add-new-experience-btn, .skills-inner .add-new-skill-btn {
+  width: 100%;
+  display: grid;
+  place-content: center;
+}
+
+.educations-inner .add-new-education-btn button, .experiences-inner .add-new-experience-btn button, .add-new-skill-btn button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: green;
+  justify-self: start;
+  color: var(--white);
+  text-wrap: nowrap;
+  padding: 0.5em 0.8em;
+  gap: 0.5em;
+  border-radius: 0.3em;
+  font-size: var(--fs-300);
+}
+
+
+.educations-inner .all-educations, .experiences-inner .all-experiences, .skills-inner .all-skills {
+  /* width: 100%; */
+  display: grid;
+  gap: 1.8em;
+}
+
+.all-educations .education,  .all-experiences .experience {
+  display: grid;
+  gap: 0.3em;
+}
+
+.education h3, .experience h3 {
+  font-size: var(--fs-400);
+  color: var(--black);
+}
+
+.education .education-degree-item b{
+  font-size: var(--fs-200);
+}
+
+@media (width < 700px) {
+  .educations-inner, .experiences-inner, .skills-inner {
+    justify-content: center;
+    /* text-align: center; */
+  }
+}
+
+/* _______SKILLS_______ */
+
+.add-new-skill-btn form {
+  display: flex;
+  border: 2px solid green;
+  padding: 0.2em;
+  border-radius: 0.5em;
+}
+
+.add-new-skill-btn form button {
+
+}
+
+.add-new-skill-btn form input{
+  /* display: flex; */
+  font-size: var(--fs-300);
+  outline: none;
+  border: none;
 }
 
 /* CONTACT ME */

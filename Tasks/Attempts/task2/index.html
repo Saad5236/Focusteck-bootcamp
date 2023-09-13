@@ -7,6 +7,11 @@
 
     <!-- css file -->
     <link rel="stylesheet" href="./assets/css/style.css" />
+    <!-- Fontawesome icons -->
+    <script
+      src="https://kit.fontawesome.com/72af40638e.js"
+      crossorigin="anonymous"
+    ></script>
     <!-- Fonts: roboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,9 +30,83 @@
       </label>
       <ul>
         <li><a class="active" href="#">Home</a></li>
-        <li><a href="#">Profile</a></li>
-        <li><a href="#">Logout</a></li>
+        <li class="update-profile-btn"><a href="#">Profile</a></li>
+        <li class="navbar-logout-btn"><a href="#">Logout</a></li>
       </ul>
+
+      <dialog id="update-portfolio-modal">
+        <article>
+          <section class="update-portfolio-inner">
+            <h3>UPDATE PORTFOLIO</h3>
+            <form action="">
+              <input
+                type="text"
+                id="update-portfolio-user-name"
+                name="update-portfolio-user-name"
+                class="update-portfolio-user-name"
+                placeholder="User Name"
+              />
+
+              <input
+                type="text"
+                id="update-portfolio-user-number"
+                name="update-portfolio-user-number"
+                class="update-portfolio-user-number"
+                placeholder="User Number"
+              />
+
+              <input
+                type="text"
+                id="update-portfolio-user-profession"
+                name="update-portfolio-user-profession"
+                class="update-portfolio-user-profession"
+                placeholder="User Profession"
+              />
+
+              <input
+              type="text"
+              id="update-portfolio-img-src"
+              name="update-portfolio-img-src"
+              class="update-portfolio-img-src"
+              placeholder="User Image link"
+            />
+
+              
+
+              <textarea
+              cols="30" rows="10"
+                type="text"
+                id="update-portfolio-user-about"
+                name="update-portfolio-user-about"
+                class="update-portfolio-user-about"
+                placeholder="User About me"
+              ></textarea>
+
+              <input
+                type="email"
+                id="update-portfolio-user-email"
+                name="update-portfolio-user-email"
+                class="update-portfolio-user-email"
+                placeholder="User Email"
+              />
+
+              <input
+                type="password"
+                id="update-portfolio-user-password"
+                name="update-portfolio-user-password"
+                class="update-portfolio-user-password"
+                placeholder="User Password"
+              />
+
+              <button class="update-portfolio-submit-btn">Add new education</button>
+            </form>
+          </section>
+
+          <button class="update-portfolio-close-btn">
+            <i class="fa-solid fa-xmark"></i> close
+          </button>
+        </article>
+      </dialog>
     </nav>
     <div class="content">
       <div>Responsive Navigation Menu Bar Design</div>
@@ -124,17 +203,38 @@
           <button class="add-new-project-btn">
             <i class="fa-solid fa-plus"></i> ADD NEW
           </button>
+          <!-- ADD NEW PROJECT MODAL -->
           <dialog id="add-new-project-modal">
             <article>
               <section class="add-new-project-inner">
                 <h3>ADD NEW PROJECT</h3>
                 <form action="">
-                  <input type="text" id="add-new-project-title" name="add-new-project-title" placeholder="Project Title" />
-                  <input type="text" id="add-new-project-img-src" name="add-new-project-img-src" placeholder="Project Image Source" />
-                  <textarea name="add-new-project-description" id="add-new-project-description" cols="30" rows="10"></textarea>
+                  <input
+                    type="text"
+                    id="add-new-project-title"
+                    name="add-new-project-title"
+                    placeholder="Project Title"
+                  />
+                  <input
+                    type="text"
+                    id="add-new-project-img-src"
+                    name="add-new-project-img-src"
+                    placeholder="Project Image Source"
+                  />
+                  <textarea
+                    name="add-new-project-description"
+                    id="add-new-project-description"
+                    cols="30"
+                    rows="10"
+                  ></textarea>
                   <div class="add-new-project-tags">
                     <div class="add-new-project-tags-input">
-                      <input type="text" id="add-new-project-tags" name="add-new-project-tags" placeholder="Add Project tag">
+                      <input
+                        type="text"
+                        id="add-new-project-tags"
+                        name="add-new-project-tags"
+                        placeholder="Add Project tag"
+                      />
                       <a href="#">Add</a>
                     </div>
                     <div class="add-new-project-tags-container"></div>
@@ -142,7 +242,12 @@
 
                   <div class="add-new-project-languages">
                     <div class="add-new-project-languages-input">
-                      <input type="text" id="add-new-project-languages" name="add-new-project-languages" placeholder="Add Project languages">
+                      <input
+                        type="text"
+                        id="add-new-project-languages"
+                        name="add-new-project-languages"
+                        placeholder="Add Project languages"
+                      />
                       <a href="#">Add</a>
                     </div>
                     <div class="add-new-project-languages-container"></div>
@@ -150,69 +255,279 @@
 
                   <div class="add-new-project-frameworks">
                     <div class="add-new-project-frameworks-input">
-                      <input type="text" id="add-new-project-frameworks" name="add-new-project-frameworks" placeholder="Add Project frameworks">
+                      <input
+                        type="text"
+                        id="add-new-project-frameworks"
+                        name="add-new-project-frameworks"
+                        placeholder="Add Project frameworks"
+                      />
                       <a href="#">Add</a>
                     </div>
                     <div class="add-new-project-frameworks-container"></div>
                   </div>
-                  <button>Login</button>
+                  <button>Add new project</button>
                 </form>
               </section>
-              <button class="add-new-project-close-btn"><i class="fa-solid fa-xmark"></i> close</button>
+              <button class="add-new-project-close-btn">
+                <i class="fa-solid fa-xmark"></i> close
+              </button>
             </article>
           </dialog>
-          <div class="all-projects">
-            <!-- <article class="project">
-                <div class="project-text">
-                  <h3>Kallyas Project</h3>
-                  <p>The Kallyas project, crafted with HTML and CSS, has been a valuable learning experience. CSS, particularly flexbox, has been a focus, and though I encountered challenges, I overcame them by diligently seeking solutions on YouTube and Stack Overflow.</p>
-                  <div class="project-btns">
-                    <button class="btn-primary blue-gradient-text">See Live</button>
-                    <button class="blue-gradient-text">Source Code</button>
-                  </div>
-                </div>
-                <picture>
-                  <img src="assets/images/kallyas-project-img.PNG" alt="">
-                </picture>
-              </article>
 
-              <article class="project">
-                <div class="project-text">
-                  <h3>Tic-Tac-Toe Game</h3>
-                  <div>
-                    <p>I've successfully developed a web-based Tic-Tac-Toe game, employing HTML, CSS, and JavaScript for the frontend, and Node.js with Express.js for the backend. This project has been a rich learning experience, particularly in advancing my JavaScript skills.</p>
-                    <p>Beyond coding, I've also learned the qualities of a committed and persevering programmer. This project demanded dedication as I delved into complex logic using Javascript, and I remained persistent even when faced with challenges. It's also taught me the importance of adaptability, as I learned to accept different and unique solutions by seeking out ideas that I've gained from various platforms like Youtube and Stack Overflow. Through this project, I've not only created a fun game but also cultivated the essential attributes of a skilled programmer.</p>
+          <dialog id="update-project-modal">
+            <article>
+              <section class="update-project-inner">
+                <h3>UPDATE PROJECT</h3>
+                <form action="">
+                  <input
+                    type="text"
+                    id="update-project-title"
+                    name="update-project-title"
+                    placeholder="Project Title"
+                  />
+                  <input
+                    type="text"
+                    id="update-project-img-src"
+                    name="update-project-img-src"
+                    placeholder="Project Image Source"
+                  />
+                  <textarea
+                    name="update-project-description"
+                    id="update-project-description"
+                    cols="30"
+                    rows="10"
+                  ></textarea>
+                  <div class="update-project-tags">
+                    <div class="update-project-tags-input">
+                      <input
+                        type="text"
+                        id="update-project-tags"
+                        name="update-project-tags"
+                        placeholder="Add Project tag"
+                      />
+                      <a href="#">Add</a>
+                    </div>
+                    <div class="update-project-tags-container"></div>
                   </div>
-                  <div class="project-btns">
-                    <button class="btn-primary blue-gradient-text">See Live</button>
-                    <button class="blue-gradient-text">Source Code</button>
-                  </div>
-                </div>
-                <picture>
-                  <img src="assets/images/rockpaperscissors-project-img.PNG" alt="">
-                </picture>
-              </article>
 
-              <article class="project">
-                <div class="project-text">
-                  <h3>General Store Software</h3>
-                  <div>
-                    <p>This a desktop application designed specifically for a general store to streamline daily operations. As a shopkeeper, I understand the complexities involved in managing inventory, transactions and other operations, so I embarked on creating a solution.</p>
-                    <p>This software is made in Java language, using Java-FX library which is specifically used for creating client-side desktop applications. As for storing data, MySQL database was integrated with this application.</p>
-                    <p>This project was made by me and my university friend. And together we learned a key lesson to work as a team. My university friend and I collaborated effectively, addressing challenges, sharing ideas, and establishing a smooth workflow. And for daily report, we used to do daily meetings.</p>
+                  <div class="update-project-languages">
+                    <div class="update-project-languages-input">
+                      <input
+                        type="text"
+                        id="update-project-languages"
+                        name="update-project-languages"
+                        placeholder="Add Project languages"
+                      />
+                      <a href="#">Add</a>
+                    </div>
+                    <div class="update-project-languages-container"></div>
                   </div>
-                  <div class="project-btns">
-                    <button class="btn-primary blue-gradient-text">See Live</button>
-                    <button class="blue-gradient-text">Source Code</button>
+
+                  <div class="update-project-frameworks">
+                    <div class="update-project-frameworks-input">
+                      <input
+                        type="text"
+                        id="update-project-frameworks"
+                        name="update-project-frameworks"
+                        placeholder="Add Project frameworks"
+                      />
+                      <a href="#">Add</a>
+                    </div>
+                    <div class="update-project-frameworks-container"></div>
                   </div>
-                </div>
-                <picture>
-                  <img src="assets/images/generalstoresoftware-project-img.jpg" alt="">
-                </picture>
-              </article> -->
-          </div>
+                  <button>Update project</button>
+                </form>
+              </section>
+              <button class="update-project-close-btn">
+                <i class="fa-solid fa-xmark"></i> close
+              </button>
+            </article>
+          </dialog>
+          <div class="all-projects"></div>
         </div>
       </section>
+
+      <!-- EDUCATION -->
+      <div class="educations">
+        <div class="educations-inner">
+          <dialog id="add-new-education-modal">
+            <article>
+              <section class="add-new-education-inner">
+                <h3>ADD NEW EDUCATION</h3>
+                <form action="">
+                  <input
+                    type="text"
+                    id="education-degree"
+                    name="education-degree"
+                    class="education-degree"
+                    placeholder="Education Degree"
+                  />
+
+                  <input
+                    type="text"
+                    id="education-program"
+                    name="education-program"
+                    class="education-program"
+                    placeholder="Education Program"
+                  />
+
+                  <input
+                    type="text"
+                    id="education-institute"
+                    name="education-institute"
+                    class="education-institute"
+                    placeholder="Education institute"
+                  />
+
+                  <input
+                  type="number"
+                  id="education-years"
+                  name="education-years"
+                  class="education-years"
+                  placeholder="Education Years"
+                />
+
+                  <button class="add-new-education-submit-btn">Add new education</button>
+                </form>
+              </section>
+
+              <button class="add-new-education-close-btn">
+                <i class="fa-solid fa-xmark"></i> close
+              </button>
+            </article>
+          </dialog>
+          <dialog id="update-education-modal">
+            <article>
+              <section class="update-education-inner">
+                <h3>ADD NEW EDUCATION</h3>
+                <form action="">
+                  <input
+                    type="text"
+                    id="update-education-degree"
+                    name="update-education-degree"
+                    class="update-education-degree"
+                    placeholder="Education Degree"
+                  />
+
+                  <input
+                    type="text"
+                    id="update-education-program"
+                    name="update-education-program"
+                    class="update-education-program"
+                    placeholder="Education Program"
+                  />
+
+                  <input
+                    type="text"
+                    id="update-education-institute"
+                    name="update-education-institute"
+                    class="update-education-institute"
+                    placeholder="Education institute"
+                  />
+
+                  <input
+                  type="number"
+                  id="update-education-years"
+                  name="update-education-years"
+                  class="update-education-years"
+                  placeholder="Education Years"
+                />
+
+                  <button class="update-education-submit-btn">Add new education</button>
+                </form>
+              </section>
+
+              <button class="update-education-close-btn">
+                <i class="fa-solid fa-xmark"></i> close
+              </button>
+            </article>
+          </dialog>
+
+          <h2 class="educations-header">EDUCATION</h2>
+          <div class="add-new-education-btn">
+            <button><i class="fa-solid fa-plus"></i> ADD EDUCATION</button>
+          </div>
+          <div class="all-educations">
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPERIENCE -->
+
+      <div class="experiences">
+        <div class="experiences-inner">
+          <dialog id="add-new-experience-modal">
+            <article>
+              <section class="add-new-experience-inner">
+                <h3>ADD NEW EXPERIENCE</h3>
+                <form action="">
+                  <input
+                    type="text"
+                    id="experience-title"
+                    name="experience-title"
+                    class="experience-title"
+                    placeholder="experience title"
+                  />
+
+                  <input
+                    type="text"
+                    id="experience-company"
+                    name="experience-company"
+                    class="experience-company"
+                    placeholder="experience company"
+                  />
+
+                  <input
+                    type="text"
+                    id="experience-skills"
+                    name="experience-skills"
+                    class="experience-skills"
+                    placeholder="experience skills"
+                  />
+
+                  <input
+                  type="number"
+                  id="experience-years"
+                  name="experience-years"
+                  class="experience-years"
+                  placeholder="experience Years"
+                />
+
+                  <button class="add-new-experience-submit-btn">Add new experience</button>
+                </form>
+              </section>
+
+              <button class="add-new-experience-close-btn">
+                <i class="fa-solid fa-xmark"></i> close
+              </button>
+            </article>
+          </dialog>
+
+          <h2 class="experiences-header">EXPERIENCES</h2>
+          <div class="add-new-experience-btn">
+            <button><i class="fa-solid fa-plus"></i> ADD EXPERIENCE</button>
+          </div>
+          <div class="all-experiences">
+          </div>
+        </div>
+      </div>
+
+      <!-- SKILLS -->
+
+      <div class="skills">
+        <div class="skills-inner">
+          <h2 class="skills-header">SKILLS</h2>
+          <div class="add-new-skill-btn">
+            <form action="">
+              <input type="text" class="add-new-skill-input" name="add-new-skill-input" id="add-new-skill-input">
+              <button><i class="fa-solid fa-plus"></i> ADD SKILL</button>
+            </form>
+          </div>
+          <ul class="all-skills">
+            <!-- <li><span></span><button class="skill-delete-btn">Delete</button></li> -->
+          </ul>
+        </div>
+      </div>
 
       <!-- CONTACT ME SECTION -->
       <section class="contact-me">
@@ -286,11 +601,8 @@
     </footer>
 
     <!-- JAVASCRIPT -->
+
     <script src="assets/js/app.js"></script>
-    <!-- Fontawesome icons -->
-    <script
-      src="https://kit.fontawesome.com/72af40638e.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="assets/js/user1.js"></script>
   </body>
 </html>
