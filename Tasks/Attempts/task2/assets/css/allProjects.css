@@ -85,68 +85,40 @@ img {
 
 /* ____________MAIN STYLING_____________ */
 
-main {
-  min-height: 100vh;
-  display: grid;
-  place-content: center;
-  gap: 2em;
-  max-width: 2000px;
-  width: 95%;
-  margin-inline: auto;
+.projects {
+    display: grid;
+    gap: 1.5em;
 }
 
-main .signup-form-section {
-  display: none;
+.projects-container {
+    max-width: 1500px;
+    width: 95%;
+    margin: auto;
+
+    display: grid;
+    gap: 5em;
 }
 
-main .login-form-section {
-  display: grid;
+.projects-container .project {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    justify-content: center;
+    gap: 2em;
 }
 
-main :is(.login-form-section, .signup-form-section) {
-  background-color: var(--grey);
-  /* display: grid; */
-  gap: 1.5em;
-  padding: 1.5em 2em;
-  border-radius: 0.5em;
-  box-shadow: 5px 5px 5px 2px rgba(0, 0, 0, 0.3);
+.projects-container .project > picture {order: 2; aspect-ratio: 18/9;}
+.projects-container .project > div {
+    order: 1;
+    text-align: left;
+    display: grid;
+    gap: 1em;
+    align-content: center;
 }
 
-:is(.login-form-section, .signup-form-section) h2 {
-  color: var(--dull-blue);
-  font-size: 2rem;
-}
-
-:is(.login-form-section, .signup-form-section) form {
-  display: grid;
-  gap: 1.5em;
-}
-
-form input {
-  padding: 1em 0.6em;
-}
-
-form :is(.login-signup-btn, .signup-login-btn) {
-  display: flex;
-  justify-content: space-between;
-  /* width: 100%; */
-  text-wrap: nowrap;
-  color: var(--white);
-}
-
-:is(.login-signup-btn, .signup-login-btn) a {
-  display: inline-block;
-  color: var(--dull-blue);
-  font-weight: bold;
-}
-
-form > * {
-  border-radius: 0.3em;
-}
-
-form button {
-  background-color: var(--dull-blue);
-  color: var(--white);
-  font-weight: bold;
-  padding-block: 1em;
+@media (width < 750px) {
+    .projects-container .project {
+        grid-template-columns: 1fr;
+    }
+    .projects-container .project > picture {order: 1;}
+    .projects-container .project > div {order: 2; text-align: center;}
 }

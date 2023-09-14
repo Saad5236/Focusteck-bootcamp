@@ -1,3 +1,37 @@
+const refreshUserProfile = () => {
+  //   const heroUserNameSpan = document.querySelector(".hero-user-name")
+  // const heroUserProfessionSpan = document.querySelector(".hero-user-profession")
+  // const aboutMeUserImage = document.querySelector(".about-me-user-image")
+  // const aboutMeUserAbout = document.querySelector(".about-me-text p")
+
+  document.querySelector(".hero-user-name").innerText = user.userName;
+  document.querySelector(".hero-user-profession").innerText =
+    user.userProfession;
+  document.querySelector(".about-me-text p").innerText = user.userAbout;
+
+  const image = new Image();
+  image.src = user.userImgSrc;
+  document.querySelector(
+    ".about-me-user-image"
+  ).innerHTML = ""
+  document.querySelector(
+    ".about-me-user-image"
+  ).appendChild(image)
+
+  // let img = document.createElement("img");
+  // img.setAttribute("src", user.userImgSrc);
+
+  // document.querySelector(
+  //   ".about-me-user-image"
+  // ).innerHTML = "";
+  // document.querySelector(
+  //   ".about-me-user-image"
+  // ).appendChild(img)
+
+  // document.querySelector(
+  //   ".about-me-user-image"
+  // ).innerHTML = `<img src=${user.userImgSrc} alt="" />`;
+};
 const generateEducationId = () => {
   let id;
   while (true) {
@@ -11,7 +45,8 @@ const generateEducationId = () => {
   return id;
 };
 
-let usersEducationData = [];
+// let usersEducationData = [];
+let usersEducationData = JSON.parse(localStorage.getItem("userEducationsData"));
 
 let addEducationModal = document.querySelector("#add-new-education-modal");
 let addEducationModalForm = document.querySelector(
@@ -29,6 +64,8 @@ let allEducationsContainer = document.querySelector(".all-educations");
 // fetching users data from db
 let user = JSON.parse(localStorage.getItem("loggedInUser"));
 console.log(user);
+
+refreshUserProfile();
 
 addEducationBtn.addEventListener("click", (e) => {
   addEducationModal.showModal();
@@ -63,6 +100,7 @@ addEducationModalForm.addEventListener("submit", (e) => {
     educationFormData.get("education-years");
 
   usersEducationData.push(userEducationData);
+  // localStorage.setItem("userEducationsData", JSON.stringify(usersEducationData));
 
   console.log("user", usersEducationData);
 
@@ -136,11 +174,13 @@ const refreshEducationContainer = () => {
         (data) => data.userEducationId === Number(userEduData.userEducationId)
       );
       usersEducationData[i].userEducationDegree = educationDegreeInput.value;
-      usersEducationData[i].userEducationProgram =
-        educationProgramInput.value;
+      usersEducationData[i].userEducationProgram = educationProgramInput.value;
       usersEducationData[i].userEducationInstitute =
         educationInstituteInput.value;
       usersEducationData[i].userEducationYears = educationYearsInput.value;
+
+      // localStorage.setItem("userEducationsData", JSON.stringify(usersEducationData));
+
 
       console.log("uef", usersEducationData, userEduData);
 
@@ -158,6 +198,8 @@ const refreshEducationContainer = () => {
       usersEducationData = usersEducationData.filter(
         (edu) => edu.userEducationId !== Number(userEducationId)
       );
+      // localStorage.setItem("userEducationsData", JSON.stringify(usersEducationData));
+
       console.log("chidvochd", usersEducationData);
 
       refreshEducationContainer();
@@ -199,16 +241,21 @@ const addUserEducationEvent = (e) => {
   addEducationModal.close();
 };
 
-
 // ____________EXPERIENCES______________
 
 let usersExperienceData = [];
 
 const addExperienceModal = document.querySelector("#add-new-experience-modal");
-const addExperienceModalForm = document.querySelector("#add-new-experience-modal form");
-const addExperienceModalFormSubmit = document.querySelector("#add-new-experience-modal form button");
+const addExperienceModalForm = document.querySelector(
+  "#add-new-experience-modal form"
+);
+const addExperienceModalFormSubmit = document.querySelector(
+  "#add-new-experience-modal form button"
+);
 const addExperienceBtn = document.querySelector(".add-new-experience-btn");
-const addExperienceModalCloseBtn = document.querySelector(".add-new-experience-close-btn");
+const addExperienceModalCloseBtn = document.querySelector(
+  ".add-new-experience-close-btn"
+);
 
 addExperienceModalCloseBtn.addEventListener("click", (e) => {
   addExperienceModal.close();
@@ -219,7 +266,7 @@ addExperienceBtn.addEventListener("click", (e) => {
 });
 
 addExperienceModalForm.addEventListener("submit", (e) => {
-  e.preventDefault()
+  e.preventDefault();
 
   let userExperienceData = { userId: user.userId };
   let experienceFormData = new FormData(
@@ -232,9 +279,8 @@ addExperienceModalForm.addEventListener("submit", (e) => {
     experienceFormData.get("experience-title");
   userExperienceData.userExperienceCompany =
     experienceFormData.get("experience-company");
-  userExperienceData.userExperienceSkills = experienceFormData.get(
-    "experience-skills"
-  );
+  userExperienceData.userExperienceSkills =
+    experienceFormData.get("experience-skills");
   userExperienceData.userExperienceYears =
     experienceFormData.get("experience-years");
 
@@ -247,7 +293,7 @@ addExperienceModalForm.addEventListener("submit", (e) => {
   refreshExperienceContainer();
 
   addExperienceModal.close();
-})
+});
 
 // EXPERIENCE'S FUNCTIONS
 
@@ -358,21 +404,24 @@ const refreshExperienceContainer = () => {
       refreshExperienceContainer();
     });
   });
-}
-
+};
 
 // ____________EXPERIENCES______________
 
 let userSkillsData = [];
 let allUsersData = JSON.parse(localStorage.getItem("usersData"));
-let userIndex = allUsersData.findIndex((userData) => userData.userId === user.userId);
+let userIndex = allUsersData.findIndex(
+  (userData) => userData.userId === user.userId
+);
 
 const addSkillForm = document.querySelector(".add-new-skill-btn form");
-const addSkillFormInput = document.querySelector(".add-new-skill-btn form input");
+const addSkillFormInput = document.querySelector(
+  ".add-new-skill-btn form input"
+);
 const allSkillsContainer = document.querySelector(".all-skills");
 
 addSkillForm.addEventListener("submit", (e) => {
-  e.preventDefault()
+  e.preventDefault();
   userSkillsData.push(addSkillFormInput.value);
   user.userSkills = userSkillsData;
   allUsersData[userIndex] = user;
@@ -383,34 +432,30 @@ addSkillForm.addEventListener("submit", (e) => {
 
   // refresh
 
-  refreshSkillsContainer()
+  refreshSkillsContainer();
 });
 
 const refreshSkillsContainer = () => {
-  allSkillsContainer.innerHTML = ""
+  allSkillsContainer.innerHTML = "";
   userSkillsData.forEach((userSkill) => {
-
     let userSkillContainer = document.createElement("div");
     userSkillContainer.classList.add("skill");
     userSkillContainer.id = userSkill;
 
-    const userSkillContent = `<span>${userSkill}</span><button class="skill-delete-btn">Delete</button>`
-    
+    const userSkillContent = `<span>${userSkill}</span><button class="skill-delete-btn">Delete</button>`;
+
     userSkillContainer.innerHTML = userSkillContent;
 
     allSkillsContainer.appendChild(userSkillContainer);
 
     // deleting data from container
-    const userSkillDelete = userSkillContainer.querySelector(
-      ".skill-delete-btn"
-    );
+    const userSkillDelete =
+      userSkillContainer.querySelector(".skill-delete-btn");
     userSkillDelete.addEventListener("click", (e) => {
       e.stopPropagation();
       let userSkillId = userSkillDelete.parentNode.id;
       console.log("chidvochd", userSkillsData);
-      userSkillsData = userSkillsData.filter(
-        (skill) => skill !== userSkillId
-      );
+      userSkillsData = userSkillsData.filter((skill) => skill !== userSkillId);
       user.userSkills = userSkillsData;
       allUsersData[userIndex] = user;
       localStorage.setItem("usersData", JSON.stringify(allUsersData));
@@ -419,20 +464,88 @@ const refreshSkillsContainer = () => {
 
       refreshSkillsContainer();
     });
-  })
-}
+  });
+};
 
 // _________PROFILE____________
 
-
 let updatePortfolioModal = document.querySelector("#update-portfolio-modal");
+let updatePortfolioModalForm = document.querySelector(
+  "#update-portfolio-modal form"
+);
 let updatePortfolioBtn = document.querySelector(".update-profile-btn");
-let updatePortfolioModalClose = document.querySelector(".update-portfolio-close-btn");
+let updatePortfolioModalClose = document.querySelector(
+  ".update-portfolio-close-btn"
+);
+
+let updateUserNameInput = document.querySelector(".update-portfolio-user-name");
+let updateUserNumberInput = document.querySelector(
+  ".update-portfolio-user-number"
+);
+let updateUserAboutInput = document.querySelector(
+  ".update-portfolio-user-about"
+);
+let updateUserEmailInput = document.querySelector(
+  ".update-portfolio-user-email"
+);
+let updateUserPasswordInput = document.querySelector(
+  ".update-portfolio-user-password"
+);
+let updateUserProfessionInput = document.querySelector(
+  ".update-portfolio-user-profession"
+);
+let updateUserImgSrcInput = document.querySelector(".update-portfolio-img-src");
 
 updatePortfolioBtn.addEventListener("click", (e) => {
+  updateUserNameInput.value = user.userName || "";
+  updateUserNumberInput.value = user.userNumber || "";
+  // updateUserImgSrcInput.value = user.userImgSrc || "";
+  updateUserAboutInput.value = user.userAbout || "";
+  updateUserEmailInput.value = user.userEmail || "";
+  updateUserPasswordInput.value = user.userPassword || "";
+  updateUserProfessionInput.value = user.userProfession || "";
+
+  // let userPortfolioImg = updateUserImgSrcInput.files[0]
+  // if(userPortfolioImg) {
+  //   updateUserImgSrcInput.value = URL.createObjectURL(userPortfolioImg);
+  // }
+
   updatePortfolioModal.showModal();
-})
+});
+
+updatePortfolioModalForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  user.userName = updateUserNameInput.value;
+  user.userNumber = updateUserNumberInput.value;
+  user.userEmail = updateUserEmailInput.value;
+  user.userPassword = updateUserPasswordInput.value;
+  user.userProfession = updateUserProfessionInput.value;
+  user.userAbout = updateUserAboutInput.value;
+  // user.userImgSrc = updateUserImgSrcInput.value;
+  let userPortfolioImg = updateUserImgSrcInput.files[0]
+  if(userPortfolioImg) {
+    user.userImgSrc = URL.createObjectURL(userPortfolioImg);
+  }
+
+  let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+  console.log("allusersdata", user, allUsersData);
+  allUsersData = allUsersData.filter(
+    (userData) => userData.userId !== user.userId
+  );
+  console.log("allusersdata", user, allUsersData);
+  allUsersData.push(user);
+  localStorage.setItem("usersData", JSON.stringify(allUsersData));
+  localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+  refreshUserProfile();
+});
 
 updatePortfolioModalClose.addEventListener("click", (e) => {
   updatePortfolioModal.close();
-})
+});
+
+// const heroUserNameSpan = document.querySelector(".hero-user-name")
+// const heroUserProfessionSpan = document.querySelector(".hero-user-profession")
+// const aboutMeUserImage = document.querySelector(".about-me-user-image")
+// const aboutMeUserAbout = document.querySelector(".about-me-text p")

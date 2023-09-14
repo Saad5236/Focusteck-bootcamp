@@ -1,3 +1,5 @@
+
+
 // ___________LOGIN SIGNUP SWITCH___________
 
 const loginFormSection = document.querySelector(".login-form-section");
@@ -56,7 +58,13 @@ signupForm.addEventListener("submit", (e) => {
 
     let allUsersData = JSON.parse(localStorage.getItem("usersData"));
 
-    if (!allUsersData || (allUsersData && !allUsersData.find((data) => data.userEmail === signupFormData.get("signup-email")))) {
+    if (
+      !allUsersData ||
+      (allUsersData &&
+        !allUsersData.find(
+          (data) => data.userEmail === signupFormData.get("signup-email")
+        ))
+    ) {
       let newUserData = {
         userId: generateId(),
         userRole: "user", // alternatively admin
@@ -65,9 +73,9 @@ signupForm.addEventListener("submit", (e) => {
         userEmail: signupFormData.get("signup-email"),
         userPassword: signupFormData.get("signup-password"),
         userProfession: "",
-        userAboutMe: "",
+        userAbout: "",
         userImgSrc: "",
-        userSkills: []
+        userSkills: [],
       };
 
       console.log(newUserData);
@@ -75,13 +83,35 @@ signupForm.addEventListener("submit", (e) => {
       let usersData;
 
       if (localStorage.getItem("usersData") === null) {
-        usersData = [];
+        usersData = [
+          {
+            userId: 1,
+            userRole: "admin", // alternatively admin
+            userName: "Saad",
+            userNumber: "89389236",
+            userEmail: "d@d.com",
+            userPassword: "d",
+            userProfession: "Admin",
+            userAbout:
+              "I am new admin. I am new admin. I am new admin. I am new admin. I am new admin. I am new admin. I am new admin. I am new admin",
+            userImgSrc: "assets/images/about-me-img.jpg",
+            userSkills: [],
+          },
+        ];
+        localStorage.setItem("userProjectsData", JSON.stringify([]));
+        localStorage.setItem("userEducationsData", JSON.stringify([]));
+        localStorage.setItem("userExperiencesData", JSON.stringify([]));
+        localStorage.setItem(
+          "usersData",
+          JSON.stringify(usersData)
+        );
       } else {
         usersData = JSON.parse(localStorage.getItem("usersData"));
       }
       usersData.push(newUserData);
       localStorage.setItem("usersData", JSON.stringify(usersData));
       localStorage.setItem("loggedInUser", JSON.stringify(newUserData));
+
       window.location.href = "./index.html";
     } else {
       alert("email already exists");
@@ -117,7 +147,11 @@ loginForm.addEventListener("submit", (e) => {
       if (loggedInUser) {
         console.log("user logged in", loggedInUser);
         localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
-        window.location.href = "./index.html";
+        if (loggedInUser.userRole === "admin") {
+          window.location.href = "./index1.html";
+        } else {
+          window.location.href = "./index.html";
+        }
       } else {
         alert("Your email or password or both are incorrect.");
       }
