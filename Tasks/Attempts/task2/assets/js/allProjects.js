@@ -9,15 +9,20 @@ if (loggedInUser && loggedInUser.userRole === "admin") {
   window.location.href = "./authentication.html";
 }
 
+navbarLogoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("loggedInUser");
+  window.location.href = "./authentication.html";
+});
+
 // ____________REFRESH PROJECTS____________
 
 let allProjectsContainer = document.querySelector(".projects-container");
 let userProjects = JSON.parse(localStorage.getItem("userProjectsData"));
 
 const refreshProjects = (filteredProjects) => {
-    allProjectsContainer.innerHTML = "";
-    filteredProjects.forEach((project) => {
-        let newProject = `<div class="project">
+  allProjectsContainer.innerHTML = "";
+  filteredProjects.forEach((project) => {
+    let newProject = `<div class="project">
         <picture class="project-img">
           <img
             src=${project.projectImageLink}
@@ -28,11 +33,11 @@ const refreshProjects = (filteredProjects) => {
           <h2>${project.projectHeading}</h2>
           <div class="project-description">${project.projectDescription}</div>
         </div>
-      </div>`
+      </div>`;
 
-      allProjectsContainer.innerHTML += newProject;
-    });
-}
+    allProjectsContainer.innerHTML += newProject;
+  });
+};
 
 refreshProjects(userProjects);
 
@@ -47,18 +52,21 @@ searchProjectsInput.addEventListener("input", (e) => {
 const filterProjects = (searchQuery) => {
   let filteredProjects = userProjects.filter((project) => {
     // const projectName = project.projectHeading.toLowerCase();
-    const projectTags = project.projectTags.map(tag => tag.toLowerCase());
-    const projectLanguages = project.projectLanguages.map(tag => tag.toLowerCase());
-    const projectFrameworks = project.projectFrameworks.map(tag => tag.toLowerCase());
+    const projectTags = project.projectTags.map((tag) => tag.toLowerCase());
+    const projectLanguages = project.projectLanguages.map((tag) =>
+      tag.toLowerCase()
+    );
+    const projectFrameworks = project.projectFrameworks.map((tag) =>
+      tag.toLowerCase()
+    );
 
     return (
-    //   projectName.startsWith(searchQuery) ||
+      //   projectName.startsWith(searchQuery) ||
       projectTags.some((tag) => tag.startsWith(searchQuery)) ||
       projectLanguages.some((language) => language.startsWith(searchQuery)) ||
-      projectFrameworks.some((framework) => framework.startsWith(searchQuery)) 
+      projectFrameworks.some((framework) => framework.startsWith(searchQuery))
     );
   });
 
   refreshProjects(filteredProjects);
 };
-

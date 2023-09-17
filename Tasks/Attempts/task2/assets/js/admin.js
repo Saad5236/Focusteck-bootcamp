@@ -90,7 +90,6 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
   //   user.userImgSrc = URL.createObjectURL(userPortfolioImg);
   // }
 
-  
   let imgFile = updateUserImgSrcInput.files[0];
   // will user FileReader() to read and get base 64 image's link
   let reader = new FileReader();
@@ -131,6 +130,5 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
 updatePortfolioModalClose.addEventListener("click", (e) => {
   updatePortfolioModal.close();
 });
-
 
 // ________NAVIGATIONS HANDLE________

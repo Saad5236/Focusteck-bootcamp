@@ -9,6 +9,11 @@ if (loggedInUser && loggedInUser.userRole === "admin") {
   window.location.href = "./authentication.html";
 }
 
+navbarLogoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("loggedInUser");
+  window.location.href = "./authentication.html";
+});
+
 // navbarLogoutBtn.addEventListener("click", () => {
 //   localStorage.removeItem("loggedInUser");
 //   window.location.href = "./authentication.html";
@@ -90,7 +95,6 @@ const refreshUsers = (filteredUsers) => {
 
       updateUserModal.showModal();
     });
-
   });
 };
 
@@ -141,7 +145,10 @@ updateUserModalForm.addEventListener("submit", (e) => {
   e.preventDefault();
   e.stopPropagation();
   console.log("HEY");
-  const updateUserFormFields = new FormData(updateUserModalForm, updateUserModalFormBtn);
+  const updateUserFormFields = new FormData(
+    updateUserModalForm,
+    updateUserModalFormBtn
+  );
 
   const updateUserName = updateUserFormFields.get("update-fullname");
   const updateUserEmail = updateUserFormFields.get("update-email");
@@ -150,38 +157,33 @@ updateUserModalForm.addEventListener("submit", (e) => {
   const updateUserRole = updateUserFormFields.get("update-role");
 
   if (
-        updateUserName === "" ||
-        updateUserEmail === "" ||
-        updateUserNumber === "" ||
-        updateUserPassword === ""
-    ){
+    updateUserName === "" ||
+    updateUserEmail === "" ||
+    updateUserNumber === "" ||
+    updateUserPassword === ""
+  ) {
     console.log("SOME FIELDS ARE EMPTY");
   } else {
     let index = allUsersData.findIndex((u) => {
-      return u.userId === userIdForUpdate
+      return u.userId === userIdForUpdate;
     });
 
-    console.log("old",allUsersData, index);
-    
+    console.log("old", allUsersData, index);
+
     allUsersData[index].userName = updateUserName;
     allUsersData[index].userNumber = updateUserNumber;
     allUsersData[index].userEmail = updateUserEmail;
     allUsersData[index].userPassword = updateUserPassword;
     allUsersData[index].userRole = updateUserRole;
-    
-    console.log("new",allUsersData, index);
 
-    localStorage.setItem(
-      "usersData",
-      JSON.stringify(allUsersData)
-    );
+    console.log("new", allUsersData, index);
 
-    refreshUsers(allUsersData)
+    localStorage.setItem("usersData", JSON.stringify(allUsersData));
+
+    refreshUsers(allUsersData);
   }
 
-  
   updateUserModal.close();
-
 });
 
 // ADD USER
