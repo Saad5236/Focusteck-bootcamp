@@ -61,18 +61,4 @@ const filterProjects = (searchQuery) => {
 
   refreshProjects(filteredProjects);
 };
-// const filteredProjects = projects.filter(project => {
-//     const projectName = project['Project Name'].toLowerCase();
-//     const tags = project.tags.map(tag => tag.toLowerCase());
-//     const languages = project['Project Languages'].map(language => language.toLowerCase());
 
-//     // Check if any property partially matches the query with initial characters
-//     return (
-//         projectName.startsWith(query) || // Partial match for project name
-//         tags.some(tag => tag.startsWith(query)) || // Partial match for tags
-//         languages.some(language => language.startsWith(query)) // Partial match for languages
-//     );
-// });
-
-// // Call a function to render the filtered projects
-// renderProjects(filteredProjects);

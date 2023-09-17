@@ -1,42 +1,22 @@
-const refreshUserProfile = () => {
-  //   const heroUserNameSpan = document.querySelector(".hero-user-name")
-  // const heroUserProfessionSpan = document.querySelector(".hero-user-profession")
-  // const aboutMeUserImage = document.querySelector(".about-me-user-image")
-  // const aboutMeUserAbout = document.querySelector(".about-me-text p")
-
-  document.querySelector(".hero-user-name").innerText = user.userName;
-  document.querySelector(".hero-user-profession").innerText =
-    user.userProfession;
-  document.querySelector(".about-me-text p").innerText = user.userAbout;
-
-  const image = new Image();
-  image.src = user.userImgSrc;
-  document.querySelector(
-    ".about-me-user-image"
-  ).innerHTML = ""
-  document.querySelector(
-    ".about-me-user-image"
-  ).appendChild(image)
-
-  // let img = document.createElement("img");
-  // img.setAttribute("src", user.userImgSrc);
-
-  // document.querySelector(
-  //   ".about-me-user-image"
-  // ).innerHTML = "";
-  // document.querySelector(
-  //   ".about-me-user-image"
-  // ).appendChild(img)
-
-  // document.querySelector(
-  //   ".about-me-user-image"
-  // ).innerHTML = `<img src=${user.userImgSrc} alt="" />`;
+const generateExperienceId = () => {
+  let id;
+  while (true) {
+    id = Math.floor(Math.random() * (999999 - 100000) + 100000);
+    if (usersExperienceData.find((i) => i.userExperienceId === id)) {
+      // if (usersData.find((i) => i.userEducationId === id)) {
+      continue;
+    } else {
+      break;
+    }
+  }
+  return id;
 };
 const generateEducationId = () => {
   let id;
   while (true) {
     id = Math.floor(Math.random() * (999999 - 100000) + 100000);
     if (usersEducationData.find((i) => i.userEducationId === id)) {
+      // if (usersData.find((i) => i.userEducationId === id)) {
       continue;
     } else {
       break;
@@ -45,38 +25,51 @@ const generateEducationId = () => {
   return id;
 };
 
+// ______________EDUCATIONS______________
+
 // let usersEducationData = [];
 let usersEducationData = JSON.parse(localStorage.getItem("userEducationsData"));
 
 let addEducationModal = document.querySelector("#add-new-education-modal");
+let updateEducationModal = document.querySelector("#update-education-modal");
 let addEducationModalForm = document.querySelector(
   "#add-new-education-modal form"
 );
-let addEducationForm = document.querySelector(".add-new-education-inner form");
-let addEducationBtn = document.querySelector(".add-new-education-btn button");
-let addEducationCloseBtn = document.querySelector(
-  ".add-new-education-close-btn"
+let updateEducationModalForm = document.querySelector(
+  "#update-education-modal form"
 );
+// let addEducationForm = document.querySelector(".add-new-education-inner form");
+let addEducationBtn = document.querySelector(".add-new-education-btn button");
 let addEducationSubmitBtn = document.querySelector(
   ".add-new-education-submit-btn"
 );
+let updateEducationSubmitBtn = document.querySelector(
+  ".update-education-submit-btn"
+);
+let addEducationCloseBtn = document.querySelector(
+  ".add-new-education-close-btn"
+);
+let updateEducationCloseBtn = document.querySelector(
+  ".update-education-close-btn"
+);
+
 let allEducationsContainer = document.querySelector(".all-educations");
 // fetching users data from db
 let user = JSON.parse(localStorage.getItem("loggedInUser"));
 console.log(user);
 
-refreshUserProfile();
+let educationIdForUpdate;
+
+// refreshUserProfile();
 
 addEducationBtn.addEventListener("click", (e) => {
   addEducationModal.showModal();
-  // addEducationModalForm.removeEventListener("submit", updateUserEducationEvent);
-  // addEducationModalForm.addEventListener("submit", addUserEducationEvent);
 });
-
 addEducationCloseBtn.addEventListener("click", (e) => {
   addEducationModal.close();
-  // addEducationModalForm.removeEventListener("submit", addUserEducationEvent);
-  // addEducationModalForm.addEventListener("submit", updateUserEducationEvent);
+});
+updateEducationCloseBtn.addEventListener("click", (e) => {
+  updateEducationModal.close();
 });
 
 addEducationModalForm.addEventListener("submit", (e) => {
@@ -88,33 +81,103 @@ addEducationModalForm.addEventListener("submit", (e) => {
     addEducationSubmitBtn
   );
 
-  userEducationData.userEducationId = generateEducationId();
-  userEducationData.userEducationDegree =
-    educationFormData.get("education-degree");
-  userEducationData.userEducationProgram =
-    educationFormData.get("education-program");
-  userEducationData.userEducationInstitute = educationFormData.get(
-    "education-institute"
+  if (
+    !educationFormData.get("education-degree") ||
+    !educationFormData.get("education-program") ||
+    !educationFormData.get("education-institute") ||
+    !educationFormData.get("education-years")
+  ) {
+    alert("Some fields are empty");
+  } else {
+    userEducationData.userEducationId = generateEducationId();
+    userEducationData.userEducationDegree =
+      educationFormData.get("education-degree");
+    userEducationData.userEducationProgram =
+      educationFormData.get("education-program");
+    userEducationData.userEducationInstitute = educationFormData.get(
+      "education-institute"
+    );
+    userEducationData.userEducationYears =
+      educationFormData.get("education-years");
+
+    usersEducationData.push(userEducationData);
+    localStorage.setItem(
+      "userEducationsData",
+      JSON.stringify(usersEducationData)
+    );
+
+    console.log("user", usersEducationData);
+
+    // _______refreshing screen______
+
+    refreshEducationContainer();
+
+    addEducationModal.close();
+  }
+});
+updateEducationModalForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  const updateEducationFields = new FormData(
+    updateEducationModalForm,
+    updateEducationSubmitBtn
   );
-  userEducationData.userEducationYears =
-    educationFormData.get("education-years");
 
-  usersEducationData.push(userEducationData);
-  // localStorage.setItem("userEducationsData", JSON.stringify(usersEducationData));
+  const updateEducationDegree = updateEducationFields.get(
+    "update-education-degree"
+  );
+  const updateEducationProgram = updateEducationFields.get(
+    "update-education-program"
+  );
+  const updateEducationYears = updateEducationFields.get(
+    "update-education-years"
+  );
+  const updateEducationInstitute = updateEducationFields.get(
+    "update-education-institute"
+  );
 
-  console.log("user", usersEducationData);
+  if (
+    !updateEducationDegree ||
+    !updateEducationProgram ||
+    !updateEducationYears ||
+    !updateEducationInstitute
+  ) {
+    alert("SOME FIELDS ARE EMPTY");
+  } else {
+    let index = usersEducationData.findIndex((u) => {
+      return u.userEducationId === educationIdForUpdate;
+    });
 
-  // _______refreshing screen______
+    console.log("old", usersEducationData, index);
 
-  refreshEducationContainer();
+    usersEducationData[index].userEducationDegree = updateEducationDegree;
+    usersEducationData[index].userEducationProgram = updateEducationProgram;
+    usersEducationData[index].userEducationInstitute = updateEducationInstitute;
+    usersEducationData[index].userEducationYears = updateEducationYears;
 
-  addEducationModal.close();
+    console.log("new", usersEducationData, index);
+
+    localStorage.setItem(
+      "userEducationsData",
+      JSON.stringify(usersEducationData)
+    );
+
+    refreshEducationContainer();
+  }
+
+  updateEducationModal.close();
 });
 
 // EDUCATION'S FUNCTIONS
+
 const refreshEducationContainer = () => {
+  let filteredUserEducationsData = usersEducationData.filter(
+    (userEd) => userEd.userId === user.userId
+  );
+
   allEducationsContainer.innerHTML = "";
-  usersEducationData.forEach((userEduData) => {
+  // usersEducationData.forEach((userEduData) => {
+  filteredUserEducationsData.forEach((userEduData) => {
     let userEducationContainer = document.createElement("div");
     userEducationContainer.classList.add("education");
     userEducationContainer.id = userEduData.userEducationId;
@@ -131,61 +194,29 @@ const refreshEducationContainer = () => {
     allEducationsContainer.appendChild(userEducationContainer);
 
     // updating data in container
-    const userEducationUpdate = userEducationContainer.querySelector(
+    const updateEducationBtn = userEducationContainer.querySelector(
       ".education-update-btn"
     );
 
-    const updateUserEducationForm = userEducationContainer.querySelector(
-      "#add-new-education-modal form"
-    );
-    let educationDegreeInput = document.querySelector(
-      "#add-new-education-modal .education-degree"
-    );
-    let educationProgramInput = document.querySelector(
-      "#add-new-education-modal .education-program"
-    );
-    let educationInstituteInput = document.querySelector(
-      "#add-new-education-modal .education-institute"
-    );
-    let educationYearsInput = document.querySelector(
-      "#add-new-education-modal .education-years"
-    );
     // adding data in modal's input fields for updation
-    userEducationUpdate.addEventListener("click", (e) => {
+    updateEducationBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      addEducationModal.showModal();
 
-      educationDegreeInput.value = userEduData.userEducationDegree;
-      educationProgramInput.value = userEduData.userEducationProgram;
-      educationInstituteInput.value = userEduData.userEducationInstitute;
-      educationYearsInput.value = userEduData.userEducationYears;
+      educationIdForUpdate = userEduData.userEducationId;
+      console.log(educationIdForUpdate);
 
+      document.querySelector(".update-education-degree").value =
+        userEduData.userEducationDegree;
+      document.querySelector(".update-education-program").value =
+        userEduData.userEducationProgram;
+      document.querySelector(".update-education-institute").value =
+        userEduData.userEducationInstitute;
+      document.querySelector(".update-education-years").value =
+        userEduData.userEducationYears;
+
+      updateEducationModal.showModal();
       refreshEducationContainer();
     });
-
-    // inititalizing updateEducation
-    updateUserEducationEvent = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      console.log("uef", usersEducationData, userEduData);
-
-      let i = usersEducationData.findIndex(
-        (data) => data.userEducationId === Number(userEduData.userEducationId)
-      );
-      usersEducationData[i].userEducationDegree = educationDegreeInput.value;
-      usersEducationData[i].userEducationProgram = educationProgramInput.value;
-      usersEducationData[i].userEducationInstitute =
-        educationInstituteInput.value;
-      usersEducationData[i].userEducationYears = educationYearsInput.value;
-
-      // localStorage.setItem("userEducationsData", JSON.stringify(usersEducationData));
-
-
-      console.log("uef", usersEducationData, userEduData);
-
-      refreshEducationContainer();
-    };
 
     // deleting data from container
     const userEducationDelete = userEducationContainer.querySelector(
@@ -198,67 +229,54 @@ const refreshEducationContainer = () => {
       usersEducationData = usersEducationData.filter(
         (edu) => edu.userEducationId !== Number(userEducationId)
       );
-      // localStorage.setItem("userEducationsData", JSON.stringify(usersEducationData));
-
+      localStorage.setItem(
+        "userEducationsData",
+        JSON.stringify(usersEducationData)
+      );
       console.log("chidvochd", usersEducationData);
 
       refreshEducationContainer();
     });
   });
 };
-
-// initialized inside forEach loop above to
-let updateUserEducationEvent = null;
-
-const addUserEducationEvent = (e) => {
-  e.preventDefault();
-
-  let userEducationData = { userId: user.userId };
-  let educationFormData = new FormData(
-    addEducationModalForm,
-    addEducationSubmitBtn
-  );
-
-  userEducationData.userEducationId = generateEducationId();
-  userEducationData.userEducationDegree =
-    educationFormData.get("education-degree");
-  userEducationData.userEducationProgram =
-    educationFormData.get("education-program");
-  userEducationData.userEducationInstitute = educationFormData.get(
-    "education-institute"
-  );
-  userEducationData.userEducationYears =
-    educationFormData.get("education-years");
-
-  usersEducationData.push(userEducationData);
-
-  console.log("user", usersEducationData);
-
-  refreshEducationContainer();
-
-  // addEducationModalForm.removeEventListener("submit", addUserEducationEvent);
-  // addEducationModalForm.addEventListener("submit", updateUserEducationEvent);
-  addEducationModal.close();
-};
+refreshEducationContainer();
 
 // ____________EXPERIENCES______________
 
-let usersExperienceData = [];
+// let usersExperienceData = [];
+let usersExperienceData = JSON.parse(
+  localStorage.getItem("userExperiencesData")
+);
 
 const addExperienceModal = document.querySelector("#add-new-experience-modal");
+const updateExperienceModal = document.querySelector(
+  "#update-experience-modal"
+);
 const addExperienceModalForm = document.querySelector(
   "#add-new-experience-modal form"
 );
+const updateExperienceModalForm = document.querySelector(
+  "#update-experience-modal form"
+);
 const addExperienceModalFormSubmit = document.querySelector(
   "#add-new-experience-modal form button"
+);
+const updateExperienceModalFormSubmit = document.querySelector(
+  "#update-experience-modal form button"
 );
 const addExperienceBtn = document.querySelector(".add-new-experience-btn");
 const addExperienceModalCloseBtn = document.querySelector(
   ".add-new-experience-close-btn"
 );
+const updateExperienceModalCloseBtn = document.querySelector(
+  ".update-experience-close-btn"
+);
 
 addExperienceModalCloseBtn.addEventListener("click", (e) => {
   addExperienceModal.close();
+});
+updateExperienceModalCloseBtn.addEventListener("click", (e) => {
+  updateExperienceModal.close();
 });
 
 addExperienceBtn.addEventListener("click", (e) => {
@@ -274,7 +292,7 @@ addExperienceModalForm.addEventListener("submit", (e) => {
     addExperienceModalFormSubmit
   );
 
-  userExperienceData.userExperienceId = generateEducationId();
+  userExperienceData.userExperienceId = generateExperienceId();
   userExperienceData.userExperienceTitle =
     experienceFormData.get("experience-title");
   userExperienceData.userExperienceCompany =
@@ -285,6 +303,10 @@ addExperienceModalForm.addEventListener("submit", (e) => {
     experienceFormData.get("experience-years");
 
   usersExperienceData.push(userExperienceData);
+  localStorage.setItem(
+    "userExperiencesData",
+    JSON.stringify(usersExperienceData)
+  );
 
   console.log("user", usersExperienceData);
 
@@ -297,24 +319,75 @@ addExperienceModalForm.addEventListener("submit", (e) => {
 
 // EXPERIENCE'S FUNCTIONS
 
-// let addEducationModal = document.querySelector("#add-new-education-modal");
-// let addEducationModalForm = document.querySelector(
-//   "#add-new-education-modal form"
-// );
-// let addEducationForm = document.querySelector(".add-new-education-inner form");
-// let addEducationBtn = document.querySelector(".add-new-education-btn button");
-// let addEducationCloseBtn = document.querySelector(
-//   ".add-new-education-close-btn"
-// );
-// let addEducationSubmitBtn = document.querySelector(
-//   ".add-new-education-submit-btn"
-// );
-// let allEducationsContainer = document.querySelector(".all-educations");
+let experienceIdForUpdate;
+
+updateExperienceModalForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  const updateExperienceFields = new FormData(
+    updateExperienceModalForm,
+    updateExperienceModalFormSubmit
+  );
+
+  const updatedExperienceTitle = updateExperienceFields.get(
+    "update-experience-title"
+  );
+  const updatedExperienceCompany = updateExperienceFields.get(
+    "update-experience-company"
+  );
+  const updatedExperienceYears = updateExperienceFields.get(
+    "update-experience-years"
+  );
+  const updatedExperienceSkills = updateExperienceFields.get(
+    "update-experience-skills"
+  );
+
+  if (
+    !updatedExperienceTitle ||
+    !updatedExperienceCompany ||
+    !updatedExperienceYears ||
+    !updatedExperienceSkills
+  ) {
+    alert("SOME FIELDS ARE EMPTY");
+    console.log(
+      updatedExperienceTitle,
+      updatedExperienceCompany,
+      updatedExperienceYears,
+      updatedExperienceSkills
+    );
+  } else {
+    let index = usersExperienceData.findIndex((u) => {
+      return u.userExperienceId === experienceIdForUpdate;
+    });
+
+    console.log("old", usersExperienceData, index);
+
+    usersExperienceData[index].userExperienceTitle = updatedExperienceTitle;
+    usersExperienceData[index].userExperienceCompany = updatedExperienceCompany;
+    usersExperienceData[index].userExperienceSkills = updatedExperienceSkills;
+    usersExperienceData[index].userExperienceYears = updatedExperienceYears;
+
+    console.log("new", usersExperienceData, index);
+
+    localStorage.setItem(
+      "userExperiencesData",
+      JSON.stringify(usersExperienceData)
+    );
+
+    refreshExperienceContainer();
+  }
+
+  updateExperienceModal.close();
+});
 
 let allExperiencesContainer = document.querySelector(".all-experiences");
 const refreshExperienceContainer = () => {
+  let filteredUserExperiencesData = usersExperienceData.filter(
+    (userEd) => userEd.userId === user.userId
+  );
   allExperiencesContainer.innerHTML = "";
-  usersExperienceData.forEach((userExpData) => {
+  // usersExperienceData.forEach((userExpData) => {
+  filteredUserExperiencesData.forEach((userExpData) => {
     let userExperienceContainer = document.createElement("div");
     userExperienceContainer.classList.add("experience");
     userExperienceContainer.id = userExpData.userExperienceId;
@@ -338,55 +411,27 @@ const refreshExperienceContainer = () => {
       ".experience-update-btn"
     );
 
-    const updateUserExperienceForm = userExperienceContainer.querySelector(
-      "#add-new-experience-modal form"
-    );
-    let experienceTitleInput = document.querySelector(
-      "#add-new-experience-modal .experience-Title"
-    );
-    let experienceCompanyInput = document.querySelector(
-      "#add-new-experience-modal .experience-company"
-    );
-    let experienceSkillsInput = document.querySelector(
-      "#add-new-experience-modal .experience-skills"
-    );
-    let experienceYearsInput = document.querySelector(
-      "#add-new-experience-modal .experience-years"
-    );
     // adding data in modal's input fields for updation
     userExperienceUpdate.addEventListener("click", (e) => {
       e.stopPropagation();
-      addExperienceModal.showModal();
+      updateExperienceModal.showModal();
+      experienceIdForUpdate = userExpData.userExperienceId;
 
-      experienceTitleInput.value = userExpData.userExperienceTitle;
-      experienceCompanyInput.value = userExpData.userExperienceCompany;
-      experienceSkillsInput.value = userExpData.userExperienceSkills;
-      experienceYearsInput.value = userExpData.userExperienceYears;
+      document.querySelector(
+        "#update-experience-modal .update-experience-title"
+      ).value = userExpData.userExperienceTitle;
+      document.querySelector(
+        "#update-experience-modal .update-experience-company"
+      ).value = userExpData.userExperienceCompany;
+      document.querySelector(
+        "#update-experience-modal .update-experience-skills"
+      ).value = userExpData.userExperienceSkills;
+      document.querySelector(
+        "#update-experience-modal .update-experience-years"
+      ).value = userExpData.userExperienceYears;
 
       refreshExperienceContainer();
     });
-
-    // inititalizing updateExperience
-    // updateUserExperienceEvent = (e) => {
-    //   e.preventDefault();
-    //   e.stopPropagation();
-
-    //   console.log("uef", usersExperienceData, userExpData);
-
-    //   let i = usersExperienceData.findIndex(
-    //     (data) => data.userExperienceId === Number(userExpData.userExperienceId)
-    //   );
-    //   usersExperienceData[i].userExperienceDegree = experienceDegreeInput.value;
-    //   usersExperienceData[i].userExperienceProgram =
-    //     experienceProgramInput.value;
-    //   usersExperienceData[i].userExperienceInstitute =
-    //     experienceInstituteInput.value;
-    //   usersExperienceData[i].userExperienceYears = experienceYearsInput.value;
-
-    //   console.log("uef", usersExperienceData, userExpData);
-
-    //   refreshExperienceContainer();
-    // };
 
     // deleting data from container
     const userExperienceDelete = userExperienceContainer.querySelector(
@@ -399,16 +444,36 @@ const refreshExperienceContainer = () => {
       usersExperienceData = usersExperienceData.filter(
         (exp) => exp.userExperienceId !== Number(userExperienceId)
       );
+
+      usersExperienceData.forEach((u) => {
+        console.log(
+          u.id,
+          typeof u.id,
+          userExperienceId,
+          typeof userExperienceId
+        );
+      });
+
       console.log("chidvochd", usersExperienceData);
+      localStorage.setItem(
+        "userExperiencesData",
+        JSON.stringify(usersExperienceData)
+      );
 
       refreshExperienceContainer();
     });
   });
 };
 
-// ____________EXPERIENCES______________
+refreshExperienceContainer();
 
-let userSkillsData = [];
+// ____________SKILLS______________
+
+// let userSkillsData = [];
+let userSkillsData = JSON.parse(
+  localStorage.getItem("loggedInUser")
+).userSkills;
+
 let allUsersData = JSON.parse(localStorage.getItem("usersData"));
 let userIndex = allUsersData.findIndex(
   (userData) => userData.userId === user.userId
@@ -437,7 +502,11 @@ addSkillForm.addEventListener("submit", (e) => {
 
 const refreshSkillsContainer = () => {
   allSkillsContainer.innerHTML = "";
+  // let loggedInUser = JSON.parse(localStorage.getItem("usersData"));
+  // let skills = loggedInUser.userSkills;
+
   userSkillsData.forEach((userSkill) => {
+    // loggedInUser.userSkills.forEach((userSkill) => {
     let userSkillContainer = document.createElement("div");
     userSkillContainer.classList.add("skill");
     userSkillContainer.id = userSkill;
@@ -453,9 +522,16 @@ const refreshSkillsContainer = () => {
       userSkillContainer.querySelector(".skill-delete-btn");
     userSkillDelete.addEventListener("click", (e) => {
       e.stopPropagation();
+      // let userSkills = JSON.parse(localStorage.getItem("usersData"))
+      // userSkills = userSkills.userSkills;
       let userSkillId = userSkillDelete.parentNode.id;
       console.log("chidvochd", userSkillsData);
-      userSkillsData = userSkillsData.filter((skill) => skill !== userSkillId);
+      console.log("1", userSkillsData);
+      userSkillsData = userSkillsData.filter((skill) => {
+        console.log(skill, userSkillId);
+        return skill !== userSkillId;
+      });
+      console.log("1", userSkillsData);
       user.userSkills = userSkillsData;
       allUsersData[userIndex] = user;
       localStorage.setItem("usersData", JSON.stringify(allUsersData));
@@ -466,6 +542,8 @@ const refreshSkillsContainer = () => {
     });
   });
 };
+
+refreshSkillsContainer();
 
 // _________PROFILE____________
 
@@ -516,36 +594,106 @@ updatePortfolioBtn.addEventListener("click", (e) => {
 updatePortfolioModalForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  user.userName = updateUserNameInput.value;
-  user.userNumber = updateUserNumberInput.value;
-  user.userEmail = updateUserEmailInput.value;
-  user.userPassword = updateUserPasswordInput.value;
-  user.userProfession = updateUserProfessionInput.value;
-  user.userAbout = updateUserAboutInput.value;
-  // user.userImgSrc = updateUserImgSrcInput.value;
-  let userPortfolioImg = updateUserImgSrcInput.files[0]
-  if(userPortfolioImg) {
-    user.userImgSrc = URL.createObjectURL(userPortfolioImg);
+  if (
+    !updateUserNameInput.value ||
+    !updateUserNumberInput.value ||
+    !updateUserEmailInput.value ||
+    !updateUserPasswordInput.value ||
+    !updateUserProfessionInput.value ||
+    !updateUserAboutInput.value
+  ) {
+    alert("Some fields are empty");
+  } else {
+    user.userName = updateUserNameInput.value;
+    user.userNumber = updateUserNumberInput.value;
+    user.userEmail = updateUserEmailInput.value;
+    user.userPassword = updateUserPasswordInput.value;
+    user.userProfession = updateUserProfessionInput.value;
+    user.userAbout = updateUserAboutInput.value;
+    // user.userImgSrc = updateUserImgSrcInput.value;
+
+    // let userPortfolioImg = updateUserImgSrcInput.files[0]
+    // if(userPortfolioImg) {
+    //   user.userImgSrc = URL.createObjectURL(userPortfolioImg);
+    // }
+
+    // updateUserImgSrcInput.addEventListener("change", () => {
+    //   console.log("HELLO");
+    //   let imgFile = updateUserImgSrcInput.files[0];
+    //   let reader = new FileReader();
+
+    //   reader.onload = function(e) {
+    //     user.userImgSrc = e.target.result;
+    //   }
+    //   reader.readAsDataURL(imgFile);
+    // console.log("user.userImgSrc",user.userImgSrc);
+    // })
+
+    let imgFile = updateUserImgSrcInput.files[0];
+    // will user FileReader() to read and get base 64 image's link
+    let reader = new FileReader();
+
+    reader.onload = function (e) {
+      // storing base 64 image link generated
+      user.userImgSrc = e.target.result;
+
+      // Since reader.onload event function that is passed executes asynchronously and it executes when file reading process completes so due to that delat rest of the code (below) would run before it could save image's linkto user.userImgSrc that's why all the rest of the code (below) is dependent on the imgSrc to be sotred and tht's why instead writing rest of the code inside of onload event function instead of outside as rest of the code would execute first
+      let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+      console.log("allusersdata", user, allUsersData);
+      allUsersData = allUsersData.filter(
+        (userData) => userData.userId !== user.userId
+      );
+      console.log("allusersdata", user, allUsersData);
+      allUsersData.push(user);
+      localStorage.setItem("usersData", JSON.stringify(allUsersData));
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+      refreshUserProfile();
+
+      updatePortfolioModal.close();
+    };
+    reader.readAsDataURL(imgFile);
   }
-
-  let allUsersData = JSON.parse(localStorage.getItem("usersData"));
-  console.log("allusersdata", user, allUsersData);
-  allUsersData = allUsersData.filter(
-    (userData) => userData.userId !== user.userId
-  );
-  console.log("allusersdata", user, allUsersData);
-  allUsersData.push(user);
-  localStorage.setItem("usersData", JSON.stringify(allUsersData));
-  localStorage.setItem("loggedInUser", JSON.stringify(user));
-
-  refreshUserProfile();
 });
 
 updatePortfolioModalClose.addEventListener("click", (e) => {
   updatePortfolioModal.close();
 });
 
-// const heroUserNameSpan = document.querySelector(".hero-user-name")
-// const heroUserProfessionSpan = document.querySelector(".hero-user-profession")
-// const aboutMeUserImage = document.querySelector(".about-me-user-image")
-// const aboutMeUserAbout = document.querySelector(".about-me-text p")
+const refreshUserProfile = () => {
+  //   const heroUserNameSpan = document.querySelector(".hero-user-name")
+  // const heroUserProfessionSpan = document.querySelector(".hero-user-profession")
+  // const aboutMeUserImage = document.querySelector(".about-me-user-image")
+  // const aboutMeUserAbout = document.querySelector(".about-me-text p")
+
+  document.querySelector(".hero-user-name").innerText = user.userName;
+  document.querySelector(".hero-user-profession").innerText =
+    user.userProfession;
+  document.querySelector(".about-me-text p").innerText = user.userAbout;
+  document.querySelector(
+    ".contact-links .user-whatsapp"
+  ).href = `https://wa.me/${user.userNumber}`;
+  document.querySelector(
+    ".contact-links .user-email"
+  ).href = `mailto://${user.userEmail}`;
+
+  // const image = new Image();
+  // image.src = user.userImgSrc;
+  // document.querySelector(
+  //   ".about-me-user-image"
+  // ).innerHTML = ""
+  // document.querySelector(
+  //   ".about-me-user-image"
+  // ).appendChild(image)
+
+  console.log("img link", user.userImgSrc);
+  let img = document.createElement("img");
+  img.src = user.userImgSrc;
+  document.querySelector(".about-me-user-image").innerHTML = "";
+  document.querySelector(".about-me-user-image").appendChild(img);
+  // document.querySelector(
+  //   ".about-me-user-image"
+  // ).innerHTML = `<img src=${user.userImgSrc} alt="" />`;
+};
+
+refreshUserProfile();

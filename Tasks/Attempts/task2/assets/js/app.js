@@ -1,6 +1,6 @@
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 let userProjectsData = JSON.parse(localStorage.getItem("userProjectsData"));
-
+// userProjectData
 // if(userProjectsData.length > 0) {
 //   userProjectsData = userProjectsData.filter((project) => project.userId === loggedInUser.userId);
 // }
@@ -62,31 +62,90 @@ navbarLogoutBtn.addEventListener("click", () => {
 const allProjectsSection = document.querySelector(
   ".projects .projects-inner .all-projects"
 );
+let updateProjectDataForm = document.querySelector(
+  ".update-project-inner form"
+);
+let updateProjectDataFormBtn = document.querySelector(
+  ".update-project-inner form button"
+);
+let updateProjectFrameworksContainer = document.querySelector(
+  ".update-project-frameworks-container"
+);
+let updateProjectFrameworksInput = document.querySelector(
+  ".update-project-frameworks-input input"
+);
+let updateProjectFrameworksAdd = document.querySelector(
+  ".update-project-frameworks-input a"
+);
+
+let updateProjectLanguagesContainer = document.querySelector(
+  ".update-project-languages-container"
+);
+let updateProjectLanguagesInput = document.querySelector(
+  ".update-project-languages-input input"
+);
+let updateProjectLanguagesAdd = document.querySelector(
+  ".update-project-languages-input a"
+);
+
+let updateProjectTagsContainer = document.querySelector(
+  ".update-project-tags-container"
+);
+let updateProjectTagsInput = document.querySelector(
+  ".update-project-tags-input input"
+);
+let updateProjectTagsAdd = document.querySelector(
+  ".update-project-tags-input a"
+);
+// project's input field
+let updateProjectFormTitleInput = document.querySelector(
+  ".update-project-inner form #update-project-title"
+);
+
+let updateProjectFormDescriptionInput = document.querySelector(
+  ".update-project-inner form #update-project-description"
+);
+let updateProjectFormImgSrcInput = document.querySelector(
+  ".update-project-inner form #update-project-img-src"
+);
+
+let userProjectDataForUpdate;
+
+updateProjectFrameworksAdd.addEventListener("click", (e) => {
+  e.stopPropagation();
+  console.log("FW ADDEVENTLISTENER");
+  userProjectDataForUpdate.value.projectFrameworks.push(
+    updateProjectFrameworksInput.value
+  );
+  updateDialogRefreshExtrasList(
+    updateProjectFrameworksContainer,
+    userProjectDataForUpdate.value.projectFrameworks
+  );
+});
+
+updateProjectLanguagesAdd.addEventListener("click", (e) => {
+  e.stopPropagation();
+  userProjectDataForUpdate.value.projectLanguages.push(
+    updateProjectLanguagesInput.value
+  );
+  updateDialogRefreshExtrasList(
+    updateProjectLanguagesContainer,
+    userProjectDataForUpdate.value.projectLanguages
+  );
+});
+updateProjectTagsAdd.addEventListener("click", (e) => {
+  e.stopPropagation();
+  userProjectDataForUpdate.value.projectTags.push(updateProjectTagsInput.value);
+  updateDialogRefreshExtrasList(
+    updateProjectTagsContainer,
+    userProjectDataForUpdate.value.projectTags
+  );
+});
 
 const refreshProjects = (itemsContainer, items) => {
   if (items.length > 0)
     items = items.filter((item) => item.userId === loggedInUser.userId);
   items.forEach((item) => {
-    // itemsContainer.innerHTML += `<article class="project" id=${item.projectId}>
-    // <div class="project-text">
-    //   <h3>${item.projectHeading}</h3>
-    //   <div>
-    //     <p>${item.projectDescription}</p>
-    //   </div>
-    //   <div class="project-btns">
-    //     <button class="btn-primary blue-gradient-text">See Live</button>
-    //     <button class="blue-gradient-text">Source Code</button>
-    //   </div>
-    //   <div class="project-update-delete-btns">
-    //     <button id=${item.projectId} class="project-delete-btn">Delete</button>
-    //     <button class="project-update-btn">Update</button>
-    //   </div>
-    // </div>
-    // <picture id=${item.projectId}>
-    //   <img src=${item.projectImageLink} alt="">
-    // </picture>
-    // </article>`;
-
     let newProject = document.createElement("article");
     newProject.classList.add("project");
     newProject.id = item.projectId;
@@ -120,150 +179,88 @@ const refreshProjects = (itemsContainer, items) => {
 
     updateProjectBtn.addEventListener("click", () => {
       let projectId = updateProjectBtn.parentNode.parentNode.parentNode.id;
-      let userProjectData = userProjectsData.find(
-        (project) => project.projectId === Number(projectId)
-      );
+      // let userProjectData = userProjectsData.find(
+      //   (project) => project.projectId === Number(projectId)
+      // );
 
-      let updateProjectDataForm = document.querySelector(
-        ".update-project-inner form"
-      );
-      let updateProjectDataFormBtn = document.querySelector(
-        ".update-project-inner form button"
-      );
-      let updateProjectFrameworksContainer = document.querySelector(
-        ".update-project-frameworks-container"
-      );
-      let updateProjectFrameworksInput = document.querySelector(
-        ".update-project-frameworks-input input"
-      );
-      let updateProjectFrameworksAdd = document.querySelector(
-        ".update-project-frameworks-input a"
-      );
+      // storing project's data in an object rather than simply assigning it to a variable. as objects are passed (as a func arg or var) as reference which means when i change that func's or var's value the original object also changes and we needed it bcz we're implementing update frameworks, tags, etc outside of loop
+      let userProjectData = {
+        value: userProjectsData.find(
+          (project) => project.projectId === Number(projectId)
+        ),
+      };
 
-      let updateProjectLanguagesContainer = document.querySelector(
-        ".update-project-languages-container"
-      );
-      let updateProjectLanguagesInput = document.querySelector(
-        ".update-project-languages-input input"
-      );
-      let updateProjectLanguagesAdd = document.querySelector(
-        ".update-project-languages-input a"
-      );
+      userProjectDataForUpdate = userProjectData;
 
-      let updateProjectTagsContainer = document.querySelector(
-        ".update-project-tags-container"
-      );
-      let updateProjectTagsInput = document.querySelector(
-        ".update-project-tags-input input"
-      );
-      let updateProjectTagsAdd = document.querySelector(
-        ".update-project-tags-input a"
-      );
-      // project's input field
-      let updateProjectFormTitleInput = document.querySelector(
-        ".update-project-inner form #update-project-title"
-      );
-
-      let updateProjectFormDescriptionInput = document.querySelector(
-        ".update-project-inner form #update-project-description"
-      );
-      let updateProjectFormImgSrcInput = document.querySelector(
-        ".update-project-inner form #update-project-img-src"
-      );
-
-      updateProjectFormTitleInput.value = userProjectData.projectHeading;
+      updateProjectFormTitleInput.value = userProjectData.value.projectHeading;
       updateProjectFormDescriptionInput.value =
-        userProjectData.projectDescription;
-      updateProjectFormImgSrcInput.value = userProjectData.projectImageLink;
+        userProjectData.value.projectDescription;
+      // updateProjectFormImgSrcInput.value =
+      //   userProjectData.value.projectImageLink;
 
-      userProjectData.projectFrameworks.forEach((framework) => {
+      updateProjectFrameworksContainer.innerHTML = "";
+      userProjectData.value.projectFrameworks.forEach((framework) => {
+        console.log("FW FOREACH");
         updateProjectFrameworksContainer.innerHTML += `<span>${framework}</span>`;
         updateProjectFrameworksContainer.addEventListener("click", (e) => {
           if (e.target.tagName === "SPAN") {
             let spanContent = e.target.textContent;
-            console.log(userProjectData.projectFrameworks);
-            userProjectData.projectFrameworks =
-              userProjectData.projectFrameworks.filter(
+            console.log(userProjectData.value.projectFrameworks);
+            userProjectData.value.projectFrameworks =
+              userProjectData.value.projectFrameworks.filter(
                 (framework) => framework !== spanContent
               );
-            console.log(userProjectData.projectFrameworks);
+            console.log(userProjectData.value.projectFrameworks);
 
             updateDialogRefreshExtrasList(
               updateProjectFrameworksContainer,
-              userProjectData.projectFrameworks
+              userProjectData.value.projectFrameworks
             );
           }
           e.stopPropagation();
         });
       });
-      updateProjectFrameworksAdd.addEventListener("click", (e) => {
-        e.stopPropagation();
-        userProjectData.projectFrameworks.push(
-          updateProjectFrameworksInput.value
-        );
-        updateDialogRefreshExtrasList(
-          updateProjectFrameworksContainer,
-          userProjectData.projectFrameworks
-        );
-      });
 
-      userProjectData.projectLanguages.forEach((framework) => {
+      userProjectData.value.projectLanguages.forEach((framework) => {
         updateProjectLanguagesContainer.innerHTML += `<span>${framework}</span>`;
         updateProjectLanguagesContainer.addEventListener("click", (e) => {
           if (e.target.tagName === "SPAN") {
             let spanContent = e.target.textContent;
-            console.log(userProjectData.projectLanguages);
-            userProjectData.projectLanguages =
-              userProjectData.projectLanguages.filter(
+            console.log(userProjectData.value.projectLanguages);
+            userProjectData.value.projectLanguages =
+              userProjectData.value.projectLanguages.filter(
                 (framework) => framework !== spanContent
               );
-            console.log(userProjectData.projectLanguages);
+            console.log(userProjectData.value.projectLanguages);
 
             updateDialogRefreshExtrasList(
               updateProjectLanguagesContainer,
-              userProjectData.projectLanguages
+              userProjectData.value.projectLanguages
             );
           }
           e.stopPropagation();
         });
       });
-      updateProjectLanguagesAdd.addEventListener("click", (e) => {
-        e.stopPropagation();
-        userProjectData.projectLanguages.push(
-          updateProjectLanguagesInput.value
-        );
-        updateDialogRefreshExtrasList(
-          updateProjectLanguagesContainer,
-          userProjectData.projectLanguages
-        );
-      });
 
-      userProjectData.projectTags.forEach((framework) => {
+      userProjectData.value.projectTags.forEach((framework) => {
         updateProjectTagsContainer.innerHTML += `<span>${framework}</span>`;
         updateProjectTagsContainer.addEventListener("click", (e) => {
           if (e.target.tagName === "SPAN") {
             let spanContent = e.target.textContent;
-            console.log(userProjectData.projectTags);
-            userProjectData.projectTags = userProjectData.projectTags.filter(
-              (framework) => framework !== spanContent
-            );
-            console.log(userProjectData.projectTags);
+            console.log(userProjectData.value.projectTags);
+            userProjectData.value.projectTags =
+              userProjectData.value.projectTags.filter(
+                (framework) => framework !== spanContent
+              );
+            console.log(userProjectData.value.projectTags);
 
             updateDialogRefreshExtrasList(
               updateProjectTagsContainer,
-              userProjectData.projectTags
+              userProjectData.value.projectTags
             );
           }
           e.stopPropagation();
         });
-      });
-      updateProjectTagsAdd.addEventListener("click", (e) => {
-        e.stopPropagation();
-        userProjectData.projectTags.push(updateProjectTagsInput.value);
-        updateDialogRefreshExtrasList(
-          updateProjectTagsContainer,
-          userProjectData.projectTags
-        );
       });
 
       let updateProjectForm = document.querySelector(
@@ -276,29 +273,51 @@ const refreshProjects = (itemsContainer, items) => {
           updateProjectFormTitleInput.value === "" ||
           updateProjectFormDescriptionInput.value === "" ||
           updateProjectFormImgSrcInput.value === "" ||
-          userProjectData.projectTags.length === 0 ||
-          userProjectData.projectLanguages.length === 0 ||
-          userProjectData.projectFrameworks.length === 0
+          userProjectData.value.projectTags.length === 0 ||
+          userProjectData.value.projectLanguages.length === 0 ||
+          userProjectData.value.projectFrameworks.length === 0
         ) {
           alert("Fill in the empty fields.");
         } else {
-          userProjectData.projectHeading = updateProjectFormTitleInput.value;
-          userProjectData.projectDescription =
+          userProjectData.value.projectHeading =
+            updateProjectFormTitleInput.value;
+          userProjectData.value.projectDescription =
             updateProjectFormDescriptionInput.value;
-          userProjectData.projectImageLink = updateProjectFormImgSrcInput.value;
+          // userProjectData.value.projectImageLink =
+          //   updateProjectFormImgSrcInput.value;
+          let imgFile = updateProjectFormImgSrcInput.files[0];
+          let reader = new FileReader();
+          reader.onload = function (e) {
+            userProjectData.value.projectImageLink = e.target.result;
 
-          let i = userProjectsData.findIndex(
-            (p) => p.projectId === userProjectData.projectId
-          );
-          userProjectsData[i] = userProjectData;
-          localStorage.setItem(
-            "userProjectsData",
-            JSON.stringify(userProjectsData)
-          );
+            let i = userProjectsData.findIndex(
+              (p) => p.projectId === userProjectData.value.projectId
+            );
+            userProjectsData[i] = userProjectData.value;
+            localStorage.setItem(
+              "userProjectsData",
+              JSON.stringify(userProjectsData)
+            );
+  
+            addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
+  
+            updateProjectModal.close();
 
-          addNewDataAndRefresh(userProjectData, allProjectsContainer);
+          };
+          reader.readAsDataURL(imgFile);
 
-          updateProjectModal.close();
+          // let i = userProjectsData.findIndex(
+          //   (p) => p.projectId === userProjectData.value.projectId
+          // );
+          // userProjectsData[i] = userProjectData.value;
+          // localStorage.setItem(
+          //   "userProjectsData",
+          //   JSON.stringify(userProjectsData)
+          // );
+
+          // addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
+
+          // updateProjectModal.close();
 
           // updateProjectFormTitleInput.value = ""
           //     updateProjectFormDescriptionInput.value = ""
@@ -389,28 +408,6 @@ const refreshProjects = (itemsContainer, items) => {
   });
 };
 refreshProjects(allProjectsSection, userProjectsData);
-// userProjectsData.forEach((userProject) => {
-//   refreshProjects(allProjectsSection, userProject);
-// allProjectsSection.innerHTML += `<article class="project" id=${userProject.projectId}>
-//   <div class="project-text">
-//     <h3>${userProject.projectHeading}</h3>
-//     <div>
-//       <p>${userProject.projectDescription}</p>
-//     </div>
-//     <div class="project-btns">
-//       <button class="btn-primary blue-gradient-text">See Live</button>
-//       <button class="blue-gradient-text">Source Code</button>
-//     </div>
-//     <div class="project-update-delete-btns">
-//       <button id=${userProject.projectId} class="project-delete-btn">Delete</button>
-//       <button class="project-update-btn">Update</button>
-//     </div>
-//   </div>
-//   <picture id=${userProject.projectId}>
-//     <img src=${userProject.projectImageLink} alt="">
-//   </picture>
-//   </article>`;
-// });
 
 // __________Project's Modal to display all details of a project__________
 
@@ -672,25 +669,50 @@ addNewProjectForm.addEventListener("submit", (e) => {
   ) {
     alert("Fill in the empty fields.");
   } else {
-    let data = {
-      userId: loggedInUser.userId,
-      projectId: generateId(),
-      projectHeading: addNewProjectTitle.value,
-      projectDescription: addNewProjectDescription.value,
-      projectImageLink: addNewProjectImgSrc.value,
-      projectTags: userProjectTags,
-      projectLanguages: userProjectlanguages,
-      projectFrameworks: userProjectframeworks,
+    let imgFile = addNewProjectImgSrc.files[0];
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      let data = {
+        userId: loggedInUser.userId,
+        projectId: generateId(),
+        projectHeading: addNewProjectTitle.value,
+        projectDescription: addNewProjectDescription.value,
+        projectImageLink: e.target.result,
+        projectTags: userProjectTags,
+        projectLanguages: userProjectlanguages,
+        projectFrameworks: userProjectframeworks,
+      };
+
+      userProjectsData.push(data);
+      localStorage.setItem(
+        "userProjectsData",
+        JSON.stringify(userProjectsData)
+      );
+
+      addNewDataAndRefresh(data, allProjectsContainer);
+      addNewProjectModal.close();
     };
+    reader.readAsDataURL(imgFile);
 
+    // let data = {
+    //   userId: loggedInUser.userId,
+    //   projectId: generateId(),
+    //   projectHeading: addNewProjectTitle.value,
+    //   projectDescription: addNewProjectDescription.value,
+    //   projectImageLink: addNewProjectImgSrc.value,
+    //   projectTags: userProjectTags,
+    //   projectLanguages: userProjectlanguages,
+    //   projectFrameworks: userProjectframeworks,
+    // };
+
+    // // userProjectsData.push(data);
+    // // allProjectsContainer.innerHTML = "";
+    // // refreshProjects(allProjectsContainer, userProjectsData);
+    // // addNewProjectModal.close();
     // userProjectsData.push(data);
-    // allProjectsContainer.innerHTML = "";
-    // refreshProjects(allProjectsContainer, userProjectsData);
-    // addNewProjectModal.close();
-    userProjectsData.push(data);
-    localStorage.setItem("userProjectsData", JSON.stringify(userProjectsData));
+    // localStorage.setItem("userProjectsData", JSON.stringify(userProjectsData));
 
-    addNewDataAndRefresh(data, allProjectsContainer);
+    // addNewDataAndRefresh(data, allProjectsContainer);
   }
 });
 
@@ -722,44 +744,3 @@ const addNewDataAndRefresh = (data, container) => {
   refreshProjects(container, userProjectsData);
   addNewProjectModal.close();
 };
-// const addNewProjectframeworksInput = document.querySelector(
-//   ".add-new-project-frameworks-input input"
-// );
-// const addNewProjectframeworksContainer = document.querySelector(
-//   ".add-new-project-frameworks-container"
-// );
-// const addNewProjectframeworks = document.querySelectorAll(
-//   ".add-new-project-frameworks-container span"
-// );
-// const addNewProjectframeworksBtn = document.querySelector(
-//   ".add-new-project-frameworks-input a"
-// );
-// let userProjectframeworks = [];
-// const addNewProjectAddExtras = (extraData, addNewExtraBtn, addExtraInput, addExtrasContainer) => {
-//   addNewExtraBtn.addEventListener("click", (event) => {
-//     event.stopPropagation();
-//     let addExtraInputValue =  addExtraInput.value;
-//     extraData.push(addExtraInputValue);
-
-//     addExtrasContainer.innerHTML += `<span>${addExtraInputValue}</span>`;
-//     console.log(extraData);
-
-//     addExtrasContainer.addEventListener("click", (e) => {
-//       event.stopPropagation();
-
-//       if (e.target.tagName === "SPAN") {
-//         let spanContent = e.target.textContent;
-//         extraData = extraData.filter(
-//           (tag) => tag !== spanContent
-//         );
-//         console.log(extraData);
-//         addExtrasContainer.removeChild(e.target);
-//     return extraData
-
-//       }
-//     });
-
-//     return extraData
-//   });
-
-// }

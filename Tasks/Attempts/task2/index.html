@@ -152,7 +152,7 @@
           <h2 class="about-me-header">ABOUT ME</h2>
           <div class="about-me-content">
             <picture class="flex-center about-me-user-image">
-              <img src="assets/images/about-me-img.jpg" alt="" />
+              <!-- <img src="assets/images/about-me-img.jpg" alt="" /> -->
             </picture>
             <div class="about-me-text">
               <p>
@@ -225,19 +225,19 @@
                     name="add-new-project-title"
                     placeholder="Project Title"
                   />
-                  <input
+                  <!-- <input
                     type="text"
                     id="add-new-project-img-src"
                     name="add-new-project-img-src"
                     placeholder="Project Image Source"
+                  /> -->
+                  <input
+                    type="file"
+                    id="add-new-project-img-src"
+                    name="add-new-project-img-src"
+                    class="add-new-project-img-src"
+                    accept="image/*"
                   />
-                  <!-- <input
-                type="file"
-                id="add-new-project-img-src"
-                name="add-new-project-img-src"
-                class="add-new-project-img-src"
-                accept="image/*"
-              /> -->
                   <textarea
                     name="add-new-project-description"
                     id="add-new-project-description"
@@ -302,11 +302,18 @@
                     name="update-project-title"
                     placeholder="Project Title"
                   />
-                  <input
+                  <!-- <input
                     type="text"
                     id="update-project-img-src"
                     name="update-project-img-src"
                     placeholder="Project Image Source"
+                  /> -->
+                  <input
+                    type="file"
+                    id="update-project-img-src"
+                    name="update-project-img-src"
+                    class="update-project-img-src"
+                    accept="image/*"
                   />
                   <textarea
                     name="update-project-description"
@@ -525,6 +532,55 @@
             </article>
           </dialog>
 
+          <dialog id="update-experience-modal">
+            <article>
+              <section class="update-experience-inner">
+                <h3>UPDATE EXPERIENCE</h3>
+                <form action="">
+                  <input
+                    type="text"
+                    id="update-experience-title"
+                    name="update-experience-title"
+                    class="update-experience-title"
+                    placeholder="experience title"
+                  />
+
+                  <input
+                    type="text"
+                    id="update-experience-company"
+                    name="update-experience-company"
+                    class="update-experience-company"
+                    placeholder="experience company"
+                  />
+
+                  <input
+                    type="text"
+                    id="update-experience-skills"
+                    name="update-experience-skills"
+                    class="update-experience-skills"
+                    placeholder="experience skills"
+                  />
+
+                  <input
+                    type="number"
+                    id="update-experience-years"
+                    name="update-experience-years"
+                    class="update-experience-years"
+                    placeholder="experience Years"
+                  />
+
+                  <button class="update-experience-submit-btn">
+                    Update experience
+                  </button>
+                </form>
+              </section>
+
+              <button class="update-experience-close-btn">
+                <i class="fa-solid fa-xmark"></i> close
+              </button>
+            </article>
+          </dialog>
+
           <h2 class="experiences-header">EXPERIENCES</h2>
           <div class="add-new-experience-btn">
             <button><i class="fa-solid fa-plus"></i> ADD EXPERIENCE</button>
@@ -564,10 +620,10 @@
             Ready to discuss a project or collaboration? Let's connect!
           </div>
           <div class="contact-links">
-            <a href="https://wa.me/03344109169"
+            <a class="user-whatsapp" href="https://wa.me/03344109169"
               ><i class="fa-brands fa-whatsapp"></i
             ></a>
-            <a href="mailto://saadatifdev@gmail.com"
+            <a class="user-email" href="mailto://saadatifdev@gmail.com"
               ><i class="fa-regular fa-envelope"></i
             ></a>
           </div>

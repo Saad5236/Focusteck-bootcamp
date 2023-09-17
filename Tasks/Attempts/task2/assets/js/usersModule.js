@@ -26,7 +26,7 @@ const refreshUsers = (filteredUsers) => {
         <div class="user-number">Phone no: <span>${user.userNumber}</span></div>
         <div class="user-btns">
             <button class="user-delete">Delete</button>
-            <button class="user-update">Update</button>
+            <button class="user-update" id=${user.userId}>Update</button>
         </div>`;
 
     let userContainer = document.createElement("div");
@@ -46,13 +46,27 @@ const refreshUsers = (filteredUsers) => {
         (user) => user.userId !== Number(userId)
       );
       allUsersProjects = allUsersProjects.filter(
-        (project) => project.userId === Number(userId)
+        (project) => project.userId !== Number(userId)
+      );
+      allUsersEducations = allUsersEducations.filter(
+        (education) => education.userId !== Number(userId)
+      );
+      allUsersExperiences = allUsersExperiences.filter(
+        (experience) => experience.userId !== Number(userId)
       );
 
       localStorage.setItem("usersData", JSON.stringify(allUsersData));
       localStorage.setItem(
         "userProjectsData",
         JSON.stringify(allUsersProjects)
+      );
+      localStorage.setItem(
+        "userEducationsData",
+        JSON.stringify(allUsersEducations)
+      );
+      localStorage.setItem(
+        "userExperiencesData",
+        JSON.stringify(allUsersExperiences)
       );
 
       console.log("chidvochd", allUsersData);
@@ -63,8 +77,11 @@ const refreshUsers = (filteredUsers) => {
     // UPDATE FUNCTIONALITY
     const updateUserBtn = userContainer.querySelector(".user-update");
     updateUserBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
+      // e.stopPropagation();
       console.log("userid", user.userId);
+
+      //getting id from html
+      userIdForUpdate = user.userId;
 
       document.querySelector("#update-fullname").value = user.userName;
       document.querySelector("#update-phonenumber").value = user.userNumber;
@@ -74,56 +91,6 @@ const refreshUsers = (filteredUsers) => {
       updateUserModal.showModal();
     });
 
-    updateUserModalForm.addEventListener("form", (e) => {
-    //   const addUserFormFields = new FormData(
-    //     addUserModalForm,
-    //     addUserModalFormBtn
-    //   ); // to fetch signup form data
-    //   const addUserName = addUserFormFields.get("signup-fullname");
-    //   const addUserEmail = addUserFormFields.get("signup-email");
-    //   const addUserNumber = addUserFormFields.get("signup-phonenumber");
-    //   const addUserPassword = addUserFormFields.get("signup-password");
-    //   const addUserRole = addUserFormFields.get("signup-role");
-
-    //   if (
-    //     addUserName === "" ||
-    //     addUserEmail === "" ||
-    //     addUserNumber === "" ||
-    //     addUserPassword === ""
-    //   ) {
-    //     alert("Some input fields are still empty. Fill them and try again.");
-    //   } else {
-    //     if (
-    //       allUsersData &&
-    //       !allUsersData.find((data) => data.userEmail === addUserEmail)
-    //     ) {
-    //       let newUserData = {
-    //         userId: generateId(),
-    //         userRole: addUserRole, // alternatively admin
-    //         userName: addUserName,
-    //         userNumber: addUserNumber,
-    //         userEmail: addUserEmail,
-    //         userPassword: addUserPassword,
-    //         userProfession: "",
-    //         userAbout: "",
-    //         userImgSrc: "",
-    //         userSkills: [],
-    //       };
-
-    //       console.log(allUsersData);
-    //       allUsersData.push(newUserData);
-    //       console.log(allUsersData);
-
-    //       localStorage.setItem("usersData", JSON.stringify(allUsersData));
-
-    //       refreshUsers(allUsersData);
-    //     } else {
-    //       alert("email already exists");
-    //     }
-    //   }
-
-    //   addUserModal.close();
-    });
   });
 };
 
@@ -158,9 +125,64 @@ const updateUserModalFormBtn = document.querySelector(
 
 let allUsersData = JSON.parse(localStorage.getItem("usersData"));
 let allUsersProjects = JSON.parse(localStorage.getItem("userProjectsData"));
+let allUsersEducations = JSON.parse(localStorage.getItem("userEducationsData"));
+let allUsersExperiences = JSON.parse(
+  localStorage.getItem("userExperiencesData")
+);
+
 const allUsersContainer = document.querySelector(".users-container");
+// stores id of user which I want to update, it's used in form submission
+let userIdForUpdate;
 
 refreshUsers(allUsersData);
+
+// UPDATE USER
+updateUserModalForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  console.log("HEY");
+  const updateUserFormFields = new FormData(updateUserModalForm, updateUserModalFormBtn);
+
+  const updateUserName = updateUserFormFields.get("update-fullname");
+  const updateUserEmail = updateUserFormFields.get("update-email");
+  const updateUserNumber = updateUserFormFields.get("update-phonenumber");
+  const updateUserPassword = updateUserFormFields.get("update-password");
+  const updateUserRole = updateUserFormFields.get("update-role");
+
+  if (
+        updateUserName === "" ||
+        updateUserEmail === "" ||
+        updateUserNumber === "" ||
+        updateUserPassword === ""
+    ){
+    console.log("SOME FIELDS ARE EMPTY");
+  } else {
+    let index = allUsersData.findIndex((u) => {
+      return u.userId === userIdForUpdate
+    });
+
+    console.log("old",allUsersData, index);
+    
+    allUsersData[index].userName = updateUserName;
+    allUsersData[index].userNumber = updateUserNumber;
+    allUsersData[index].userEmail = updateUserEmail;
+    allUsersData[index].userPassword = updateUserPassword;
+    allUsersData[index].userRole = updateUserRole;
+    
+    console.log("new",allUsersData, index);
+
+    localStorage.setItem(
+      "usersData",
+      JSON.stringify(allUsersData)
+    );
+
+    refreshUsers(allUsersData)
+  }
+
+  
+  updateUserModal.close();
+
+});
 
 // ADD USER
 addUserBtn.addEventListener("click", (e) => {
