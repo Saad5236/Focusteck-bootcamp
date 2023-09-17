@@ -20,7 +20,7 @@ const refreshProjects = (filteredProjects) => {
         let newProject = `<div class="project">
         <picture class="project-img">
           <img
-            src="./assets/images/generalstoresoftware-project-img.jpg"
+            src=${project.projectImageLink}
             alt=""
           />
         </picture>
