@@ -298,11 +298,10 @@ const refreshProjects = (itemsContainer, items) => {
               "userProjectsData",
               JSON.stringify(userProjectsData)
             );
-  
-            addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
-  
-            updateProjectModal.close();
 
+            addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
+
+            updateProjectModal.close();
           };
           reader.readAsDataURL(imgFile);
 

@@ -162,7 +162,7 @@ updateUserModalForm.addEventListener("submit", (e) => {
     updateUserNumber === "" ||
     updateUserPassword === ""
   ) {
-    console.log("SOME FIELDS ARE EMPTY");
+    alert("SOME FIELDS ARE EMPTY");
   } else {
     let index = allUsersData.findIndex((u) => {
       return u.userId === userIdForUpdate;
@@ -181,9 +181,8 @@ updateUserModalForm.addEventListener("submit", (e) => {
     localStorage.setItem("usersData", JSON.stringify(allUsersData));
 
     refreshUsers(allUsersData);
+    updateUserModal.close();
   }
-
-  updateUserModal.close();
 });
 
 // ADD USER
@@ -240,12 +239,13 @@ addUserModalForm.addEventListener("submit", (e) => {
       localStorage.setItem("usersData", JSON.stringify(allUsersData));
 
       refreshUsers(allUsersData);
+      addUserModal.close();
+
     } else {
       alert("email already exists");
     }
   }
 
-  addUserModal.close();
 });
 
 // _____SEARCH USER______
@@ -263,7 +263,7 @@ const filterUsers = (searchQuery) => {
     let userNumber = user.userNumber.toLowerCase();
 
     return (
-      userName.startsWith(searchQuery) ||
+      userName.includes(searchQuery) ||
       userEmail.startsWith(searchQuery) ||
       userNumber.startsWith(searchQuery)
     );

@@ -45,6 +45,7 @@
                 name="update-portfolio-user-name"
                 class="update-portfolio-user-name"
                 placeholder="User Name"
+                pattern="[A-Za-z\s.]+"
               />
 
               <input
@@ -53,6 +54,7 @@
                 name="update-portfolio-user-number"
                 class="update-portfolio-user-number"
                 placeholder="User Number"
+                pattern="\d+"
               />
 
               <input
@@ -409,6 +411,7 @@
                     name="education-years"
                     class="education-years"
                     placeholder="Education Years"
+                    min="1"
                   />
 
                   <button class="add-new-education-submit-btn">
@@ -425,7 +428,7 @@
           <dialog id="update-education-modal">
             <article>
               <section class="update-education-inner">
-                <h3>ADD NEW EDUCATION</h3>
+                <h3>UPDATE EDUCATION</h3>
                 <form action="">
                   <input
                     type="text"
@@ -457,10 +460,11 @@
                     name="update-education-years"
                     class="update-education-years"
                     placeholder="Education Years"
+                    min="1"
                   />
 
                   <button class="update-education-submit-btn">
-                    Add new education
+                    Update education
                   </button>
                 </form>
               </section>
@@ -518,6 +522,7 @@
                     name="experience-years"
                     class="experience-years"
                     placeholder="experience Years"
+                    min="1"
                   />
 
                   <button class="add-new-experience-submit-btn">
@@ -567,6 +572,7 @@
                     name="update-experience-years"
                     class="update-experience-years"
                     placeholder="experience Years"
+                    min="1"
                   />
 
                   <button class="update-experience-submit-btn">

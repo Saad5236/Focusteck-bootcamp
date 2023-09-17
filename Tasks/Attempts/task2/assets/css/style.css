@@ -261,7 +261,7 @@ input[type="checkbox"] {
   font-weight: 700;
 }
 
-/* HERO SECTION */
+/* #HERO SECTION */
 
 .hero {
   /* border: 2px solid blue; */
@@ -475,7 +475,7 @@ input[type="checkbox"] {
   word-wrap: break-word;
 }
 
-#project-modal-dialog .project-modal-close-btn, #add-new-project-modal .add-new-project-close-btn, #update-project-modal .update-project-close-btn, #add-new-education-modal .add-new-education-close-btn, #add-new-experience-modal .add-new-experience-close-btn, #update-portfolio-modal .update-portfolio-close-btn {
+#project-modal-dialog .project-modal-close-btn, #add-new-project-modal .add-new-project-close-btn, #update-project-modal .update-project-close-btn, #add-new-education-modal .add-new-education-close-btn, .update-education-close-btn, #add-new-experience-modal .add-new-experience-close-btn, .update-experience-close-btn, #update-portfolio-modal .update-portfolio-close-btn {
   margin-inline: auto;
   display: inline-block;
   margin-top: 1em;
@@ -510,23 +510,24 @@ input[type="checkbox"] {
   gap: 0.5em;
   border-radius: 0.3em;
   font-size: var(--fs-300);
+  margin-inline: auto;
 }
 
 /* Add new project modal */
 
-.projects-inner :is(#add-new-project-modal, #update-project-modal), .educations-inner #add-new-education-modal, .experiences-inner #add-new-experience-modal, #update-portfolio-modal {
+:is(#add-new-project-modal, #update-project-modal, #update-education-modal, #update-experience-modal), .educations-inner #add-new-education-modal, .experiences-inner #add-new-experience-modal, #update-portfolio-modal {
   margin: auto;
 }
 
-.projects-inner #add-new-project-modal::backdrop, #update-project-modal::backdrop, .educations-inner #add-new-education-modal::backdrop, .experiences-inner #add-new-experience-modal::backdrop {
+.projects-inner #add-new-project-modal::backdrop, #update-project-modal::backdrop, .educations-inner #add-new-education-modal::backdrop, #update-education-modal::backdrop, .experiences-inner #add-new-experience-modal::backdrop, #update-experience-modal::backdrop {
   background-color: rgba(0,0,0,0.6);
 }
 
-:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #add-new-experience-modal, #update-portfolio-modal) article {
+:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #update-education-modal, #add-new-experience-modal, #update-experience-modal, #update-portfolio-modal) article {
   padding: 1.5em 1em;
 }
 
-#add-new-project-modal .add-new-project-inner,#update-project-modal .update-project-inner, #add-new-education-modal .add-new-education-inner, #add-new-experience-modal .add-new-experience-inner, #update-portfolio-modal .update-portfolio-inner {
+#add-new-project-modal .add-new-project-inner, #update-project-modal .update-project-inner, #add-new-education-modal .add-new-education-inner, #update-education-modal .update-education-inner, #add-new-experience-modal .add-new-experience-inner, .update-experience-inner, #update-portfolio-modal .update-portfolio-inner {
   display: grid;
   text-align: center;
   color: var(--black);
@@ -538,7 +539,7 @@ input[type="checkbox"] {
   color: var(--white);
 }
 
-:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #add-new-experience-modal, #update-portfolio-modal) form{
+:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #update-education-modal, #add-new-experience-modal, #update-experience-modal, #update-portfolio-modal) form{
   display: grid;
   gap: 1.5em;
 }
@@ -551,11 +552,11 @@ input[type="checkbox"] {
   border-radius: 0.3em;
 }
 
-:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #add-new-experience-modal, #update-portfolio-modal) form input {
+:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #update-education-modal, #add-new-experience-modal, #update-experience-modal, #update-portfolio-modal) form input {
   padding: 1em 0.6em;
 }
 
-:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #add-new-experience-modal, #update-portfolio-modal) form button {
+:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #update-education-modal, #add-new-experience-modal, #update-experience-modal, #update-portfolio-modal) form button {
   background-color: var(--bright-blue);
   color: var(--white);
   padding-block: 0.7em;

@@ -25,6 +25,12 @@ const refreshUserProfile = () => {
   document.querySelector(".hero-user-profession").innerText =
     user.userProfession;
   document.querySelector(".about-me-text p").innerText = user.userAbout;
+  // document.querySelector(
+  //   ".contact-links .user-whatsapp"
+  // ).href = `https://wa.me/${user.userNumber}`;
+  // document.querySelector(
+  //   ".contact-links .user-email"
+  // ).href = `mailto://${user.userEmail}`;
 
   let img = document.createElement("img");
   img.src = user.userImgSrc;
@@ -78,53 +84,64 @@ updatePortfolioBtn.addEventListener("click", (e) => {
 updatePortfolioModalForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  user.userName = updateUserNameInput.value;
-  user.userNumber = updateUserNumberInput.value;
-  user.userEmail = updateUserEmailInput.value;
-  user.userPassword = updateUserPasswordInput.value;
-  user.userProfession = updateUserProfessionInput.value;
-  user.userAbout = updateUserAboutInput.value;
-  // user.userImgSrc = updateUserImgSrcInput.value;
-  // let userPortfolioImg = updateUserImgSrcInput.files[0]
-  // if(userPortfolioImg) {
-  //   user.userImgSrc = URL.createObjectURL(userPortfolioImg);
-  // }
+  if (
+    !updateUserNameInput.value ||
+    !updateUserNumberInput.value ||
+    !updateUserEmailInput.value ||
+    !updateUserPasswordInput.value ||
+    !updateUserProfessionInput.value ||
+    !updateUserAboutInput.value
+  ) {
+    alert("Some fields are empty");
+  } else {
+    user.userName = updateUserNameInput.value;
+    user.userNumber = updateUserNumberInput.value;
+    user.userEmail = updateUserEmailInput.value;
+    user.userPassword = updateUserPasswordInput.value;
+    user.userProfession = updateUserProfessionInput.value;
+    user.userAbout = updateUserAboutInput.value;
+    // user.userImgSrc = updateUserImgSrcInput.value;
+    // let userPortfolioImg = updateUserImgSrcInput.files[0]
+    // if(userPortfolioImg) {
+    //   user.userImgSrc = URL.createObjectURL(userPortfolioImg);
+    // }
 
-  let imgFile = updateUserImgSrcInput.files[0];
-  // will user FileReader() to read and get base 64 image's link
-  let reader = new FileReader();
-  reader.onload = function (e) {
-    // storing base 64 image link generated
-    user.userImgSrc = e.target.result;
+    let imgFile = updateUserImgSrcInput.files[0];
+    // will user FileReader() to read and get base 64 image's link
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      // storing base 64 image link generated
+      user.userImgSrc = e.target.result;
 
-    // Since reader.onload event function that is passed executes asynchronously and it executes when file reading process completes so due to that delat rest of the code (below) would run before it could save image's linkto user.userImgSrc that's why all the rest of the code (below) is dependent on the imgSrc to be sotred and tht's why instead writing rest of the code inside of onload event function instead of outside as rest of the code would execute first
-    let allUsersData = JSON.parse(localStorage.getItem("usersData"));
-    console.log("allusersdata", user, allUsersData);
-    allUsersData = allUsersData.filter(
-      (userData) => userData.userId !== user.userId
-    );
-    console.log("allusersdata", user, allUsersData);
-    allUsersData.push(user);
-    localStorage.setItem("usersData", JSON.stringify(allUsersData));
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
+      // Since reader.onload event function that is passed executes asynchronously and it executes when file reading process completes so due to that delat rest of the code (below) would run before it could save image's linkto user.userImgSrc that's why all the rest of the code (below) is dependent on the imgSrc to be sotred and tht's why instead writing rest of the code inside of onload event function instead of outside as rest of the code would execute first
+      let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+      console.log("allusersdata", user, allUsersData);
+      allUsersData = allUsersData.filter(
+        (userData) => userData.userId !== user.userId
+      );
+      console.log("allusersdata", user, allUsersData);
+      allUsersData.push(user);
+      localStorage.setItem("usersData", JSON.stringify(allUsersData));
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
 
-    refreshUserProfile();
+      refreshUserProfile();
 
-    updatePortfolioModal.close();
-  };
-  reader.readAsDataURL(imgFile);
+      updatePortfolioModal.close();
+    };
+    reader.readAsDataURL(imgFile);
 
-  // let allUsersData = JSON.parse(localStorage.getItem("usersData"));
-  // console.log("allusersdata", user, allUsersData);
-  // allUsersData = allUsersData.filter(
-  //   (userData) => userData.userId !== user.userId
-  // );
-  // console.log("allusersdata", user, allUsersData);
-  // allUsersData.push(user);
-  // localStorage.setItem("usersData", JSON.stringify(allUsersData));
-  // localStorage.setItem("loggedInUser", JSON.stringify(user));
+    // let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+    // console.log("allusersdata", user, allUsersData);
+    // allUsersData = allUsersData.filter(
+    //   (userData) => userData.userId !== user.userId
+    // );
+    // console.log("allusersdata", user, allUsersData);
+    // allUsersData.push(user);
+    // localStorage.setItem("usersData", JSON.stringify(allUsersData));
+    // localStorage.setItem("loggedInUser", JSON.stringify(user));
 
-  // refreshUserProfile();
+    // refreshUserProfile();
+  }
 });
 
 updatePortfolioModalClose.addEventListener("click", (e) => {

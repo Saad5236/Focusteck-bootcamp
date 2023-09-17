@@ -292,29 +292,38 @@ addExperienceModalForm.addEventListener("submit", (e) => {
     addExperienceModalFormSubmit
   );
 
-  userExperienceData.userExperienceId = generateExperienceId();
-  userExperienceData.userExperienceTitle =
-    experienceFormData.get("experience-title");
-  userExperienceData.userExperienceCompany =
-    experienceFormData.get("experience-company");
-  userExperienceData.userExperienceSkills =
-    experienceFormData.get("experience-skills");
-  userExperienceData.userExperienceYears =
-    experienceFormData.get("experience-years");
+  if (
+    !experienceFormData.get("experience-title") ||
+    !experienceFormData.get("experience-company") ||
+    !experienceFormData.get("experience-skills") ||
+    !experienceFormData.get("experience-years")
+  ) {
+    alert("Some fields are empty");
+  } else {
+    userExperienceData.userExperienceId = generateExperienceId();
+    userExperienceData.userExperienceTitle =
+      experienceFormData.get("experience-title");
+    userExperienceData.userExperienceCompany =
+      experienceFormData.get("experience-company");
+    userExperienceData.userExperienceSkills =
+      experienceFormData.get("experience-skills");
+    userExperienceData.userExperienceYears =
+      experienceFormData.get("experience-years");
 
-  usersExperienceData.push(userExperienceData);
-  localStorage.setItem(
-    "userExperiencesData",
-    JSON.stringify(usersExperienceData)
-  );
+    usersExperienceData.push(userExperienceData);
+    localStorage.setItem(
+      "userExperiencesData",
+      JSON.stringify(usersExperienceData)
+    );
 
-  console.log("user", usersExperienceData);
+    console.log("user", usersExperienceData);
 
-  // _______refreshing screen______
+    // _______refreshing screen______
 
-  refreshExperienceContainer();
+    refreshExperienceContainer();
 
-  addExperienceModal.close();
+    addExperienceModal.close();
+  }
 });
 
 // EXPERIENCE'S FUNCTIONS
@@ -375,9 +384,8 @@ updateExperienceModalForm.addEventListener("submit", (e) => {
     );
 
     refreshExperienceContainer();
+    updateExperienceModal.close();
   }
-
-  updateExperienceModal.close();
 });
 
 let allExperiencesContainer = document.querySelector(".all-experiences");
@@ -487,17 +495,22 @@ const allSkillsContainer = document.querySelector(".all-skills");
 
 addSkillForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  userSkillsData.push(addSkillFormInput.value);
-  user.userSkills = userSkillsData;
-  allUsersData[userIndex] = user;
-  localStorage.setItem("usersData", JSON.stringify(allUsersData));
-  localStorage.setItem("loggedInUser", JSON.stringify(user));
 
-  console.log(userSkillsData);
+  if (!addSkillFormInput.value) {
+    alert("Skill input field is empty");
+  } else {
+    userSkillsData.push(addSkillFormInput.value);
+    user.userSkills = userSkillsData;
+    allUsersData[userIndex] = user;
+    localStorage.setItem("usersData", JSON.stringify(allUsersData));
+    localStorage.setItem("loggedInUser", JSON.stringify(user));
 
-  // refresh
+    console.log(userSkillsData);
 
-  refreshSkillsContainer();
+    // refresh
+
+    refreshSkillsContainer();
+  }
 });
 
 const refreshSkillsContainer = () => {
