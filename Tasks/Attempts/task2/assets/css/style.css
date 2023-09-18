@@ -411,14 +411,19 @@ input[type="checkbox"] {
   }
 }
 
-
-.projects, .educations, .experiences, .skills {
+.projects,
+.educations,
+.experiences,
+.skills {
   display: flex;
   justify-content: center;
   margin-bottom: 4em;
 }
 
-.projects-inner, .educations-inner, .experiences-inner, .skills-inner {
+.projects-inner,
+.educations-inner,
+.experiences-inner,
+.skills-inner {
   margin-inline: auto;
   color: var(--black);
   max-width: 2000px;
@@ -438,7 +443,8 @@ input[type="checkbox"] {
   padding-block: 1.5em;
 }
 
-.projects #project-modal-dialog::backdrop, update-portfolio-modal::backdrop {
+.projects #project-modal-dialog::backdrop,
+update-portfolio-modal::backdrop {
   background-color: rgba(33, 33, 33, 0.6);
 }
 
@@ -452,7 +458,6 @@ input[type="checkbox"] {
   max-width: 1500px;
   width: 95%;
   margin-inline: auto;
-
 }
 
 .project-modal h3 {
@@ -475,7 +480,14 @@ input[type="checkbox"] {
   word-wrap: break-word;
 }
 
-#project-modal-dialog .project-modal-close-btn, #add-new-project-modal .add-new-project-close-btn, #update-project-modal .update-project-close-btn, #add-new-education-modal .add-new-education-close-btn, .update-education-close-btn, #add-new-experience-modal .add-new-experience-close-btn, .update-experience-close-btn, #update-portfolio-modal .update-portfolio-close-btn {
+#project-modal-dialog .project-modal-close-btn,
+#add-new-project-modal .add-new-project-close-btn,
+#update-project-modal .update-project-close-btn,
+#add-new-education-modal .add-new-education-close-btn,
+.update-education-close-btn,
+#add-new-experience-modal .add-new-experience-close-btn,
+.update-experience-close-btn,
+#update-portfolio-modal .update-portfolio-close-btn {
   margin-inline: auto;
   display: inline-block;
   margin-top: 1em;
@@ -492,7 +504,11 @@ input[type="checkbox"] {
   gap: 0.3em;
 }
 
-.projects-inner .projects-header, .educations-inner .educations-header, .experiences-inner .experiences-header, .skills-inner .skills-header,  .update-portfolio-inner .update-portfolio-header {
+.projects-inner .projects-header,
+.educations-inner .educations-header,
+.experiences-inner .experiences-header,
+.skills-inner .skills-header,
+.update-portfolio-inner .update-portfolio-header {
   font-size: var(--fs-600);
   text-align: center;
   /* margin-bottom: 2em; */
@@ -515,19 +531,47 @@ input[type="checkbox"] {
 
 /* Add new project modal */
 
-:is(#add-new-project-modal, #update-project-modal, #update-education-modal, #update-experience-modal), .educations-inner #add-new-education-modal, .experiences-inner #add-new-experience-modal, #update-portfolio-modal {
+:is(
+    #add-new-project-modal,
+    #update-project-modal,
+    #update-education-modal,
+    #update-experience-modal
+  ),
+.educations-inner #add-new-education-modal,
+.experiences-inner #add-new-experience-modal,
+#update-portfolio-modal {
   margin: auto;
 }
 
-.projects-inner #add-new-project-modal::backdrop, #update-project-modal::backdrop, .educations-inner #add-new-education-modal::backdrop, #update-education-modal::backdrop, .experiences-inner #add-new-experience-modal::backdrop, #update-experience-modal::backdrop {
-  background-color: rgba(0,0,0,0.6);
+.projects-inner #add-new-project-modal::backdrop,
+#update-project-modal::backdrop,
+.educations-inner #add-new-education-modal::backdrop,
+#update-education-modal::backdrop,
+.experiences-inner #add-new-experience-modal::backdrop,
+#update-experience-modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
-:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #update-education-modal, #add-new-experience-modal, #update-experience-modal, #update-portfolio-modal) article {
+:is(
+    #add-new-project-modal,
+    #update-project-modal,
+    #add-new-education-modal,
+    #update-education-modal,
+    #add-new-experience-modal,
+    #update-experience-modal,
+    #update-portfolio-modal
+  )
+  article {
   padding: 1.5em 1em;
 }
 
-#add-new-project-modal .add-new-project-inner, #update-project-modal .update-project-inner, #add-new-education-modal .add-new-education-inner, #update-education-modal .update-education-inner, #add-new-experience-modal .add-new-experience-inner, .update-experience-inner, #update-portfolio-modal .update-portfolio-inner {
+#add-new-project-modal .add-new-project-inner,
+#update-project-modal .update-project-inner,
+#add-new-education-modal .add-new-education-inner,
+#update-education-modal .update-education-inner,
+#add-new-experience-modal .add-new-experience-inner,
+.update-experience-inner,
+#update-portfolio-modal .update-portfolio-inner {
   display: grid;
   text-align: center;
   color: var(--black);
@@ -539,7 +583,16 @@ input[type="checkbox"] {
   color: var(--white);
 }
 
-:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #update-education-modal, #add-new-experience-modal, #update-experience-modal, #update-portfolio-modal) form{
+:is(
+    #add-new-project-modal,
+    #update-project-modal,
+    #add-new-education-modal,
+    #update-education-modal,
+    #add-new-experience-modal,
+    #update-experience-modal,
+    #update-portfolio-modal
+  )
+  form {
   display: grid;
   gap: 1.5em;
 }
@@ -552,11 +605,31 @@ input[type="checkbox"] {
   border-radius: 0.3em;
 }
 
-:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #update-education-modal, #add-new-experience-modal, #update-experience-modal, #update-portfolio-modal) form input {
+:is(
+    #add-new-project-modal,
+    #update-project-modal,
+    #add-new-education-modal,
+    #update-education-modal,
+    #add-new-experience-modal,
+    #update-experience-modal,
+    #update-portfolio-modal
+  )
+  form
+  input {
   padding: 1em 0.6em;
 }
 
-:is(#add-new-project-modal, #update-project-modal, #add-new-education-modal, #update-education-modal, #add-new-experience-modal, #update-experience-modal, #update-portfolio-modal) form button {
+:is(
+    #add-new-project-modal,
+    #update-project-modal,
+    #add-new-education-modal,
+    #update-education-modal,
+    #add-new-experience-modal,
+    #update-experience-modal,
+    #update-portfolio-modal
+  )
+  form
+  button {
   background-color: var(--bright-blue);
   color: var(--white);
   padding-block: 0.7em;
@@ -568,8 +641,7 @@ input[type="checkbox"] {
 .add-new-project-frameworks .add-new-project-frameworks-container,
 .update-project-tags .update-project-tags-container,
 .update-project-languages .update-project-languages-container,
-.update-project-frameworks .update-project-frameworks-container
-{
+.update-project-frameworks .update-project-frameworks-container {
   margin-top: 0.5em;
   width: 100%;
   display: flex;
@@ -577,12 +649,12 @@ input[type="checkbox"] {
   gap: 0.5em;
 }
 
-.add-new-project-tags .add-new-project-tags-container span, 
-.add-new-project-languages .add-new-project-languages-container span, 
-  .add-new-project-frameworks .add-new-project-frameworks-container span,
-  .update-project-tags .update-project-tags-container span, 
-.update-project-languages .update-project-languages-container span, 
-  .update-project-frameworks .update-project-frameworks-container span {
+.add-new-project-tags .add-new-project-tags-container span,
+.add-new-project-languages .add-new-project-languages-container span,
+.add-new-project-frameworks .add-new-project-frameworks-container span,
+.update-project-tags .update-project-tags-container span,
+.update-project-languages .update-project-languages-container span,
+.update-project-frameworks .update-project-frameworks-container span {
   display: inline-block;
   background-color: var(--dull-blue);
   border-radius: 1em;
@@ -647,6 +719,27 @@ input[type="checkbox"] {
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
 }
 
+.project-update-delete-btns, .education-degree-btns, .experience-job-btns {
+  display: flex;
+  /* justify-content: center; */
+  gap: 0.5em;
+}
+
+.project-update-delete-btns button, .education-degree-btns button, .experience-job-btns button {
+  border-radius: 0.3em;
+  padding: 0.4em 0.8em;
+  color: var(--white);
+}
+
+.project-update-delete-btns .project-delete-btn, .education-delete-btn, .experience-delete-btn  {
+  background-color: red;
+}
+
+.project-update-delete-btns .project-update-btn, .education-update-btn, .experience-update-btn {
+  background-color: yellow;
+  color: var(--black);
+}
+
 @media (width > 700px) {
   .projects-inner {
     max-width: 2200px;
@@ -667,6 +760,10 @@ input[type="checkbox"] {
   .project picture {
     order: 2;
   }
+
+  .project-update-delete-btns {
+    justify-content: start;
+  }
 }
 
 @media (width > 1500px) {
@@ -681,17 +778,23 @@ input[type="checkbox"] {
 
 /* _________EDUCATION SECTION_________ */
 
-.educations-inner, .experiences-inner, .skills-inner {
+.educations-inner,
+.experiences-inner,
+.skills-inner {
   margin-inline: auto;
 }
 
-.educations-inner .add-new-education-btn, .experiences-inner .add-new-experience-btn, .skills-inner .add-new-skill-btn {
+.educations-inner .add-new-education-btn,
+.experiences-inner .add-new-experience-btn,
+.skills-inner .add-new-skill-btn {
   width: 100%;
   display: grid;
   place-content: center;
 }
 
-.educations-inner .add-new-education-btn button, .experiences-inner .add-new-experience-btn button, .add-new-skill-btn button{
+.educations-inner .add-new-education-btn button,
+.experiences-inner .add-new-experience-btn button,
+.add-new-skill-btn button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -705,29 +808,34 @@ input[type="checkbox"] {
   font-size: var(--fs-300);
 }
 
-
-.educations-inner .all-educations, .experiences-inner .all-experiences, .skills-inner .all-skills {
+.educations-inner .all-educations,
+.experiences-inner .all-experiences,
+.skills-inner .all-skills {
   /* width: 100%; */
   display: grid;
   gap: 1.8em;
 }
 
-.all-educations .education,  .all-experiences .experience {
+.all-educations .education,
+.all-experiences .experience {
   display: grid;
   gap: 0.3em;
 }
 
-.education h3, .experience h3 {
+.education h3,
+.experience h3 {
   font-size: var(--fs-400);
   color: var(--black);
 }
 
-.education .education-degree-item b{
+.education .education-degree-item b {
   font-size: var(--fs-200);
 }
 
 @media (width < 700px) {
-  .educations-inner, .experiences-inner, .skills-inner {
+  .educations-inner,
+  .experiences-inner,
+  .skills-inner {
     justify-content: center;
     /* text-align: center; */
   }
@@ -742,15 +850,34 @@ input[type="checkbox"] {
   border-radius: 0.5em;
 }
 
-.add-new-skill-btn form button {
-
-}
-
-.add-new-skill-btn form input{
+.add-new-skill-btn form input {
   /* display: flex; */
   font-size: var(--fs-300);
   outline: none;
   border: none;
+}
+
+.skills-inner {
+  max-width: 1500px;
+  width: 93%;
+}
+
+.all-skills li {
+  list-style-type:decimal;
+}
+
+.all-skills li button {
+  margin-left: 0.5em;
+  border-radius: 0.3em;
+  padding: 0.4em 0.8em;
+  color: var(--white);
+  background-color: red;
+}
+
+@media (width < 700px) {
+  .all-skills {
+    justify-content: center;
+  }
 }
 
 /* CONTACT ME */

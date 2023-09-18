@@ -185,5 +185,132 @@ input[type="checkbox"] {
 /* MAIN */
 
 main {
-  padding: 6em 0 0 0;
+  padding: 7em 0 3em 0;
+}
+
+main, main .users-module{
+  display: grid;
+  gap: 1.5em;
+}
+
+.users-module .users-container {
+  display: grid;
+  gap: 1em;
+}
+
+main .users-module {
+  justify-content: center;
+}
+
+.users-module > div {
+  display: flex;
+  gap: 1em;
+}
+
+.users-module > div button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: green;
+  justify-self: start;
+  color: var(--white);
+  text-wrap: nowrap;
+  padding: 0.5em 0.8em;
+  gap: 0.5em;
+  border-radius: 0.3em;
+  font-size: var(--fs-300);
+}
+
+.users-module > div input {
+  /* display: flex; */
+  font-size: var(--fs-300);
+  outline: none;
+  border: 2px solid green;
+  border-radius: 0.3em;
+  padding-inline: 0.5em;
+}
+
+.users-container .user-btns {
+  display: flex;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.user-btns button {
+  border-radius: 0.3em;
+  padding: 0.4em 0.8em;
+  color: var(--white);
+}
+
+.user-btns .user-delete {
+  background-color: red;
+}
+
+.user-btns .user-update {
+  background-color: yellow;
+  color: var(--black);
+}
+
+/* DIALOG'S FORMS */
+
+#add-user-modal, #update-user-modal {
+  margin: auto;
+  max-width: 1500px;
+  padding: 0 2em;
+  text-align: center;
+  padding-block: 1.5em;
+  justify-items: center;
+}
+
+#add-user-modal::backdrop, #update-user-modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+#add-user-modal article, #update-user-modal article {
+  padding: 1.5em 1em;
+}
+
+:is(#add-user-modal, #update-user-modal) .signup-form-section {
+  display: grid;
+  text-align: center;
+  color: var(--black);
+  gap: 1.5em;
+  padding: 1em 1.5em;
+  border-radius: 0.5em;
+  box-shadow: 5px 5px 5px 2px rgba(0, 0, 0, 0.3);
+  background-color: var(--grey);
+  color: var(--white);
+}
+
+.signup-form-section form {
+  display: grid;
+  gap: 1.5em;
+}
+
+.signup-form-section form input, .signup-form-section form select {
+  padding: 1em 0.6em;
+}
+
+.signup-form-section form button {
+  background-color: var(--bright-blue);
+  color: var(--white);
+  padding-block: 0.7em;
+  border-radius: 0.3em;
+}
+
+.add-user-close-btn, .update-user-close-btn {
+  margin-inline: auto;
+  display: inline-block;
+  margin-top: 1em;
+
+  background-color: rgb(167, 12, 12);
+  color: var(--white);
+  font-size: var(--fs-400);
+  border-radius: 1em;
+  padding: 0.3em 0.5em;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
 }

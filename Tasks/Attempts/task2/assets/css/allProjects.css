@@ -184,12 +184,20 @@ input[type="checkbox"] {
 /* MAIN */
 
 main {
-  padding: 6em 0 0 0;
+  padding: 7em 0 3em 0;
 }
 
 .projects {
   display: grid;
   gap: 1.5em;
+}
+
+input {
+  font-size: var(--fs-300);
+  outline: none;
+  border: 2px solid green;
+  border-radius: 0.3em;
+  padding: 0.5em;
 }
 
 .projects-container {
@@ -211,6 +219,9 @@ main {
 .projects-container .project > picture {
   order: 2;
   aspect-ratio: 18/9;
+  border-radius: 0.3em;
+  overflow: hidden;
+  box-shadow: 2px 2px 3px 2px rgba(0, 0, 0, 0.2);
 }
 .projects-container .project > div {
   order: 1;
@@ -232,3 +243,5 @@ main {
     text-align: center;
   }
 }
+
+/*  */

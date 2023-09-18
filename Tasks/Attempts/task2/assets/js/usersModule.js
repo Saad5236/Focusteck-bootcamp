@@ -164,24 +164,38 @@ updateUserModalForm.addEventListener("submit", (e) => {
   ) {
     alert("SOME FIELDS ARE EMPTY");
   } else {
-    let index = allUsersData.findIndex((u) => {
-      return u.userId === userIdForUpdate;
-    });
+    if (!allUsersData.find((data) => data.userEmail === updateUserEmail)) {
+      let index = allUsersData.findIndex((u) => {
+        return u.userId === userIdForUpdate;
+      });
 
-    console.log("old", allUsersData, index);
+      console.log("old", allUsersData, index);
 
-    allUsersData[index].userName = updateUserName;
-    allUsersData[index].userNumber = updateUserNumber;
-    allUsersData[index].userEmail = updateUserEmail;
-    allUsersData[index].userPassword = updateUserPassword;
-    allUsersData[index].userRole = updateUserRole;
+      allUsersData[index].userName = updateUserName;
+      allUsersData[index].userNumber = updateUserNumber;
+      allUsersData[index].userEmail = updateUserEmail;
+      allUsersData[index].userPassword = updateUserPassword;
+      allUsersData[index].userRole = updateUserRole;
 
-    console.log("new", allUsersData, index);
+      console.log("new", allUsersData, index);
 
-    localStorage.setItem("usersData", JSON.stringify(allUsersData));
+      localStorage.setItem("usersData", JSON.stringify(allUsersData));
 
-    refreshUsers(allUsersData);
-    updateUserModal.close();
+      let user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (user.userId === allUsersData[index].userId) {
+        user.userName = allUsersData[index].userName;
+        user.userNumber = allUsersData[index].userNumber;
+        user.userEmail = allUsersData[index].userEmail;
+        user.userPassword = allUsersData[index].userPassword;
+        user.userRole = allUsersData[index].userRole;
+        localStorage.setItem("loggedInUser", JSON.stringify(user));
+      }
+
+      refreshUsers(allUsersData);
+      updateUserModal.close();
+    } else {
+      alert("Email already exists for someone.")
+    }
   }
 });
 
@@ -240,12 +254,10 @@ addUserModalForm.addEventListener("submit", (e) => {
 
       refreshUsers(allUsersData);
       addUserModal.close();
-
     } else {
       alert("email already exists");
     }
   }
-
 });
 
 // _____SEARCH USER______

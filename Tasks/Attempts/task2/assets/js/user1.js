@@ -187,7 +187,7 @@ const refreshEducationContainer = () => {
       <div class="education-degree-program"><b>Degree Program -</b> <span>${userEduData.userEducationProgram}</span></div>
       <div class="education-degree-institute"><b>Degree Institute -</b> <span>${userEduData.userEducationInstitute}</span></div>
       <div class="education-degree-years"><b>Degree Duration -</b> <span>${userEduData.userEducationYears}</span></div>
-      <div class="education-degree-btns"><button class="education-update-btn">Update</button> <button class="education-delete-btn">Delete</button></div>`;
+      <div class="education-degree-btns"><button class="education-delete-btn">Delete</button><button class="education-update-btn">Update</button></div>`;
 
     userEducationContainer.innerHTML = userEducationContent;
 
@@ -520,7 +520,7 @@ const refreshSkillsContainer = () => {
 
   userSkillsData.forEach((userSkill) => {
     // loggedInUser.userSkills.forEach((userSkill) => {
-    let userSkillContainer = document.createElement("div");
+    let userSkillContainer = document.createElement("li");
     userSkillContainer.classList.add("skill");
     userSkillContainer.id = userSkill;
 
@@ -665,6 +665,7 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
 
       updatePortfolioModal.close();
     };
+    // method reads the contents of the specified file and converts it to a data URL, which is a string representation of the file's data. This data URL can be used to display the image in an HTML 
     reader.readAsDataURL(imgFile);
   }
 });
