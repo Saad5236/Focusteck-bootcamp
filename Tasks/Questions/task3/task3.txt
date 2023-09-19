@@ -1,0 +1,3 @@
+- For this week, your task is to move the data to node js, implement apis to get,update,delete,create data along with auth . In case of any query please feel free to contact us. 
+- import data from json file into our backend in which data handling will be done. Then in frontend we'll make requests on certain urls to deal with data, and for each required request we'll be handling it in the backend.
+- serverside code will be done in server's folder inside task.

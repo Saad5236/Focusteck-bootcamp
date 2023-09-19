@@ -1,5 +1,3 @@
-
-
 // ___________LOGIN SIGNUP SWITCH___________
 
 const loginFormSection = document.querySelector(".login-form-section");
@@ -101,10 +99,7 @@ signupForm.addEventListener("submit", (e) => {
         localStorage.setItem("userProjectsData", JSON.stringify([]));
         localStorage.setItem("userEducationsData", JSON.stringify([]));
         localStorage.setItem("userExperiencesData", JSON.stringify([]));
-        localStorage.setItem(
-          "usersData",
-          JSON.stringify(usersData)
-        );
+        localStorage.setItem("usersData", JSON.stringify(usersData));
       } else {
         usersData = JSON.parse(localStorage.getItem("usersData"));
       }
