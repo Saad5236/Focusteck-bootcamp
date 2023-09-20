@@ -25,8 +25,7 @@ export default async (req, res) => {
     res.setHeader("Content-type", "application/json");
     res.write(JSON.stringify(usersData));
     res.end();
-  } 
-  else if (req.method === "POST") {
+  } else if (req.method === "POST") {
     console.log("POST");
     try {
       let body = await requestBodyParser(req);
@@ -44,8 +43,7 @@ export default async (req, res) => {
         })
       );
     }
-  }
-  else if (userId && req.method === "GET") {
+  } else if (userId && req.method === "GET") {
     res.setHeader("Content-Type", "application/json");
 
     let user = usersData.find((u) => u.userId === userId);
