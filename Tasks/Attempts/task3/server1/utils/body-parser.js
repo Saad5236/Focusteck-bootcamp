@@ -1,4 +1,4 @@
-module.exports = async (request) => {
+export default async (request) => {
   return new Promise((resolve, reject) => {
     try {
       let body = "";

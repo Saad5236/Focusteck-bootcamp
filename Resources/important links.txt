@@ -1,1 +1,2 @@
 https://10015.io/tools/css-clip-path-generator (CSS clip-paths tool)
+https://www.youtube.com/watch?v=4Z02Lgx4nS0&t=1264s (backend development using vanilla node.js)

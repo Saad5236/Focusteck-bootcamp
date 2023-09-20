@@ -665,7 +665,7 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
 
       updatePortfolioModal.close();
     };
-    // method reads the contents of the specified file and converts it to a data URL, which is a string representation of the file's data. This data URL can be used to display the image in an HTML 
+    // method reads the contents of the specified file and converts it to a data URL, which is a string representation of the file's data. This data URL can be used to display the image in an HTML
     reader.readAsDataURL(imgFile);
   }
 });
