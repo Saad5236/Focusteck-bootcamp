@@ -1,65 +1,62 @@
 const PORT = 3000;
-import { log } from "console";
 import http from "http";
-import usersRequests from "./methods/users-requests.js";
-import projectsRequests from "./methods/projects-requests.js";
-import educationsRequests from "./methods/educations-requests.js";
-import experiencesRequests from "./methods/experiences-requests.js";
-
-// const http = require("http");
-// const getRequest = require("./methods/get-request.js");
-// const postRequest = require("./methods/post-request.js");
-// const deleteRequest = require("./methods/delete-request.js");
-// const putRequest = require("./methods/put-request.js");
-// let users = require("./data/users.json")
-// let projects = require("./data/projects.json")
-// // let educations = require("./data/educations.json")
-// // let experiences = require("./data/experiences.json")
+import cors from "cors";
+import authenticationRequests from "./routes/authentication-requests.js";
+import usersRequests from "./routes/users-requests.js";
+import projectsRequests from "./routes/projects-requests.js";
+import educationsRequests from "./routes/educations-requests.js";
+import experiencesRequests from "./routes/experiences-requests.js";
 
 let server = http.createServer((req, res) => {
-  let urlType = req.url.split("/")[2];
+  // const corsOptions = {
+  //   origin: '*', // Replace with the actual origin of your frontend app
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow the HTTP methods you need
+  //   optionsSuccessStatus: 204, // Send 204 No Content for preflight requests
+  //   credentials: true, // Enable sending cookies and HTTP authentication
+  // };
+  // Use the cors middleware with the configured options
+  cors()(req, res, () => {
+    // res.writeHead(200, { 'Content-Type': 'application/json' });
+    // res.end(JSON.stringify({ message: 'Hello, CORS is configured!' }));
 
-  if (urlType === "users") {
-    usersRequests(req, res);
-  } else if (urlType === "projects") {
-    projectsRequests(req, res);
-  } else if (urlType === "experiences") {
-    experiencesRequests(req, res);
-  } else if (urlType === "educations") {
-    educationsRequests(req, res);
-  } else {
-    res.statusCode = 404;
-    res.setHeader("Content-Type", "application/json"); // to send our response in json format then
-    res.write(
-      JSON.stringify({ title: "Not found", message: "Route not found" })
-    );
-    res.end();
-  }
+    if (req.url.split("/")[1] === "api") {
+      let urlType = req.url.split("/")[2];
 
-  //   req.users = users;
-  //   req.projects = projects;
-  //   // req.educations = educations;
-  //   // req.experiences = experiences;
+      if (urlType === "login" || urlType === "signup") {
+        authenticationRequests(req, res);
+      } else {
+        if (urlType === "users") {
+          usersRequests(req, res);
+        } else if (urlType === "projects") {
+          projectsRequests(req, res);
+        } else if (urlType === "experiences") {
+          experiencesRequests(req, res);
+        } else if (urlType === "educations") {
+          educationsRequests(req, res);
+        } else {
+          console.log("SHAT");
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json"); // to send our response in json format then
+          // res.writeHead(404, { "Content-Type": "application/json" });
+          res.write(
+            JSON.stringify({ title: "Not found", message: "Route not found" })
+          );
+          res.end();
+        }
+      }
+    } else {
+      console.log("SHiT");
 
-  // switch (req.method) {
-  //   case "GET":
-  //     getRequest(req, res);
-  //     break;
-  //   case "POST":
-  //     postRequest(req, res);
-  //     break;
-  //   case "DELETE":
-  //     deleteRequest(req, res);
-  //     break;
-  //   case "PUT":
-  //     putRequest(req, res);
-  //     break;
-  //   default:
-  //     res.statusCode = 404;
-  //     res.setHeader("Content-Type", "application/json"); // to send our response in json format then
-  //     res.write(JSON.stringify({ title: "Not found", message: "Route not found" }));
-  //     res.end();
-  // }
+      res.statusCode = 404;
+      res.setHeader("Content-Type", "application/json"); // to send our response in json format then
+
+      // res.writeHead(404, { "Content-Type": "application/json" });
+      res.write(
+        JSON.stringify({ title: "Not found", message: "Route not found" })
+      );
+      res.end();
+    }
+  });
 });
 
 // running server on port 3000
