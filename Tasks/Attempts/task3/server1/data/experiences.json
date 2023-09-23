@@ -5,6 +5,14 @@
     "userExperienceSkills": "h",
     "userExperienceTitle": "ug",
     "userExperienceYears": "5",
-    "userId": 1
+    "userId": 2
+  },
+  {
+    "userExperienceCompany": "gogo",
+    "userExperienceId": 2,
+    "userExperienceSkills": "h",
+    "userExperienceTitle": "ug",
+    "userExperienceYears": "5",
+    "userId": 2
   }
 ]

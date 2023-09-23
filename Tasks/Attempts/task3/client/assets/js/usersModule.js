@@ -11,6 +11,7 @@ if (loggedInUser && loggedInUser.userRole === "admin") {
 
 navbarLogoutBtn.addEventListener("click", () => {
   localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("authToken");
   window.location.href = "./authentication.html";
 });
 

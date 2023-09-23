@@ -55,19 +55,19 @@ signupForm.addEventListener("submit", async (e) => {
   } else {
     // if all fields are filled
 
-          let newUserData = {
-        // userId: generateId(),
-        userRole: "user", // alternatively admin
-        userName: signupFormData.get("signup-fullname"),
-        userNumber: signupFormData.get("signup-phonenumber"),
-        userEmail: signupFormData.get("signup-email"),
-        userPassword: signupFormData.get("signup-password"),
-        userProfession: "",
-        userAbout: "",
-        userImgSrc: "",
-        userSkills: [],
-      };
-    const res = await authenticationRequests.signupUser(newUserData)
+    let newUserData = {
+      // userId: generateId(),
+      userRole: "user", // alternatively admin
+      userName: signupFormData.get("signup-fullname"),
+      userNumber: signupFormData.get("signup-phonenumber"),
+      userEmail: signupFormData.get("signup-email"),
+      userPassword: signupFormData.get("signup-password"),
+      userProfession: "",
+      userAbout: "",
+      userImgSrc: "",
+      userSkills: [],
+    };
+    const res = await authenticationRequests.signupUser(newUserData);
 
     if (res.status === 201 || res.status === 200) {
       const data = await res.json();
@@ -82,7 +82,7 @@ signupForm.addEventListener("submit", async (e) => {
       }
     } else if (res.status === 409) {
       alert("Duplicate email found in database");
-    } 
+    }
 
     // let allUsersData = JSON.parse(localStorage.getItem("usersData"));
 
@@ -150,7 +150,6 @@ const loginForm = document.querySelector(".login-form-section form");
 const loginFormBtn = document.querySelector(".login-form-section form button");
 // const authenticationRequests = require("../requests/authentication.js")
 
-
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   console.log("OHAYO");
@@ -174,7 +173,7 @@ loginForm.addEventListener("submit", async (e) => {
     const res = await authenticationRequests.loginUser({
       userEmail: loginFormDataEmail,
       userPassword: loginFormDataPassword,
-    })
+    });
 
     if (res.status === 200) {
       const data = await res.json();

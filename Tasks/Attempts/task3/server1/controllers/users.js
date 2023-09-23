@@ -15,6 +15,7 @@ const generateUserId = () => {
 
 import jwt from "jsonwebtoken";
 import requestBodyParser from "../utils/body-parser.js";
+import middlewares from "../utils/middleware.js";
 import users from "../data/users.json" assert { type: "json" };
 let usersData = users;
 
@@ -38,20 +39,19 @@ const loginUser = async (req, res) => {
         })
       );
     } else {
-      delete foundUser.userPassword;
-      let authToken = jwt.sign(
-        {
-          userId: foundUser.userId,
-          userRole: foundUser.userRole,
-          userEmail: foundUser.userEmail,
-        },
-        "my-secret-key"
-      );
+      // delete foundUser.userPassword;
+      let user = {
+        userId: foundUser.userId,
+        userRole: foundUser.userRole,
+        userEmail: foundUser.userEmail,
+      };
+      let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
+      let {userPassword, ...userWithoutPassword} = foundUser;
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(
         JSON.stringify({
           authToken,
-          userData: foundUser,
+          userData: userWithoutPassword,
         })
       );
     }
@@ -86,24 +86,21 @@ const signupUser = async (req, res) => {
       usersData.push(body);
 
       console.log("login too 1", usersData);
-
-      let authToken = jwt.sign(
-        {
-          userId: body.userId,
-          userRole: body.userRole,
-          userEmail: body.userEmail,
-        },
-        "my-secret-key"
-      );
+      let user = {
+        userId: body.userId,
+        userRole: body.userRole,
+        userEmail: body.userEmail,
+      };
+      let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
       console.log("login too 2", authToken);
 
-      // delete body.userPassword;
+      let {userPassword, ...userWithoutPassword} = body;
 
-      res.writeHead(201, { "Content-Type": "application/json" });
+      res.writeHead(200, { "Content-Type": "application/json" });
       res.end(
         JSON.stringify({
           authToken,
-          userData: body,
+          userData: userWithoutPassword,
         })
       );
     }
@@ -122,97 +119,165 @@ const signupUser = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-  res.statusCode = 200;
-    res.setHeader("Content-type", "application/json");
-    res.write(JSON.stringify(usersData));
-    res.end();
-}
+  middlewares.authenticateToken(req, res, () => {
+    console.log("role", req.user.userRole);
+    if (req.user.userRole === "admin") {
+      res.statusCode = 200;
+      res.setHeader("Content-type", "application/json");
+      let usersDataWithoutPassword = usersData.map(({userPassword, ...user}) => user);
+      res.write(JSON.stringify(usersDataWithoutPassword));
+      res.end();
+    } else if (req.user.userRole === "user") {
+      res.writeHead(401, { "Content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          title: "User unauthorized",
+          message: "User is not authrized to access this api.",
+        })
+      );
+    }
+  });
+  // res.statusCode = 200;
+  //   res.setHeader("Content-type", "application/json");
+  //   res.write(JSON.stringify(usersData));
+  //   res.end();
+};
 
 const getUser = async (req, res, userId) => {
-  res.setHeader("Content-Type", "application/json");
+  middlewares.authenticateToken(req, res, () => {
+    if (req.user.userRole === "admin") {
+      res.setHeader("Content-Type", "application/json");
+      let user = usersData.find((u) => u.userId === userId);
 
-    let user = usersData.find((u) => u.userId === userId);
-
-    if (user) {
-      res.statusCode = 200;
-      res.write(JSON.stringify(user));
-      res.end();
+      if (user) {
+        res.statusCode = 200;
+        let {userPassword, ...userWithoutPassword} = user;
+        res.write(JSON.stringify(userWithoutPassword));
+        res.end();
+      } else {
+        res.statusCode = 404;
+        res.write(
+          JSON.stringify({
+            title: "Not Found",
+            message: "User not found in database",
+          })
+        );
+        res.end();
+      }
     } else {
-      res.statusCode = 404;
-      res.write(
-        JSON.stringify({
-          title: "Not Found",
-          message: "User not found in database",
-        })
+      returnError(
+        req,
+        res,
+        401,
+        "Unauthorized user",
+        "User is not authrized to access this api."
       );
-      res.end();
     }
-}
+  });
+};
 
 const deleteUser = async (req, res, userId) => {
-  res.setHeader("Content-Type", "application/json");
+  middlewares.authenticateToken(req, res, () => {
+    if (req.user.userRole === "admin") {
+      res.setHeader("Content-Type", "application/json");
 
-    let removedUser = usersData.find((u) => u.userId === userId);
-    // usersData = usersData.filter((u) => u.userId !== userId);
+      let removedUser = usersData.find((u) => u.userId === userId);
+      // usersData = usersData.filter((u) => u.userId !== userId);
 
-    // if (usersData.length > 0) {
-    if (removedUser) {
-      // res.statusCode = 200;
-      // res.write(JSON.stringify(removedUser));
-      // res.end();
-      usersData = usersData.filter((u) => u.userId !== userId);
-      res.writeHead(204, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(removedUser));
+      // if (usersData.length > 0) {
+      if (removedUser) {
+        // res.statusCode = 200;
+        // res.write(JSON.stringify(removedUser));
+        // res.end();
+        // usersData = usersData.filter((u) => u.userId !== userId);
+        usersData.forEach((user, i) => {
+          if (user.userId === userId) {
+            usersData.splice(i, 1);
+          }
+        });
+        res.writeHead(204, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(removedUser));
+      } else {
+        res.statusCode = 404;
+        res.write(
+          JSON.stringify({
+            title: "Not Found",
+            message: "User not found in database",
+          })
+        );
+        res.end();
+      }
     } else {
-      res.statusCode = 404;
-      res.write(
-        JSON.stringify({
-          title: "Not Found",
-          message: "User not found in database",
-        })
+      returnError(
+        req,
+        res,
+        401,
+        "Unauthorized user",
+        "User is not authrized to access this api."
       );
-      res.end();
     }
-}
+  });
+};
 
 const updateUser = async (req, res, userId) => {
-  try {
-    let body = await requestBodyParser(req);
-    let updateUserIndex = usersData.findIndex((u) => u.userId === userId);
+  middlewares.authenticateToken(req, res, async () => {
+    // if (req.user.userRole === "admin") {
+    try {
+      let body = await requestBodyParser(req);
+      let updateUserIndex = usersData.findIndex((u) => u.userId === userId);
 
-    if (updateUserIndex === -1) {
-      console.log("NOOO");
-      res.statusCode = 404;
-      res.write(
-        JSON.stringify({ title: "Not Found", message: "User not found" })
+      if (updateUserIndex === -1) {
+        console.log("NOOO");
+        res.statusCode = 404;
+        res.write(
+          JSON.stringify({ title: "Not Found", message: "User not found" })
+        );
+      } else {
+        console.log("YES");
+        body.userId = userId;
+        usersData[updateUserIndex] = body;
+        let {userPassword, ...usersDataWithoutPassword} = usersData[updateUserIndex]
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(usersDataWithoutPassword));
+      }
+    } catch (e) {
+      console.log(e);
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          title: "Validation Failed",
+          message: "Request body is not in valid format",
+        })
       );
-    } else {
-      console.log("YES");
-      body.userId = userId;
-      usersData[updateUserIndex] = body;
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(usersData[updateUserIndex]));
     }
-  } catch (e) {
-    console.log(e);
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        title: "Validation Failed",
-        message: "Request body is not in valid format",
-      })
-    );
-  }
-}
+    // } else {
+    //   returnError(
+    //     req,
+    //     res,
+    //     401,
+    //     "Unauthorized user",
+    //     "User is not authrized to access this api."
+    //   );
+    // }
+  });
+};
 
 const returnError = (req, res, statusCode, title, message) => {
   res.writeHead(statusCode, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        title: title,
-        message: message,
-      })
-    );
-}
+  res.end(
+    JSON.stringify({
+      title: title,
+      message: message,
+    })
+  );
+};
 
-export default { loginUser, signupUser, getAllUsers, getUser, deleteUser, updateUser, returnError };
+export default {
+  loginUser,
+  signupUser,
+  getAllUsers,
+  getUser,
+  deleteUser,
+  updateUser,
+  returnError,
+};

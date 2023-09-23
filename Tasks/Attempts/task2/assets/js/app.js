@@ -199,6 +199,9 @@ const refreshProjects = (itemsContainer, items) => {
       //   userProjectData.value.projectImageLink;
 
       updateProjectFrameworksContainer.innerHTML = "";
+      updateProjectLanguagesContainer.innerHTML = "";
+      updateProjectTagsContainer.innerHTML = "";
+
       userProjectData.value.projectFrameworks.forEach((framework) => {
         console.log("FW FOREACH");
         updateProjectFrameworksContainer.innerHTML += `<span>${framework}</span>`;

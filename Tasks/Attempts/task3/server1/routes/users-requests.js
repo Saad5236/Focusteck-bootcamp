@@ -17,7 +17,6 @@ import userControllers from "../controllers/users.js";
 import requestBodyParser from "../utils/body-parser.js";
 import users from "../data/users.json" assert { type: "json" };
 let usersData = users;
-
 export default async (req, res) => {
   if (!req.url.split("/")[4]) {
     let userId = Number(req.url.split("/")[3]);
@@ -45,27 +44,20 @@ export default async (req, res) => {
     } else if (userId && req.method === "GET") {
       userControllers.getUser(req, res, userId);
     } else if (!userId) {
-      userControllers.returnError(
+      userControllers(
         req,
         res,
         400,
         "Validation Failed",
         "ID is not valid, so can't find user based on userId"
       );
-      // res.writeHead(400, { "Content-Type": "application/json" });
-      // res.end(
-      //   JSON.stringify({
-      //     title: "Validation Failed",
-      //     message: "ID is not valid, so can't find user based on userId",
-      //   })
-      // );
     } else if (userId && req.method === "DELETE") {
       userControllers.deleteUser(req, res, userId);
     } else if (userId && req.method === "PUT") {
       userControllers.updateUser(req, res, userId);
     }
   } else {
-    userControllers.returnError(req, res, 404, "Not found", "Route not found!");
+    userControllers(req, res, 404, "Not found", "Route not found!");
     // res.writeHead(404, { "Content-type": "application/json" });
     // res.end(
     //   JSON.stringify({ title: "Not found", message: "Route not found!" })

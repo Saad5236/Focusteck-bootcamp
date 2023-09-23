@@ -1,45 +1,26 @@
+// import authenticationRequests from "../requests/authentication.js";
+import projectsRequests from "../requests/projects.js";
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-let userProjectsData = JSON.parse(localStorage.getItem("userProjectsData"));
-// userProjectData
-// if(userProjectsData.length > 0) {
-//   userProjectsData = userProjectsData.filter((project) => project.userId === loggedInUser.userId);
-// }
+const authToken = JSON.parse(localStorage.getItem("authToken"));
+// let userProjectsData = JSON.parse(localStorage.getItem("userProjectsData"));
+let userProjectsData;
+try {
+  let projectsDataResponse = await projectsRequests.getProjects(
+    loggedInUser.userId,
+    authToken
+  );
+  if (!projectsDataResponse.status === 201) {
+    alert(`ERROR GETTING DATA`);
+  }
+  userProjectsData = await projectsDataResponse.json();
 
-// let userProjectsData = [
-// {
-//   userId: loggedInUser.userId,
-//   projectId: 1,
-//   projectHeading: "Kallyas Project",
-//   projectDescription:
-//     "The Kallyas project, crafted with HTML and CSS, has been a valuable learning experience. CSS, particularly flexbox, has been a focus, and though I encountered challenges, I overcame them by diligently seeking solutions on YouTube and Stack Overflow.",
-//   projectImageLink: "./assets/images/kallyas-project-img.PNG",
-//   projectTags: ["coding", "programming"],
-//   projectLanguages: ["C++", "Java"],
-//   projectFrameworks: ["Express.js", "Bootstrap"],
-// },
-// {
-//   userId: loggedInUser.userId,
-//   projectId: 2,
-//   projectHeading: "Tic-Tac-Toe Game",
-//   projectDescription:
-//     "I've successfully developed a web-based Tic-Tac-Toe game, employing HTML, CSS, and JavaScript for the frontend, and Node.js with Express.js for the backend. This project has been a rich learning experience, particularly in advancing my JavaScript skills. Beyond coding, I've also learned the qualities of a committed and persevering programmer. This project demanded dedication as I delved into complex logic using Javascript, and I remained persistent even when faced with challenges. It's also taught me the importance of adaptability, as I learned to accept different and unique solutions by seeking out ideas that I've gained from various platforms like Youtube and Stack Overflow. Through this project, I've not only created a fun game but also cultivated the essential attributes of a skilled programmer.",
-//   projectImageLink: "./assets/images/rockpaperscissors-project-img.PNG",
-//   projectTags: ["coding", "programming"],
-//   projectLanguages: ["C++", "Java"],
-//   projectFrameworks: ["Express.js", "Bootstrap"],
-// },
-// {
-//   userId: loggedInUser.userId,
-//   projectId: 3,
-//   projectHeading: "General Store Software",
-//   projectDescription:
-//     "This a desktop application designed specifically for a general store to streamline daily operations. As a shopkeeper, I understand the complexities involved in managing inventory, transactions and other operations, so I embarked on creating a solution. This software is made in Java language, using Java-FX library which is specifically used for creating client-side desktop applications. As for storing data, MySQL database was integrated with this application. This project was made by me and my university friend. And together we learned a key lesson to work as a team. My university friend and I collaborated effectively, addressing challenges, sharing ideas, and establishing a smooth workflow. And for daily report, we used to do daily meetings.",
-//   projectImageLink: "./assets/images/generalstoresoftware-project-img.jpg",
-//   projectTags: ["coding", "programming"],
-//   projectLanguages: ["C++", "Java"],
-//   projectFrameworks: ["Express.js", "Bootstrap"],
-// },
-// ];
+  if (userProjectsData.title) {
+    userProjectsData = [];
+  }
+  console.log("ALL USERS DATA", userProjectsData);
+} catch (e) {
+  console.log("ERROR GETTING PROJECTS", e);
+}
 
 // __________CHECKING LOGIN & LOGOUT__________
 
@@ -54,6 +35,7 @@ if (loggedInUser) {
 
 navbarLogoutBtn.addEventListener("click", () => {
   localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("authToken");
   window.location.href = "./authentication.html";
 });
 
@@ -133,6 +115,7 @@ updateProjectLanguagesAdd.addEventListener("click", (e) => {
     userProjectDataForUpdate.value.projectLanguages
   );
 });
+
 updateProjectTagsAdd.addEventListener("click", (e) => {
   e.stopPropagation();
   userProjectDataForUpdate.value.projectTags.push(updateProjectTagsInput.value);
@@ -199,6 +182,9 @@ const refreshProjects = (itemsContainer, items) => {
       //   userProjectData.value.projectImageLink;
 
       updateProjectFrameworksContainer.innerHTML = "";
+      updateProjectLanguagesContainer.innerHTML = "";
+      updateProjectTagsContainer.innerHTML = "";
+
       userProjectData.value.projectFrameworks.forEach((framework) => {
         console.log("FW FOREACH");
         updateProjectFrameworksContainer.innerHTML += `<span>${framework}</span>`;
@@ -266,7 +252,7 @@ const refreshProjects = (itemsContainer, items) => {
       let updateProjectForm = document.querySelector(
         ".update-project-inner form"
       );
-      updateProjectForm.addEventListener("submit", (e) => {
+      updateProjectForm.addEventListener("submit", async (e) => {
         e.stopPropagation();
         e.preventDefault();
         if (
@@ -287,17 +273,35 @@ const refreshProjects = (itemsContainer, items) => {
           //   updateProjectFormImgSrcInput.value;
           let imgFile = updateProjectFormImgSrcInput.files[0];
           let reader = new FileReader();
-          reader.onload = function (e) {
+          reader.onload = async function (e) {
             userProjectData.value.projectImageLink = e.target.result;
 
             let i = userProjectsData.findIndex(
               (p) => p.projectId === userProjectData.value.projectId
             );
-            userProjectsData[i] = userProjectData.value;
-            localStorage.setItem(
-              "userProjectsData",
-              JSON.stringify(userProjectsData)
-            );
+
+            // userProjectsData[i] = userProjectData.value;
+            // localStorage.setItem(
+            //   "userProjectsData",
+            //   JSON.stringify(userProjectsData)
+            // );
+
+            try {
+              let updateProjectResponse = await projectsRequests.updateProject(userProjectData.value, projectId, authToken);
+              
+              if (updateProjectResponse.status === 201 || updateProjectResponse.status === 200) {
+                userProjectData.value = await updateProjectResponse.json();
+                userProjectsData[i] = userProjectData.value;
+                // userProjectsData.push(userProjectData.value)
+                console.log(userProjectData.value, "project data");
+              } else {
+                alert("Project not updated")
+                console.log("Project not updated")
+              }
+            } catch(e) {
+              alert("update project request not send!");
+              console.log("error sending update project request", e);
+            }
 
             addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
 
@@ -336,17 +340,34 @@ const refreshProjects = (itemsContainer, items) => {
 
     // DELETING PROJECT
     let projectDelBtn = newProject.querySelector(".project-delete-btn");
-    projectDelBtn.addEventListener("click", (e) => {
+    projectDelBtn.addEventListener("click", async (e) => {
       // console.log(projectId);
       console.log(userProjectsData);
 
-      userProjectsData = userProjectsData.filter(
+      try {
+        let deleteProjectResponse = await projectsRequests.deleteProject(projectDelBtn.id, authToken);
+      
+          if (deleteProjectResponse.status === 201 || deleteProjectResponse.status === 200) {
+          let deletedProject = await deleteProjectResponse.json();
+          userProjectsData = userProjectsData.filter(
         (project) => project.projectId !== Number(projectDelBtn.id)
       );
-      localStorage.setItem(
-        "userProjectsData",
-        JSON.stringify(userProjectsData)
-      );
+        } else {
+          alert("Project not updated")
+          console.log("Project not updated")
+        }
+      } catch (error) {
+        alert("delete project request not send!");
+        console.log("error sending delete project request", e);
+      }
+
+      // userProjectsData = userProjectsData.filter(
+      //   (project) => project.projectId !== Number(projectDelBtn.id)
+      // );
+      // localStorage.setItem(
+      //   "userProjectsData",
+      //   JSON.stringify(userProjectsData)
+      // );
 
       allProjectsContainer.innerHTML = "";
       allProjectsDeleteBtns = document.querySelectorAll(".project-delete-btn");
@@ -417,57 +438,6 @@ const projectDialogCloseBtn = document.querySelector(
   "#project-modal-dialog .project-modal-close-btn"
 );
 
-// // projectArticles.forEach((projectArticle, index) => {
-// projectArticlesPictures.forEach((projectArticlePicture, index) => {
-//   // projectArticle.addEventListener("click", (event) => {
-//   projectArticlePicture.addEventListener("click", (event) => {
-//     // Replaced event.target.id to event.currentTarget.id or this.id. The event.target is always the deepest element clicked, while event.currentTarget or this will point to the element to which the handler is bound, or to the element that the delegate selector matched.
-//     console.log(event.currentTarget.id);
-//     const currentTargetId = event.currentTarget.id;
-//     const project = userProjectsData.find(
-//       (project) => project.projectId === Number(currentTargetId)
-//     );
-
-//     // Adding data in modal
-//     const projectModalH3 = document.querySelector(".project-modal h3");
-//     projectModalH3.innerText = project.projectHeading;
-
-//     const projectModalImg = document.querySelector(
-//       ".project-modal picture img"
-//     );
-//     projectModalImg.setAttribute("src", project.projectImageLink);
-
-//     const projectModalP = document.querySelector(".project-modal p");
-//     projectModalP.innerText = project.projectDescription;
-
-//     const projectModalLanguagesContainer = document.querySelector(
-//       ".project-languages .languages-container"
-//     );
-//     const projectModalFrameworksContainer = document.querySelector(
-//       ".project-frameworks .frameworks-container"
-//     );
-//     const projectModalTagsContainer = document.querySelector(
-//       ".project-tags .tags-container"
-//     );
-//     // resetting previous project's data from containers
-//     projectModalLanguagesContainer.innerHTML = "";
-//     projectModalFrameworksContainer.innerHTML = "";
-//     projectModalTagsContainer.innerHTML = "";
-//     project.projectLanguages.forEach(
-//       (i) => (projectModalLanguagesContainer.innerHTML += `<li>${i}</li>`)
-//     );
-//     project.projectFrameworks.forEach(
-//       (i) => (projectModalFrameworksContainer.innerHTML += `<li>${i}</li>`)
-//     );
-//     project.projectTags.forEach(
-//       (i) => (projectModalTagsContainer.innerHTML += `<li>${i}</li>`)
-//     );
-
-//     // Display modal to show all project's details
-//     projectDialog.showModal();
-//     event.stopPropagation();
-//   });
-// });
 
 // Closing project model
 projectDialogCloseBtn.addEventListener("click", () => {
@@ -483,41 +453,6 @@ let allProjectsContainer = document.querySelector(".all-projects");
 let allProjects = document.querySelectorAll(".project");
 let allProjectsDeleteBtns = document.querySelectorAll(".project-delete-btn");
 
-// allProjectsDeleteBtns.forEach((projectDeleteBtn) => {
-//   projectDeleteBtn.addEventListener("click", (e) => {
-//     const projectId = e.target.id;
-//     console.log(projectId);
-//     console.log(userProjectsData);
-
-//     userProjectsData = userProjectsData.filter(
-//       (project) => project.projectId !== Number(projectId)
-//     );
-
-//     allProjectsContainer.innerHTML = "";
-//     allProjectsDeleteBtns = document.querySelectorAll(".project-delete-btn")
-//     refreshProjects(allProjectsContainer, userProjectsData);
-
-//     console.log(userProjectsData);
-//   });
-// });
-
-// allProjectsContainer.addEventListener("click", (e) => {
-//   const projectId = e.target.id;
-//   if (e.target.classList.contains("project-delete-btn")) {
-//     console.log(projectId);
-//     console.log(userProjectsData);
-
-//     userProjectsData = userProjectsData.filter(
-//       (project) => project.projectId !== Number(projectId)
-//     );
-
-//     allProjectsContainer.innerHTML = "";
-//     allProjectsDeleteBtns = document.querySelectorAll(".project-delete-btn");
-//     refreshProjects(allProjectsContainer, userProjectsData);
-
-//     console.log(userProjectsData);
-//   }
-// });
 
 // Updating project
 
@@ -649,7 +584,7 @@ let addNewProjectSubmitBtn = document.querySelector(
   ".add-new-project-inner button"
 );
 let addNewProjectForm = document.querySelector(".add-new-project-inner form");
-addNewProjectForm.addEventListener("submit", (e) => {
+addNewProjectForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   let addNewProjectTitle = document.querySelector("#add-new-project-title");
@@ -670,8 +605,8 @@ addNewProjectForm.addEventListener("submit", (e) => {
   } else {
     let imgFile = addNewProjectImgSrc.files[0];
     let reader = new FileReader();
-    reader.onload = function (e) {
-      let data = {
+    reader.onload = async function (e) {
+      let projectData = {
         userId: loggedInUser.userId,
         projectId: generateId(),
         projectHeading: addNewProjectTitle.value,
@@ -682,36 +617,32 @@ addNewProjectForm.addEventListener("submit", (e) => {
         projectFrameworks: userProjectframeworks,
       };
 
-      userProjectsData.push(data);
-      localStorage.setItem(
-        "userProjectsData",
-        JSON.stringify(userProjectsData)
-      );
+      // userProjectsData.push(data);
+      // localStorage.setItem(
+      //   "userProjectsData",
+      //   JSON.stringify(userProjectsData)
+      // );
+      try {
+        let addProjectResponse = await projectsRequests.addProject(projectData, loggedInUser.userId, authToken);
+        // let addProjectResponse = await projectsRequests.addProject(projectData, 33, authToken);
+        
+        if (addProjectResponse.status === 201 || addProjectResponse.status === 200) {
+          projectData = await addProjectResponse.json();
+          userProjectsData.push(projectData)
+          console.log(projectData, "project data");
+        } else {
+          alert("Project not added")
+          console.log("Project not added")
+        }
+      } catch(e) {
+        alert("add project request not send!");
+        console.log("error sending add project request", e);
+      }
 
-      addNewDataAndRefresh(data, allProjectsContainer);
+      addNewDataAndRefresh(projectData, allProjectsContainer);
       addNewProjectModal.close();
     };
     reader.readAsDataURL(imgFile);
-
-    // let data = {
-    //   userId: loggedInUser.userId,
-    //   projectId: generateId(),
-    //   projectHeading: addNewProjectTitle.value,
-    //   projectDescription: addNewProjectDescription.value,
-    //   projectImageLink: addNewProjectImgSrc.value,
-    //   projectTags: userProjectTags,
-    //   projectLanguages: userProjectlanguages,
-    //   projectFrameworks: userProjectframeworks,
-    // };
-
-    // // userProjectsData.push(data);
-    // // allProjectsContainer.innerHTML = "";
-    // // refreshProjects(allProjectsContainer, userProjectsData);
-    // // addNewProjectModal.close();
-    // userProjectsData.push(data);
-    // localStorage.setItem("userProjectsData", JSON.stringify(userProjectsData));
-
-    // addNewDataAndRefresh(data, allProjectsContainer);
   }
 });
 

@@ -1,9 +1,7 @@
-fetch("http://localhost:3000/api/educations")
-  .then((res) => {
-    if (res.ok) console.log("OKKK getting data");
-    else console.log("NOT OK");
-  })
-  .catch((e) => console.log(e));
+import usersRequests from "../requests/users.js";
+import educationsRequests from "../requests/educations.js";
+const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+const authToken = JSON.parse(localStorage.getItem("authToken"));
 
 const generateExperienceId = () => {
   let id;
@@ -32,10 +30,33 @@ const generateEducationId = () => {
   return id;
 };
 
+// _________GETTING DATA FROM BACKEND___________
+let usersEducationData;
+try {
+  let getEducationsResponse = await educationsRequests.getEducations(
+    loggedInUser.userId,
+    authToken
+  );
+  console.log("HEY", getEducationsResponse.status);
+  if (
+    getEducationsResponse.status === 200 ||
+    getEducationsResponse.status === 201
+  ) {
+    usersEducationData = await getEducationsResponse.json();
+    console.log("HEY2", usersEducationData);
+  } else {
+    console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
+    usersEducationData = [];
+  }
+} catch (error) {
+  console.log("ERROR GETTING EDUCATIONS", error);
+  alert("ERROR GETTING EDUCATIONS");
+}
+
 // ______________EDUCATIONS______________
 
 // let usersEducationData = [];
-let usersEducationData = JSON.parse(localStorage.getItem("userEducationsData"));
+// let usersEducationData = JSON.parse(localStorage.getItem("userEducationsData"));
 
 let addEducationModal = document.querySelector("#add-new-education-modal");
 let updateEducationModal = document.querySelector("#update-education-modal");
@@ -79,7 +100,7 @@ updateEducationCloseBtn.addEventListener("click", (e) => {
   updateEducationModal.close();
 });
 
-addEducationModalForm.addEventListener("submit", (e) => {
+addEducationModalForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   let userEducationData = { userId: user.userId };
@@ -96,7 +117,7 @@ addEducationModalForm.addEventListener("submit", (e) => {
   ) {
     alert("Some fields are empty");
   } else {
-    userEducationData.userEducationId = generateEducationId();
+    // userEducationData.userEducationId = generateEducationId();
     userEducationData.userEducationDegree =
       educationFormData.get("education-degree");
     userEducationData.userEducationProgram =
@@ -107,22 +128,44 @@ addEducationModalForm.addEventListener("submit", (e) => {
     userEducationData.userEducationYears =
       educationFormData.get("education-years");
 
-    usersEducationData.push(userEducationData);
-    localStorage.setItem(
-      "userEducationsData",
-      JSON.stringify(usersEducationData)
-    );
+    // usersEducationData.push(userEducationData);
+    // localStorage.setItem(
+    //   "userEducationsData",
+    //   JSON.stringify(usersEducationData)
+    // );
+
+    try {
+      let addEducationResponse = await educationsRequests.addEducation(
+        userEducationData,
+        userEducationData.userId,
+        authToken
+      );
+      if (
+        addEducationResponse.status === 201 ||
+        addEducationResponse.status === 200
+      ) {
+        let addEducationData = await addEducationResponse.json();
+        usersEducationData.push(addEducationData);
+        alert("SUCCESSFULLY ADDED EDUCATION");
+        refreshEducationContainer();
+      } else {
+        alert("COULDN'T ADD EDUCATION");
+      }
+    } catch (error) {
+      alert("COULDN'T SEND REQUEST TO ADD EDUCATION");
+      console.log("COULDN'T SEND REQUEST TO ADD EDUCATION", error);
+    }
 
     console.log("user", usersEducationData);
 
     // _______refreshing screen______
 
-    refreshEducationContainer();
+    // refreshEducationContainer();
 
     addEducationModal.close();
   }
 });
-updateEducationModalForm.addEventListener("submit", (e) => {
+updateEducationModalForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   e.stopPropagation();
   const updateEducationFields = new FormData(
@@ -164,12 +207,33 @@ updateEducationModalForm.addEventListener("submit", (e) => {
 
     console.log("new", usersEducationData, index);
 
-    localStorage.setItem(
-      "userEducationsData",
-      JSON.stringify(usersEducationData)
-    );
+    // localStorage.setItem(
+    //   "userEducationsData",
+    //   JSON.stringify(usersEducationData)
+    // );
 
-    refreshEducationContainer();
+    try {
+      let updateEducationResponse = await educationsRequests.updateEducation(
+        usersEducationData[index],
+        usersEducationData[index].userEducationId,
+        authToken
+      );
+
+      if (
+        updateEducationResponse.status === 200 ||
+        updateEducationResponse.status === 201
+      ) {
+        alert("education updated!");
+        refreshEducationContainer();
+      } else {
+        alert("education not found or not able to updated");
+      }
+    } catch (error) {
+      console.log("ERROR SENDING EDUCATION UPDATE REQ");
+      alert("ERROR SENDING EDUCATION UPDATE REQ");
+    }
+
+    // refreshEducationContainer();
   }
 
   updateEducationModal.close();
@@ -178,9 +242,10 @@ updateEducationModalForm.addEventListener("submit", (e) => {
 // EDUCATION'S FUNCTIONS
 
 const refreshEducationContainer = () => {
-  let filteredUserEducationsData = usersEducationData.filter(
-    (userEd) => userEd.userId === user.userId
-  );
+  // let filteredUserEducationsData = usersEducationData.filter(
+  //   (userEd) => userEd.userId === user.userId
+  // );
+  let filteredUserEducationsData = usersEducationData;
 
   allEducationsContainer.innerHTML = "";
   // usersEducationData.forEach((userEduData) => {
@@ -229,20 +294,42 @@ const refreshEducationContainer = () => {
     const userEducationDelete = userEducationContainer.querySelector(
       ".education-delete-btn"
     );
-    userEducationDelete.addEventListener("click", (e) => {
+    userEducationDelete.addEventListener("click", async (e) => {
       e.stopPropagation();
       let userEducationId = userEducationDelete.parentNode.parentNode.id;
       console.log("chidvochd", usersEducationData);
-      usersEducationData = usersEducationData.filter(
-        (edu) => edu.userEducationId !== Number(userEducationId)
-      );
-      localStorage.setItem(
-        "userEducationsData",
-        JSON.stringify(usersEducationData)
-      );
+      // usersEducationData = usersEducationData.filter(
+      //   (edu) => edu.userEducationId !== Number(userEducationId)
+      // );
+      // localStorage.setItem(
+      //   "userEducationsData",
+      //   JSON.stringify(usersEducationData)
+      // );
+      try {
+        let deleteEducationsResponse = await educationsRequests.deleteEducation(
+          userEducationId,
+          authToken
+        );
+        if (
+          deleteEducationsResponse.status === 201 ||
+          deleteEducationsResponse.status === 200
+        ) {
+          alert("USER'S EDUCATION DELETED");
+          usersEducationData = usersEducationData.filter(
+            (edu) => edu.userEducationId !== Number(userEducationId)
+          );
+          refreshEducationContainer();
+        } else {
+          console.log("UNABLE TO DELETE DATA FROM BACKEND");
+          alert("UNABLE TO DELETE DATA FROM BACKEND");
+        }
+      } catch (error) {
+        console.log("ERROR SENDING UPDATE EDUCATION REQUEST");
+        alert("ERROR SENDING UPDATE EDUCATION REQUEST");
+      }
       console.log("chidvochd", usersEducationData);
 
-      refreshEducationContainer();
+      // refreshEducationContainer();
     });
   });
 };
@@ -653,20 +740,47 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
     // will user FileReader() to read and get base 64 image's link
     let reader = new FileReader();
 
-    reader.onload = function (e) {
+    reader.onload = async function (e) {
       // storing base 64 image link generated
       user.userImgSrc = e.target.result;
 
       // Since reader.onload event function that is passed executes asynchronously and it executes when file reading process completes so due to that delat rest of the code (below) would run before it could save image's linkto user.userImgSrc that's why all the rest of the code (below) is dependent on the imgSrc to be sotred and tht's why instead writing rest of the code inside of onload event function instead of outside as rest of the code would execute first
-      let allUsersData = JSON.parse(localStorage.getItem("usersData"));
-      console.log("allusersdata", user, allUsersData);
-      allUsersData = allUsersData.filter(
-        (userData) => userData.userId !== user.userId
-      );
-      console.log("allusersdata", user, allUsersData);
-      allUsersData.push(user);
-      localStorage.setItem("usersData", JSON.stringify(allUsersData));
-      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      // let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+      // console.log("allusersdata", user, allUsersData);
+      // allUsersData = allUsersData.filter(
+      //   (userData) => userData.userId !== user.userId
+      // );
+      // console.log("allusersdata", user, allUsersData);
+      // allUsersData.push(user);
+
+      // let updateUserIndex = allUsersData.findIndex((u) => u.userId === user.userId);
+      // allUsersData[updateUserIndex] = user;
+
+      let authToken = JSON.parse(localStorage.getItem("authToken"));
+      try {
+        let updateUserResponse = await usersRequests.updateUser(
+          user,
+          user.userId,
+          authToken
+        );
+
+        if (
+          updateUserResponse.status === 201 ||
+          updateUserResponse.status === 200
+        ) {
+          user = await updateUserResponse.json();
+          localStorage.setItem("loggedInUser", JSON.stringify(user));
+        } else {
+          alert("user not updated");
+          console.log("user not updated");
+        }
+      } catch (error) {
+        console.log("ERROR UPDATING USER", error);
+        alert("ERROR UPDATING USER");
+      }
+
+      // localStorage.setItem("usersData", JSON.stringify(allUsersData));
+      // localStorage.setItem("loggedInUser", JSON.stringify(user));
 
       refreshUserProfile();
 
