@@ -190,12 +190,12 @@ const deleteProjectByProjectId = async (req, res, projectId) => {
         //   (project) => project.projectId !== projectId
         // );
 
-        for(let i=0; i<projectsData.length; i++) {
+        for (let i = 0; i < projectsData.length; i++) {
           if (projectsData[i].projectId === projectId) {
-              projectsData.splice(i, 1);
-              break;
-            }
-      }
+            projectsData.splice(i, 1);
+            break;
+          }
+        }
 
         // projectsData.forEach((project, i) => {
         //   if (project.projectId === projectId) {
@@ -243,12 +243,12 @@ const deleteProjectByUserId = async (req, res, userId) => {
         //   (project) => project.userId !== userId
         // );
 
-        for(let i=0; i<projectsData.length; i++) {
+        for (let i = 0; i < projectsData.length; i++) {
           if (projectsData[i].userId === userId) {
-              projectsData.splice(i, 1);
-              i--;
-            }
-      }
+            projectsData.splice(i, 1);
+            i--;
+          }
+        }
 
         // projectsData.forEach((project, i) => {
         //   if (project.userId === userId) {

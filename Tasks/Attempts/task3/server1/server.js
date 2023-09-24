@@ -6,6 +6,7 @@ import usersRequests from "./routes/users-requests.js";
 import projectsRequests from "./routes/projects-requests.js";
 import educationsRequests from "./routes/educations-requests.js";
 import experiencesRequests from "./routes/experiences-requests.js";
+import skillsRequests from "./routes/skills-requests.js";
 
 let server = http.createServer((req, res) => {
   // const corsOptions = {
@@ -33,6 +34,8 @@ let server = http.createServer((req, res) => {
           experiencesRequests(req, res);
         } else if (urlType === "educations") {
           educationsRequests(req, res);
+        } else if (urlType === "skills") {
+          skillsRequests(req, res);
         } else {
           console.log("SHAT");
           res.statusCode = 404;

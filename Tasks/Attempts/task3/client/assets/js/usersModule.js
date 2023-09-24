@@ -1,5 +1,9 @@
 // __________CHECKING LOGIN & LOGOUT__________
-
+import usersRequests from "../requests/users.js";
+import projectsRequests from "../requests/projects.js";
+import educationsRequests from "../requests/educations.js";
+import experiencesRequests from "../requests/experiences.js";
+import skillsRequests from "../requests/skills.js";
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const navbarLogoutBtn = document.querySelector(".navbar-logout-btn");
 
@@ -21,6 +25,42 @@ navbarLogoutBtn.addEventListener("click", () => {
 // });
 
 // ___________CREATE ADMIN/USER___________
+
+const deleteUserAllData = async (userId, authToken) => {
+  try {
+    // let deleteUserResponse = await usersRequests.deleteUser(
+    //   userId,
+    //   authToken
+    // );
+    const [projectsDelRes, educationsDelRes, experiencesDelRes, skillsDelRes] = await Promise.all([
+      projectsRequests.deleteProjectsByUserId(userId, authToken),
+      educationsRequests.deleteEducationsByUserId(userId, authToken),
+      experiencesRequests.deleteExperiencesByUserId(userId, authToken),
+      skillsRequests.deleteSkillsByUserId(userId, authToken),
+    ]);
+    if (
+      projectsDelRes.status === 200 &&
+      educationsDelRes.status === 200 &&
+      experiencesDelRes.status === 200 &&
+      skillsDelRes.status === 200
+    ) {
+      alert("ALL DATA DELETED OF USER");
+      let delProjects = await projectsDelRes.json();
+      let delEducations = await educationsDelRes.json();
+      let delExperiences = await experiencesDelRes.json();
+      let delSkills = await skillsDelRes.json();
+
+      console.log("deleted data", delProjects, delEducations, delExperiences, delSkills);
+      // filterAndRefreshUsers(allUsersData);
+    } else {
+      console.log("UNABLE TO DELETE DATA FROM BACKEND");
+      alert("UNABLE TO DELETE DATA FROM BACKEND");
+    }
+  } catch (error) {
+    console.log("ERROR SENDING DELETE USER REQUEST");
+    alert("ERROR SENDING DELETE USER REQUEST");
+  }
+}
 
 const refreshUsers = (filteredUsers) => {
   allUsersContainer.innerHTML = "";
@@ -44,40 +84,67 @@ const refreshUsers = (filteredUsers) => {
 
     // DELETE FUNCTIONALITY
     const userDeleteBtn = userContainer.querySelector(".user-delete");
-    userDeleteBtn.addEventListener("click", (e) => {
+    userDeleteBtn.addEventListener("click", async (e) => {
       e.stopPropagation();
       let userId = userDeleteBtn.parentNode.parentNode.id;
       console.log("chidvochd", allUsersData);
-      allUsersData = allUsersData.filter(
+      try {
+        let deleteUserResponse = await usersRequests.deleteUser(
+          userId,
+          authToken
+        );
+        if (
+          deleteUserResponse.status === 201 ||
+          deleteUserResponse.status === 200 ||
+          deleteUserResponse.status === 204 
+        ) {
+          alert("USER DELETED");
+          // usersEducationData = usersEducationData.filter(
+          //   (edu) => edu.userEducationId !== Number(userEducationId)
+          // );
+          allUsersData = allUsersData.filter(
         (user) => user.userId !== Number(userId)
       );
-      allUsersProjects = allUsersProjects.filter(
-        (project) => project.userId !== Number(userId)
-      );
-      allUsersEducations = allUsersEducations.filter(
-        (education) => education.userId !== Number(userId)
-      );
-      allUsersExperiences = allUsersExperiences.filter(
-        (experience) => experience.userId !== Number(userId)
-      );
+            deleteUserAllData(Number(userId), authToken);
+          filterAndRefreshUsers(allUsersData);
+        } else {
+          console.log("UNABLE TO DELETE DATA FROM BACKEND");
+          alert("UNABLE TO DELETE DATA FROM BACKEND");
+        }
+      } catch (error) {
+        console.log("ERROR SENDING DELETE USER REQUEST");
+        alert("ERROR SENDING DELETE USER REQUEST");
+      }
+      // allUsersData = allUsersData.filter(
+      //   (user) => user.userId !== Number(userId)
+      // );
+      // allUsersProjects = allUsersProjects.filter(
+      //   (project) => project.userId !== Number(userId)
+      // );
+      // allUsersEducations = allUsersEducations.filter(
+      //   (education) => education.userId !== Number(userId)
+      // );
+      // allUsersExperiences = allUsersExperiences.filter(
+      //   (experience) => experience.userId !== Number(userId)
+      // );
 
-      localStorage.setItem("usersData", JSON.stringify(allUsersData));
-      localStorage.setItem(
-        "userProjectsData",
-        JSON.stringify(allUsersProjects)
-      );
-      localStorage.setItem(
-        "userEducationsData",
-        JSON.stringify(allUsersEducations)
-      );
-      localStorage.setItem(
-        "userExperiencesData",
-        JSON.stringify(allUsersExperiences)
-      );
+      // localStorage.setItem("usersData", JSON.stringify(allUsersData));
+      // localStorage.setItem(
+      //   "userProjectsData",
+      //   JSON.stringify(allUsersProjects)
+      // );
+      // localStorage.setItem(
+      //   "userEducationsData",
+      //   JSON.stringify(allUsersEducations)
+      // );
+      // localStorage.setItem(
+      //   "userExperiencesData",
+      //   JSON.stringify(allUsersExperiences)
+      // );
 
-      console.log("chidvochd", allUsersData);
+      // console.log("chidvochd", allUsersData);
 
-      refreshUsers(allUsersData);
+      // refreshUsers(allUsersData);
     });
 
     // UPDATE FUNCTIONALITY
@@ -98,6 +165,11 @@ const refreshUsers = (filteredUsers) => {
     });
   });
 };
+
+const filterAndRefreshUsers = (allUsers) => {
+  let currentLoggedInAdmin = JSON.parse(localStorage.getItem("loggedInUser"));
+  refreshUsers(allUsers.filter((u) => u.userId !== currentLoggedInAdmin.userId));
+}
 
 const generateId = () => {
   let id;
@@ -128,7 +200,28 @@ const updateUserModalFormBtn = document.querySelector(
   "#update-user-modal form button"
 );
 
-let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+// let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+let authToken = JSON.parse(localStorage.getItem("authToken"));
+let allUsersData;
+try {
+  let getUsersResponse = await usersRequests.getAllUsers(
+    authToken
+  );
+  console.log("HEY", getUsersResponse.status);
+  if (
+    getUsersResponse.status === 200 ||
+    getUsersResponse.status === 201
+  ) {
+    allUsersData = await getUsersResponse.json();
+    console.log("HEY2", allUsersData);
+  } else {
+    console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
+    allUsersData = [];
+  }
+} catch (error) {
+  console.log("ERROR GETTING EDUCATIONS", error);
+  alert("ERROR GETTING EDUCATIONS");
+}
 let allUsersProjects = JSON.parse(localStorage.getItem("userProjectsData"));
 let allUsersEducations = JSON.parse(localStorage.getItem("userEducationsData"));
 let allUsersExperiences = JSON.parse(
@@ -139,10 +232,11 @@ const allUsersContainer = document.querySelector(".users-container");
 // stores id of user which I want to update, it's used in form submission
 let userIdForUpdate;
 
-refreshUsers(allUsersData);
+filterAndRefreshUsers(allUsersData);
+// refreshUsers(allUsersData);
 
 // UPDATE USER
-updateUserModalForm.addEventListener("submit", (e) => {
+updateUserModalForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   e.stopPropagation();
   console.log("HEY");
@@ -165,38 +259,78 @@ updateUserModalForm.addEventListener("submit", (e) => {
   ) {
     alert("SOME FIELDS ARE EMPTY");
   } else {
-    if (!allUsersData.find((data) => data.userEmail === updateUserEmail)) {
+    // if (!allUsersData.find((data) => data.userEmail === updateUserEmail)) {
       let index = allUsersData.findIndex((u) => {
         return u.userId === userIdForUpdate;
       });
 
-      console.log("old", allUsersData, index);
+      let user = allUsersData[index];
+      let previousUserRole = user.userRole;
+      user.userName = updateUserName;
+      user.userNumber = updateUserNumber;
+      user.userEmail = updateUserEmail;
+      user.userPassword = updateUserPassword;
+      user.userRole = updateUserRole;
 
-      allUsersData[index].userName = updateUserName;
-      allUsersData[index].userNumber = updateUserNumber;
-      allUsersData[index].userEmail = updateUserEmail;
-      allUsersData[index].userPassword = updateUserPassword;
-      allUsersData[index].userRole = updateUserRole;
+      // let authToken = JSON.parse(localStorage.getItem("authToken"));
+      try {
+        let updateUserResponse = await usersRequests.updateUser(
+          user,
+          user.userId,
+          authToken
+        );
 
-      console.log("new", allUsersData, index);
+        if (
+          updateUserResponse.status === 201 ||
+          updateUserResponse.status === 200
+        ) {
+          user = await updateUserResponse.json();
+          allUsersData[index] = user;
+          if(previousUserRole === "user" && user.userRole === "admin") {
+            console.log("deleted user's data since he's ana dmin now")
+            deleteUserAllData(user.userId, authToken)
+          }
+          filterAndRefreshUsers(allUsersData);
 
-      localStorage.setItem("usersData", JSON.stringify(allUsersData));
+      updateUserModal.close();
 
-      let user = JSON.parse(localStorage.getItem("loggedInUser"));
-      if (user.userId === allUsersData[index].userId) {
-        user.userName = allUsersData[index].userName;
-        user.userNumber = allUsersData[index].userNumber;
-        user.userEmail = allUsersData[index].userEmail;
-        user.userPassword = allUsersData[index].userPassword;
-        user.userRole = allUsersData[index].userRole;
-        localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+        } else {
+          alert("user not updated");
+          console.log("user not updated");
+        }
+      } catch (error) {
+        console.log("ERROR UPDATING USER", error);
+        alert("ERROR UPDATING USER");
       }
 
-      refreshUsers(allUsersData);
-      updateUserModal.close();
-    } else {
-      alert("Email already exists for someone.")
-    }
+      console.log("old", allUsersData, index);
+
+      // allUsersData[index].userName = updateUserName;
+      // allUsersData[index].userNumber = updateUserNumber;
+      // allUsersData[index].userEmail = updateUserEmail;
+      // allUsersData[index].userPassword = updateUserPassword;
+      // allUsersData[index].userRole = updateUserRole;
+
+      // console.log("new", allUsersData, index);
+
+      // localStorage.setItem("usersData", JSON.stringify(allUsersData));
+
+      // let user = JSON.parse(localStorage.getItem("loggedInUser"));
+      // if (user.userId === allUsersData[index].userId) {
+      //   user.userName = allUsersData[index].userName;
+      //   user.userNumber = allUsersData[index].userNumber;
+      //   user.userEmail = allUsersData[index].userEmail;
+      //   user.userPassword = allUsersData[index].userPassword;
+      //   user.userRole = allUsersData[index].userRole;
+      //   localStorage.setItem("loggedInUser", JSON.stringify(user));
+      // }
+
+      // refreshUsers(allUsersData);
+      // updateUserModal.close();
+    // } else {
+    //   alert("Email already exists for someone.");
+    // }
   }
 });
 
@@ -212,7 +346,7 @@ updateUserCloseBtn.addEventListener("click", (e) => {
   updateUserModal.close();
 });
 
-addUserModalForm.addEventListener("submit", (e) => {
+addUserModalForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const addUserFormFields = new FormData(addUserModalForm, addUserModalFormBtn); // to fetch signup form data
@@ -247,14 +381,42 @@ addUserModalForm.addEventListener("submit", (e) => {
         userSkills: [],
       };
 
-      console.log(allUsersData);
-      allUsersData.push(newUserData);
-      console.log(allUsersData);
+      try {
+        let addUserResponse = await usersRequests.addUser(
+          newUserData,
+          authToken
+        );
+        if (
+          addUserResponse.status === 201 ||
+          addUserResponse.status === 200
+        ) {
+          let addUserData = await addUserResponse.json();
+          // usersExperienceData.push(addUserData);
+          allUsersData.push(addUserData);
+          alert("SUCCESSFULLY ADDED USER");
+          console.log("OH GOD YES");
+  
+          filterAndRefreshUsers(allUsersData);
+          // refreshExperienceContainer();
 
-      localStorage.setItem("usersData", JSON.stringify(allUsersData));
-
-      refreshUsers(allUsersData);
       addUserModal.close();
+        } else {
+          alert("COULDN'T ADD USER");
+        }
+      } catch (error) {
+        alert("COULDN'T SEND REQUEST TO ADD USER");
+        console.log("OH GOD NO");
+        console.log("COULDN'T SEND REQUEST TO ADD USER", error);
+      }
+
+      // console.log(allUsersData);
+      // allUsersData.push(newUserData);
+      // console.log(allUsersData);
+
+      // localStorage.setItem("usersData", JSON.stringify(allUsersData));
+
+      // refreshUsers(allUsersData);
+      // addUserModal.close();
     } else {
       alert("email already exists");
     }

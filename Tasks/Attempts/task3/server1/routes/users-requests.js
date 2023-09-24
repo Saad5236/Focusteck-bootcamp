@@ -25,26 +25,27 @@ export default async (req, res) => {
       userControllers.getAllUsers(req, res);
     } else if (req.method === "POST") {
       console.log("POST");
-      try {
-        let body = await requestBodyParser(req);
-        body.userId = generateUserId();
-        usersData.push(body);
-        res.writeHead(201, { "Content-Type": "application/json" });
-        res.end();
-      } catch (err) {
-        console.log(err);
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            title: "Validation Failed",
-            message: "Request body is not valid",
-          })
-        );
-      }
+      userControllers.signupUser(req, res, "add");
+      // try {
+      //   let body = await requestBodyParser(req);
+      //   body.userId = generateUserId();
+      //   usersData.push(body);
+      //   res.writeHead(201, { "Content-Type": "application/json" });
+      //   res.end(JSON.stringify(body));
+      // } catch (err) {
+      //   console.log(err);
+      //   res.writeHead(400, { "Content-Type": "application/json" });
+      //   res.end(
+      //     JSON.stringify({
+      //       title: "Validation Failed",
+      //       message: "Request body is not valid",
+      //     })
+      //   );
+      // }
     } else if (userId && req.method === "GET") {
       userControllers.getUser(req, res, userId);
     } else if (!userId) {
-      userControllers(
+      userControllers.returnError(
         req,
         res,
         400,
@@ -57,7 +58,7 @@ export default async (req, res) => {
       userControllers.updateUser(req, res, userId);
     }
   } else {
-    userControllers(req, res, 404, "Not found", "Route not found!");
+    userControllers.returnError(req, res, 404, "Not found", "Route not found!");
     // res.writeHead(404, { "Content-type": "application/json" });
     // res.end(
     //   JSON.stringify({ title: "Not found", message: "Route not found!" })

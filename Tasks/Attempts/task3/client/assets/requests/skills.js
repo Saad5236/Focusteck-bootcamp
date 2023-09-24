@@ -1,5 +1,5 @@
-const getExperiences = (userId, token) => {
-    console.log("GETTING experiences");
+const getSkills = (userId, token) => {
+    console.log("GETTING skills");
     const headers = new Headers({
       Authorization: `Bearer ${token}`,
     });
@@ -10,12 +10,12 @@ const getExperiences = (userId, token) => {
       headers: headers,
     };
     return fetch(
-      `http://localhost:3000/api/experiences/user/${userId}`,
+      `http://localhost:3000/api/skills/user/${userId}`,
       requestOptions
     );
   };
   
-  const addExperience = (experience, userId, token) => {
+  const addSkill = (skill, userId, token) => {
     const headers = new Headers({
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -25,32 +25,15 @@ const getExperiences = (userId, token) => {
     const requestOptions = {
       method: "POST", // or 'POST', 'PUT', 'DELETE', etc.
       headers: headers,
-      body: JSON.stringify(experience),
+      body: JSON.stringify(skill),
     };
     return fetch(
-      `http://localhost:3000/api/experiences/user/${userId}`,
+      `http://localhost:3000/api/skills/user/${userId}`,
       requestOptions
     );
   };
   
-  const updateExperience = (experience, experienceId, token) => {
-    const headers = new Headers({
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    });
-  
-    const requestOptions = {
-      method: "PUT",
-      headers: headers,
-      body: JSON.stringify(experience),
-    };
-    return fetch(
-      `http://localhost:3000/api/experiences/experience/${experienceId}`,
-      requestOptions
-    );
-  };
-  
-  const deleteExperience = (experienceId, token) => {
+  const deleteSkill = (skillId, token) => {
     const headers = new Headers({
       Authorization: `Bearer ${token}`,
     });
@@ -60,12 +43,12 @@ const getExperiences = (userId, token) => {
       headers: headers,
     };
     return fetch(
-      `http://localhost:3000/api/experiences/experience/${experienceId}`,
+      `http://localhost:3000/api/skills/skill/${skillId}`,
       requestOptions
     );
   };
 
-  const deleteExperiencesByUserId = (userId, token) => {
+  const deleteSkillsByUserId = (skillId, token) => {
     const headers = new Headers({
       Authorization: `Bearer ${token}`,
     });
@@ -75,16 +58,15 @@ const getExperiences = (userId, token) => {
       headers: headers,
     };
     return fetch(
-      `http://localhost:3000/api/experiences/user/${userId}`,
+      `http://localhost:3000/api/skills/user/${skillId}`,
       requestOptions
     );
   };
   
   export default {
-    getExperiences,
-    addExperience,
-    updateExperience,
-    deleteExperience,
-    deleteExperiencesByUserId
+    getSkills,
+    addSkill,
+    deleteSkill,
+    deleteSkillsByUserId
   };
   

@@ -1,6 +1,8 @@
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 let userProjectsData = JSON.parse(localStorage.getItem("userProjectsData"));
 let user = JSON.parse(localStorage.getItem("loggedInUser"));
+import usersRequests from "../requests/users.js";
+
 
 // __________CHECKING LOGIN & LOGOUT__________
 
@@ -110,22 +112,49 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
     let imgFile = updateUserImgSrcInput.files[0];
     // will user FileReader() to read and get base 64 image's link
     let reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = async function (e) {
       // storing base 64 image link generated
       user.userImgSrc = e.target.result;
 
       // Since reader.onload event function that is passed executes asynchronously and it executes when file reading process completes so due to that delat rest of the code (below) would run before it could save image's linkto user.userImgSrc that's why all the rest of the code (below) is dependent on the imgSrc to be sotred and tht's why instead writing rest of the code inside of onload event function instead of outside as rest of the code would execute first
-      let allUsersData = JSON.parse(localStorage.getItem("usersData"));
-      console.log("allusersdata", user, allUsersData);
-      allUsersData = allUsersData.filter(
-        (userData) => userData.userId !== user.userId
-      );
-      console.log("allusersdata", user, allUsersData);
-      allUsersData.push(user);
-      localStorage.setItem("usersData", JSON.stringify(allUsersData));
-      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      // let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+      // console.log("allusersdata", user, allUsersData);
+      // allUsersData = allUsersData.filter(
+      //   (userData) => userData.userId !== user.userId
+      // );
+      // console.log("allusersdata", user, allUsersData);
+      // allUsersData.push(user);
+      // localStorage.setItem("usersData", JSON.stringify(allUsersData));
 
+      let authToken = JSON.parse(localStorage.getItem("authToken"));
+      try {
+        let updateUserResponse = await usersRequests.updateUser(
+          user,
+          user.userId,
+          authToken
+        );
+
+        if (
+          updateUserResponse.status === 201 ||
+          updateUserResponse.status === 200
+        ) {
+          user = await updateUserResponse.json();
+          localStorage.setItem("loggedInUser", JSON.stringify(user));
+      // refreshUserProfile();
       refreshUserProfile();
+
+        } else {
+          alert("user not updated");
+          console.log("user not updated");
+        }
+      } catch (error) {
+        console.log("ERROR UPDATING USER", error);
+        alert("ERROR UPDATING USER");
+      }
+
+      // localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+      // refreshUserProfile();
 
       updatePortfolioModal.close();
     };

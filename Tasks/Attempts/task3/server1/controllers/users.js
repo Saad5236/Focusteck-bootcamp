@@ -46,7 +46,7 @@ const loginUser = async (req, res) => {
         userEmail: foundUser.userEmail,
       };
       let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
-      let {userPassword, ...userWithoutPassword} = foundUser;
+      let { userPassword, ...userWithoutPassword } = foundUser;
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(
         JSON.stringify({
@@ -67,8 +67,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-const signupUser = async (req, res) => {
-  console.log("POST signup");
+const addNewUser = async (req, res, status) => {
   try {
     let body = await requestBodyParser(req);
     body.userId = generateUserId();
@@ -85,24 +84,33 @@ const signupUser = async (req, res) => {
       console.log("POST signup");
       usersData.push(body);
 
+      let { userPassword, ...userWithoutPassword } = body;
+
       console.log("login too 1", usersData);
-      let user = {
-        userId: body.userId,
-        userRole: body.userRole,
-        userEmail: body.userEmail,
-      };
-      let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
-      console.log("login too 2", authToken);
+      if (status === "signup") {
+        let user = {
+          userId: body.userId,
+          userRole: body.userRole,
+          userEmail: body.userEmail,
+        };
+        let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
+        console.log("login too 2", authToken);
 
-      let {userPassword, ...userWithoutPassword} = body;
+        // let { userPassword, ...userWithoutPassword } = body;
 
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({
-          authToken,
-          userData: userWithoutPassword,
-        })
-      );
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            authToken,
+            userData: userWithoutPassword,
+          })
+        );
+      } else if (status === "add") {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify(userWithoutPassword)
+        );
+      }
     }
     // res.writeHead(201, { "Content-Type": "application/json" });
     // res.end(JSON.stringify(body));
@@ -118,13 +126,84 @@ const signupUser = async (req, res) => {
   }
 };
 
+const signupUser = async (req, res, status) => {
+  console.log("POST signup");
+  // try {
+  //   let body = await requestBodyParser(req);
+  //   body.userId = generateUserId();
+
+  //   if (usersData.some((user) => user.userEmail === body.userEmail)) {
+  //     res.writeHead(409, { "Content-Type": "application/json" });
+  //     res.end(
+  //       JSON.stringify({
+  //         title: "Duplicate email",
+  //         message: "A user already exists with same email.",
+  //       })
+  //     );
+  //   } else {
+  //     console.log("POST signup");
+  //     usersData.push(body);
+
+  //     console.log("login too 1", usersData);
+  //     let user = {
+  //       userId: body.userId,
+  //       userRole: body.userRole,
+  //       userEmail: body.userEmail,
+  //     };
+  //     let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
+  //     console.log("login too 2", authToken);
+
+  //     let { userPassword, ...userWithoutPassword } = body;
+
+  //     res.writeHead(200, { "Content-Type": "application/json" });
+  //     res.end(
+  //       JSON.stringify({
+  //         authToken,
+  //         userData: userWithoutPassword,
+  //       })
+  //     );
+  //   }
+  //   // res.writeHead(201, { "Content-Type": "application/json" });
+  //   // res.end(JSON.stringify(body));
+  // } catch (err) {
+  //   console.log(err);
+  //   res.writeHead(400, { "Content-Type": "application/json" });
+  //   res.end(
+  //     JSON.stringify({
+  //       title: "Validation Failed",
+  //       message: "Request body is not valid",
+  //     })
+  //   );
+  // }
+
+  if (status === "add") {
+    middlewares.authenticateToken(req, res, () => {
+      if (req.user.userRole === "admin") {
+        addNewUser(req, res, status);
+      } else {
+        res.writeHead(401, { "Content-type": "application/json" });
+        res.end(
+          JSON.stringify({
+            title: "User unauthorized",
+            message: "User is not authrized to access this api.",
+          })
+        );
+      }
+    });
+  } else if (status === "signup") {
+    addNewUser(req, res, status);
+  }
+};
+
 const getAllUsers = async (req, res) => {
   middlewares.authenticateToken(req, res, () => {
     console.log("role", req.user.userRole);
     if (req.user.userRole === "admin") {
       res.statusCode = 200;
       res.setHeader("Content-type", "application/json");
-      let usersDataWithoutPassword = usersData.map(({userPassword, ...user}) => user);
+      let usersDataWithoutPassword = usersData.map(
+        ({ userPassword, ...user }) => user
+      );
       res.write(JSON.stringify(usersDataWithoutPassword));
       res.end();
     } else if (req.user.userRole === "user") {
@@ -151,7 +230,7 @@ const getUser = async (req, res, userId) => {
 
       if (user) {
         res.statusCode = 200;
-        let {userPassword, ...userWithoutPassword} = user;
+        let { userPassword, ...userWithoutPassword } = user;
         res.write(JSON.stringify(userWithoutPassword));
         res.end();
       } else {
@@ -190,11 +269,19 @@ const deleteUser = async (req, res, userId) => {
         // res.write(JSON.stringify(removedUser));
         // res.end();
         // usersData = usersData.filter((u) => u.userId !== userId);
-        usersData.forEach((user, i) => {
-          if (user.userId === userId) {
+
+        // usersData.forEach((user, i) => {
+        //   if (user.userId === userId) {
+        //     usersData.splice(i, 1);
+        //   }
+        // });
+
+        for (let i = 0; i < usersData.length; i++) {
+          if (usersData[i].userId === userId) {
             usersData.splice(i, 1);
+            break;
           }
-        });
+        }
         res.writeHead(204, { "Content-Type": "application/json" });
         res.end(JSON.stringify(removedUser));
       } else {
@@ -236,7 +323,8 @@ const updateUser = async (req, res, userId) => {
         console.log("YES");
         body.userId = userId;
         usersData[updateUserIndex] = body;
-        let {userPassword, ...usersDataWithoutPassword} = usersData[updateUserIndex]
+        let { userPassword, ...usersDataWithoutPassword } =
+          usersData[updateUserIndex];
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(usersDataWithoutPassword));
       }

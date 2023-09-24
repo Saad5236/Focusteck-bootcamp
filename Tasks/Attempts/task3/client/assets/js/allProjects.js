@@ -1,5 +1,5 @@
 // __________CHECKING LOGIN & LOGOUT__________
-
+import projectsRequests from "../requests/projects.js";
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const navbarLogoutBtn = document.querySelector(".navbar-logout-btn");
 
@@ -16,9 +16,27 @@ navbarLogoutBtn.addEventListener("click", () => {
 });
 
 // ____________REFRESH PROJECTS____________
-
+let authToken = JSON.parse(localStorage.getItem("authToken"));
 let allProjectsContainer = document.querySelector(".projects-container");
-let userProjects = JSON.parse(localStorage.getItem("userProjectsData"));
+// let userProjects = JSON.parse(localStorage.getItem("userProjectsData"));
+let userProjects;
+try {
+  let projectsDataResponse = await projectsRequests.getAllProjects(
+    authToken
+  );
+  if (!projectsDataResponse.status === 201 || !projectsDataResponse.status === 200) {
+    alert(`ERROR GETTING DATA`);
+  } else {
+  userProjects = await projectsDataResponse.json();
+
+  if (userProjects.title) {
+    userProjects = [];
+  }
+  console.log("ALL USERS DATA", userProjects);
+}
+} catch (e) {
+  console.log("ERROR GETTING PROJECTS", e);
+}
 
 const refreshProjects = (filteredProjects) => {
   allProjectsContainer.innerHTML = "";

@@ -99,7 +99,7 @@ const addExperience = (req, res, userId) => {
           body.userId = userId;
           experiencesData.push(body);
           res.writeHead(201, { "Content-Type": "application/json" });
-          res.end();
+          res.end(JSON.stringify(body));
         } catch (err) {
           console.log(err);
           res.writeHead(400, { "Content-Type": "application/json" });

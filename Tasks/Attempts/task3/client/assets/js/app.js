@@ -5,7 +5,7 @@ const authToken = JSON.parse(localStorage.getItem("authToken"));
 // let userProjectsData = JSON.parse(localStorage.getItem("userProjectsData"));
 let userProjectsData;
 try {
-  let projectsDataResponse = await projectsRequests.getProjects(
+  let projectsDataResponse = await projectsRequests.getProjectsByUserId(
     loggedInUser.userId,
     authToken
   );
@@ -287,18 +287,25 @@ const refreshProjects = (itemsContainer, items) => {
             // );
 
             try {
-              let updateProjectResponse = await projectsRequests.updateProject(userProjectData.value, projectId, authToken);
-              
-              if (updateProjectResponse.status === 201 || updateProjectResponse.status === 200) {
+              let updateProjectResponse = await projectsRequests.updateProject(
+                userProjectData.value,
+                projectId,
+                authToken
+              );
+
+              if (
+                updateProjectResponse.status === 201 ||
+                updateProjectResponse.status === 200
+              ) {
                 userProjectData.value = await updateProjectResponse.json();
                 userProjectsData[i] = userProjectData.value;
                 // userProjectsData.push(userProjectData.value)
                 console.log(userProjectData.value, "project data");
               } else {
-                alert("Project not updated")
-                console.log("Project not updated")
+                alert("Project not updated");
+                console.log("Project not updated");
               }
-            } catch(e) {
+            } catch (e) {
               alert("update project request not send!");
               console.log("error sending update project request", e);
             }
@@ -345,16 +352,22 @@ const refreshProjects = (itemsContainer, items) => {
       console.log(userProjectsData);
 
       try {
-        let deleteProjectResponse = await projectsRequests.deleteProject(projectDelBtn.id, authToken);
-      
-          if (deleteProjectResponse.status === 201 || deleteProjectResponse.status === 200) {
+        let deleteProjectResponse = await projectsRequests.deleteProjectByProjectId(
+          projectDelBtn.id,
+          authToken
+        );
+
+        if (
+          deleteProjectResponse.status === 201 ||
+          deleteProjectResponse.status === 200
+        ) {
           let deletedProject = await deleteProjectResponse.json();
           userProjectsData = userProjectsData.filter(
-        (project) => project.projectId !== Number(projectDelBtn.id)
-      );
+            (project) => project.projectId !== Number(projectDelBtn.id)
+          );
         } else {
-          alert("Project not updated")
-          console.log("Project not updated")
+          alert("Project not updated");
+          console.log("Project not updated");
         }
       } catch (error) {
         alert("delete project request not send!");
@@ -438,7 +451,6 @@ const projectDialogCloseBtn = document.querySelector(
   "#project-modal-dialog .project-modal-close-btn"
 );
 
-
 // Closing project model
 projectDialogCloseBtn.addEventListener("click", () => {
   console.log("closing modal");
@@ -452,7 +464,6 @@ projectDialogCloseBtn.addEventListener("click", () => {
 let allProjectsContainer = document.querySelector(".all-projects");
 let allProjects = document.querySelectorAll(".project");
 let allProjectsDeleteBtns = document.querySelectorAll(".project-delete-btn");
-
 
 // Updating project
 
@@ -623,18 +634,25 @@ addNewProjectForm.addEventListener("submit", async (e) => {
       //   JSON.stringify(userProjectsData)
       // );
       try {
-        let addProjectResponse = await projectsRequests.addProject(projectData, loggedInUser.userId, authToken);
+        let addProjectResponse = await projectsRequests.addProject(
+          projectData,
+          loggedInUser.userId,
+          authToken
+        );
         // let addProjectResponse = await projectsRequests.addProject(projectData, 33, authToken);
-        
-        if (addProjectResponse.status === 201 || addProjectResponse.status === 200) {
+
+        if (
+          addProjectResponse.status === 201 ||
+          addProjectResponse.status === 200
+        ) {
           projectData = await addProjectResponse.json();
-          userProjectsData.push(projectData)
+          userProjectsData.push(projectData);
           console.log(projectData, "project data");
         } else {
-          alert("Project not added")
-          console.log("Project not added")
+          alert("Project not added");
+          console.log("Project not added");
         }
-      } catch(e) {
+      } catch (e) {
         alert("add project request not send!");
         console.log("error sending add project request", e);
       }

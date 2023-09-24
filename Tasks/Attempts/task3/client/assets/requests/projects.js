@@ -1,4 +1,21 @@
-const getProjects = (userId, token) => {
+const getAllProjects = (token) => {
+  console.log("GETTING PROJECTS");
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`,
+  });
+
+  // Create the request options object with headers
+  const requestOptions = {
+    method: "GET", // or 'POST', 'PUT', 'DELETE', etc.
+    headers: headers,
+  };
+  return fetch(
+    `http://localhost:3000/api/projects`,
+    requestOptions
+  );
+};
+
+const getProjectsByUserId = (userId, token) => {
   console.log("GETTING PROJECTS");
   const headers = new Headers({
     Authorization: `Bearer ${token}`,
@@ -50,7 +67,7 @@ const updateProject = (project, projectId, token) => {
   );
 };
 
-const deleteProject = (projectId, token) => {
+const deleteProjectByProjectId = (projectId, token) => {
   const headers = new Headers({
     Authorization: `Bearer ${token}`,
   });
@@ -65,4 +82,19 @@ const deleteProject = (projectId, token) => {
   );
 };
 
-export default { getProjects, addProject, updateProject, deleteProject };
+const deleteProjectsByUserId = (userId, token) => {
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`,
+  });
+
+  const requestOptions = {
+    method: "DELETE",
+    headers: headers,
+  };
+  return fetch(
+    `http://localhost:3000/api/projects/user/${userId}`,
+    requestOptions
+  );
+};
+
+export default { getAllProjects, getProjectsByUserId, addProject, updateProject, deleteProjectByProjectId, deleteProjectsByUserId };

@@ -1,5 +1,7 @@
 import usersRequests from "../requests/users.js";
 import educationsRequests from "../requests/educations.js";
+import experiencesRequests from "../requests/experiences.js";
+import skillsRequests from "../requests/skills.js";
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const authToken = JSON.parse(localStorage.getItem("authToken"));
 
@@ -338,9 +340,30 @@ refreshEducationContainer();
 // ____________EXPERIENCES______________
 
 // let usersExperienceData = [];
-let usersExperienceData = JSON.parse(
-  localStorage.getItem("userExperiencesData")
-);
+// let usersExperienceData = JSON.parse(
+//   localStorage.getItem("userExperiencesData")
+// );
+let usersExperienceData;
+try {
+  let getExperiencesResponse = await experiencesRequests.getExperiences(
+    loggedInUser.userId,
+    authToken
+  );
+  console.log("HEY", getExperiencesResponse.status);
+  if (
+    getExperiencesResponse.status === 200 ||
+    getExperiencesResponse.status === 201
+  ) {
+    usersExperienceData = await getExperiencesResponse.json();
+    console.log("HEY2", usersExperienceData);
+  } else {
+    console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
+    usersExperienceData = [];
+  }
+} catch (error) {
+  console.log("ERROR GETTING EDUCATIONS", error);
+  alert("ERROR GETTING EDUCATIONS");
+}
 
 const addExperienceModal = document.querySelector("#add-new-experience-modal");
 const updateExperienceModal = document.querySelector(
@@ -377,7 +400,7 @@ addExperienceBtn.addEventListener("click", (e) => {
   addExperienceModal.showModal();
 });
 
-addExperienceModalForm.addEventListener("submit", (e) => {
+addExperienceModalForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   let userExperienceData = { userId: user.userId };
@@ -394,7 +417,7 @@ addExperienceModalForm.addEventListener("submit", (e) => {
   ) {
     alert("Some fields are empty");
   } else {
-    userExperienceData.userExperienceId = generateExperienceId();
+    // userExperienceData.userExperienceId = generateExperienceId();
     userExperienceData.userExperienceTitle =
       experienceFormData.get("experience-title");
     userExperienceData.userExperienceCompany =
@@ -404,17 +427,42 @@ addExperienceModalForm.addEventListener("submit", (e) => {
     userExperienceData.userExperienceYears =
       experienceFormData.get("experience-years");
 
-    usersExperienceData.push(userExperienceData);
-    localStorage.setItem(
-      "userExperiencesData",
-      JSON.stringify(usersExperienceData)
-    );
+    // usersExperienceData.push(userExperienceData);
+    // localStorage.setItem(
+    //   "userExperiencesData",
+    //   JSON.stringify(usersExperienceData)
+    // );
+
+    try {
+      let addExperienceResponse = await experiencesRequests.addExperience(
+        userExperienceData,
+        userExperienceData.userId,
+        authToken
+      );
+      if (
+        addExperienceResponse.status === 201 ||
+        addExperienceResponse.status === 200
+      ) {
+        let addExperienceData = await addExperienceResponse.json();
+        usersExperienceData.push(addExperienceData);
+        alert("SUCCESSFULLY ADDED EXPERIENCE");
+        console.log("OH GOD YES");
+
+        refreshExperienceContainer();
+      } else {
+        alert("COULDN'T ADD EXPERIENCE");
+      }
+    } catch (error) {
+      alert("COULDN'T SEND REQUEST TO ADD EXPERIENCE");
+      console.log("OH GOD NO");
+      console.log("COULDN'T SEND REQUEST TO ADD EXPERIENCE", error);
+    }
 
     console.log("user", usersExperienceData);
 
     // _______refreshing screen______
 
-    refreshExperienceContainer();
+    // refreshExperienceContainer();
 
     addExperienceModal.close();
   }
@@ -424,7 +472,7 @@ addExperienceModalForm.addEventListener("submit", (e) => {
 
 let experienceIdForUpdate;
 
-updateExperienceModalForm.addEventListener("submit", (e) => {
+updateExperienceModalForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   e.stopPropagation();
   const updateExperienceFields = new FormData(
@@ -472,12 +520,34 @@ updateExperienceModalForm.addEventListener("submit", (e) => {
 
     console.log("new", usersExperienceData, index);
 
-    localStorage.setItem(
-      "userExperiencesData",
-      JSON.stringify(usersExperienceData)
-    );
+    // localStorage.setItem(
+    //   "userExperiencesData",
+    //   JSON.stringify(usersExperienceData)
+    // );
 
-    refreshExperienceContainer();
+    try {
+      let updateExperienceResponse = await experiencesRequests.updateExperience(
+        usersExperienceData[index],
+        usersExperienceData[index].userExperienceId,
+        authToken
+      );
+
+      if (
+        updateExperienceResponse.status === 200 ||
+        updateExperienceResponse.status === 201
+      ) {
+        alert("experience updated!");
+        // refreshExperienceContainer();
+        refreshExperienceContainer();
+      } else {
+        alert("experience not found or not able to updated");
+      }
+    } catch (error) {
+      console.log("ERROR SENDING Experience UPDATE REQ");
+      alert("ERROR SENDING Experience UPDATE REQ");
+    }
+
+    // refreshExperienceContainer();
     updateExperienceModal.close();
   }
 });
@@ -539,30 +609,44 @@ const refreshExperienceContainer = () => {
     const userExperienceDelete = userExperienceContainer.querySelector(
       ".experience-delete-btn"
     );
-    userExperienceDelete.addEventListener("click", (e) => {
+    userExperienceDelete.addEventListener("click", async (e) => {
       e.stopPropagation();
       let userExperienceId = userExperienceDelete.parentNode.parentNode.id;
       console.log("chidvochd", usersExperienceData);
-      usersExperienceData = usersExperienceData.filter(
-        (exp) => exp.userExperienceId !== Number(userExperienceId)
-      );
+      // usersExperienceData = usersExperienceData.filter(
+      //   (exp) => exp.userExperienceId !== Number(userExperienceId)
+      // );
 
-      usersExperienceData.forEach((u) => {
-        console.log(
-          u.id,
-          typeof u.id,
-          userExperienceId,
-          typeof userExperienceId
-        );
-      });
+      // localStorage.setItem(
+      //   "userExperiencesData",
+      //   JSON.stringify(usersExperienceData)
+      // );
 
-      console.log("chidvochd", usersExperienceData);
-      localStorage.setItem(
-        "userExperiencesData",
-        JSON.stringify(usersExperienceData)
-      );
+      // refreshExperienceContainer();
 
-      refreshExperienceContainer();
+      try {
+        let deleteExperiencesResponse =
+          await experiencesRequests.deleteExperience(
+            userExperienceId,
+            authToken
+          );
+        if (
+          deleteExperiencesResponse.status === 201 ||
+          deleteExperiencesResponse.status === 200
+        ) {
+          alert("USER'S Experience DELETED");
+          usersExperienceData = usersExperienceData.filter(
+            (edu) => edu.userExperienceId !== Number(userExperienceId)
+          );
+          refreshExperienceContainer();
+        } else {
+          console.log("UNABLE TO DELETE DATA FROM BACKEND");
+          alert("UNABLE TO DELETE DATA FROM BACKEND");
+        }
+      } catch (error) {
+        console.log("ERROR SENDING UPDATE Experience REQUEST");
+        alert("ERROR SENDING UPDATE Experience REQUEST");
+      }
     });
   });
 };
@@ -572,9 +656,30 @@ refreshExperienceContainer();
 // ____________SKILLS______________
 
 // let userSkillsData = [];
-let userSkillsData = JSON.parse(
-  localStorage.getItem("loggedInUser")
-).userSkills;
+
+// let userSkillsData = JSON.parse(
+//   localStorage.getItem("loggedInUser")
+// ).userSkills;
+
+// let userSkillsData = JSON.parse(localStorage.getItem("userSkillsData")) || []
+let userSkillsData;
+try {
+  let getSkillsResponse = await skillsRequests.getSkills(
+    loggedInUser.userId,
+    authToken
+  );
+  console.log("HEY", getSkillsResponse.status);
+  if (getSkillsResponse.status === 200 || getSkillsResponse.status === 201) {
+    userSkillsData = await getSkillsResponse.json();
+    console.log("HEY2", userSkillsData);
+  } else {
+    console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
+    userSkillsData = [];
+  }
+} catch (error) {
+  console.log("ERROR GETTING EDUCATIONS", error);
+  alert("ERROR GETTING EDUCATIONS");
+}
 
 let allUsersData = JSON.parse(localStorage.getItem("usersData"));
 let userIndex = allUsersData.findIndex(
@@ -587,23 +692,55 @@ const addSkillFormInput = document.querySelector(
 );
 const allSkillsContainer = document.querySelector(".all-skills");
 
-addSkillForm.addEventListener("submit", (e) => {
+addSkillForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   if (!addSkillFormInput.value) {
     alert("Skill input field is empty");
   } else {
-    userSkillsData.push(addSkillFormInput.value);
-    user.userSkills = userSkillsData;
-    allUsersData[userIndex] = user;
-    localStorage.setItem("usersData", JSON.stringify(allUsersData));
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
+    // if (!userSkillsData.find((skill) => addSkillFormInput.value === skill.userSkill && skill.userId === loggedInUser.userId)){
+    let newSkill = {
+      userId: loggedInUser.userId,
+      userSkill: addSkillFormInput.value,
+    };
+
+    try {
+      let addSkillResponse = await skillsRequests.addSkill(
+        newSkill,
+        newSkill.userId,
+        authToken
+      );
+      if (addSkillResponse.status === 201 || addSkillResponse.status === 200) {
+        let addSkillData = await addSkillResponse.json();
+        userSkillsData.push(addSkillData);
+        alert("SUCCESSFULLY ADDED SKILL");
+        // refreshEducationContainer();
+        refreshSkillsContainer();
+      } else {
+        alert("COULDN'T ADD SKILL");
+      }
+    } catch (error) {
+      alert("COULDN'T SEND REQUEST TO ADD SKILL");
+      console.log("COULDN'T SEND REQUEST TO ADD SKILL", error);
+    }
+
+    // userSkillsData.push(newSkill);
+    // localStorage.setItem("userSkillsData", JSON.stringify(userSkillsData));
+
+    // userSkillsData.push(addSkillFormInput.value);
+    // user.userSkills = userSkillsData;
+    // allUsersData[userIndex] = user;
+    // localStorage.setItem("usersData", JSON.stringify(allUsersData));
+    // localStorage.setItem("loggedInUser", JSON.stringify(user));
 
     console.log(userSkillsData);
 
     // refresh
 
-    refreshSkillsContainer();
+    // refreshSkillsContainer();
+    // }else {
+    //   alert("this skill already exists");
+    // }
   }
 });
 
@@ -612,13 +749,17 @@ const refreshSkillsContainer = () => {
   // let loggedInUser = JSON.parse(localStorage.getItem("usersData"));
   // let skills = loggedInUser.userSkills;
 
+  console.log("userSkillsData", userSkillsData);
   userSkillsData.forEach((userSkill) => {
     // loggedInUser.userSkills.forEach((userSkill) => {
+    // if(userSkill.userId === loggedInUser.userId) {
     let userSkillContainer = document.createElement("li");
     userSkillContainer.classList.add("skill");
-    userSkillContainer.id = userSkill;
+    // userSkillContainer.id = userSkill;
+    userSkillContainer.id = userSkill.userSkillId;
 
-    const userSkillContent = `<span>${userSkill}</span><button class="skill-delete-btn">Delete</button>`;
+    // const userSkillContent = `<span>${userSkill}</span><button class="skill-delete-btn">Delete</button>`;
+    const userSkillContent = `<span>${userSkill.userSkill}</span><button class="skill-delete-btn">Delete</button>`;
 
     userSkillContainer.innerHTML = userSkillContent;
 
@@ -627,26 +768,57 @@ const refreshSkillsContainer = () => {
     // deleting data from container
     const userSkillDelete =
       userSkillContainer.querySelector(".skill-delete-btn");
-    userSkillDelete.addEventListener("click", (e) => {
+    userSkillDelete.addEventListener("click", async (e) => {
       e.stopPropagation();
       // let userSkills = JSON.parse(localStorage.getItem("usersData"))
       // userSkills = userSkills.userSkills;
       let userSkillId = userSkillDelete.parentNode.id;
-      console.log("chidvochd", userSkillsData);
+      console.log("chidvochd", userSkillsData, userSkillId, typeof userSkillId);
+      // userSkillsData = userSkillsData.filter((skill) => {
+      //   console.log(skill, userSkillId);
+      //   return skill.userSkillId !== userSkillId;
+      // });
+      try {
+        let deleteSkillResponse = await skillsRequests.deleteSkill(
+          userSkillId,
+          authToken
+        );
+        if (
+          deleteSkillResponse.status === 201 ||
+          deleteSkillResponse.status === 200
+        ) {
+          alert("USER'S Skill DELETED");
+          userSkillsData = userSkillsData.filter(
+            (skill) => skill.userSkillId !== Number(userSkillId)
+          );
+          // for(let i=0; i<userSkillsData.length; i++) {
+          //   if(userSkillsData[i].userSkillId === userSkillId) {
+          //     userSkillsData.splice(i, 1);
+          //     break;
+          //   }
+          // }
+          // refreshExperienceContainer();
+          refreshSkillsContainer();
+        } else {
+          console.log("UNABLE TO DELETE DATA FROM BACKEND");
+          alert("UNABLE TO DELETE DATA FROM BACKEND");
+        }
+      } catch (error) {
+        console.log("ERROR SENDING UPDATE Skill REQUEST");
+        alert("ERROR SENDING UPDATE Skill REQUEST");
+      }
       console.log("1", userSkillsData);
-      userSkillsData = userSkillsData.filter((skill) => {
-        console.log(skill, userSkillId);
-        return skill !== userSkillId;
-      });
-      console.log("1", userSkillsData);
-      user.userSkills = userSkillsData;
-      allUsersData[userIndex] = user;
-      localStorage.setItem("usersData", JSON.stringify(allUsersData));
-      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      // localStorage.setItem("userSkillsData", JSON.stringify(userSkillsData));
+
+      // user.userSkills = userSkillsData;
+      // allUsersData[userIndex] = user;
+      // localStorage.setItem("usersData", JSON.stringify(allUsersData));
+      // localStorage.setItem("loggedInUser", JSON.stringify(user));
       console.log("chidvochd", userSkillsData);
 
-      refreshSkillsContainer();
+      // refreshSkillsContainer();
     });
+    // }
   });
 };
 
@@ -770,6 +942,8 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
         ) {
           user = await updateUserResponse.json();
           localStorage.setItem("loggedInUser", JSON.stringify(user));
+      refreshUserProfile();
+
         } else {
           alert("user not updated");
           console.log("user not updated");
@@ -782,7 +956,7 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
       // localStorage.setItem("usersData", JSON.stringify(allUsersData));
       // localStorage.setItem("loggedInUser", JSON.stringify(user));
 
-      refreshUserProfile();
+      // refreshUserProfile();
 
       updatePortfolioModal.close();
     };
