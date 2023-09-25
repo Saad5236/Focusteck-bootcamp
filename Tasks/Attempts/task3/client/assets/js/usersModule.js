@@ -196,7 +196,7 @@ const refreshUsers = (filteredUsers) => {
 
 const filterAndRefreshUsers = (allUsers) => {
   let currentLoggedInAdmin = JSON.parse(localStorage.getItem("loggedInUser"));
-  refreshUsers(allUsers.filter((u) => u.userId !== currentLoggedInAdmin.userId));
+  refreshUsers(allUsers.filter((u) => u.userId !== currentLoggedInAdmin.userId) || []);
 }
 
 const generateId = () => {

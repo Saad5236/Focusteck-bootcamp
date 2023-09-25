@@ -98,6 +98,32 @@ const getProjectByProjectId = (req, res, projectId) => {
   });
 };
 
+const getProjects = (req, res, userId) => {
+  middlewares.authenticateToken(req, res, () => {
+    let projects = [];
+    if (req.user.userRole === "admin" && userId === null) {
+      projects = projectsData;
+    } else if (req.user.userRole === "user" && userId !== null) {
+      projects = projectsData.filter(
+        (project) => project.userId === userId
+      );
+    }
+    if (projects.length > 0) {
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.write(JSON.stringify(projects));
+      res.end();
+    } else {
+      middlewares.returnError(
+        req,
+        res,
+        404,
+        "project not found",
+        "project you're trying to find does not exist."
+      );
+    }
+  })
+}
+
 const getProjectsByUserId = (req, res, userId) => {
   middlewares.authenticateToken(req, res, () => {
     if (req.user.userRole === "user") {
@@ -349,6 +375,7 @@ const updateProjectByProjectId = (req, res, projectId) => {
 
 export default {
   getAllProjects,
+  getProjects,
   getProjectByProjectId,
   getProjectsByUserId,
   addProjectByUserId,

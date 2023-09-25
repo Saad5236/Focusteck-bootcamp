@@ -23,32 +23,34 @@ let usersData = users;
 const logoutUser = (req, res) => {
   try {
     middlewares.authenticateToken(req, res, () => {
-      let index = sessions.findIndex((session) => session.userId === req.user.userId);
-      if(index !== -1) {
+      let index = sessions.findIndex(
+        (session) => session.userId === req.user.userId
+      );
+      if (index !== -1) {
         sessions.splice(index, 1);
         console.log("AFTER DELETION SESSION", sessions);
         res.writeHead(200, { "Content-type": "application/json" });
-      res.end(
-        JSON.stringify({
-          title: "Logged out successfully!",
-          message: "Token is also deleted from backend.",
-        })
-      );
+        res.end(
+          JSON.stringify({
+            title: "Logged out successfully!",
+            message: "Token is also deleted from backend.",
+          })
+        );
       } else {
-        console.log("COULDN;t delete session")
+        console.log("COULDN;t delete session");
         res.writeHead(404, { "Content-type": "application/json" });
-      res.end(
-        JSON.stringify({
-          title: "Logged out Unsucessful",
-          message: "Couldn't loout.",
-        })
-      );
+        res.end(
+          JSON.stringify({
+            title: "Logged out Unsucessful",
+            message: "Couldn't loout.",
+          })
+        );
       }
-    })
+    });
   } catch (error) {
     console.log("ERROR LOGGING OUT", error);
   }
-}
+};
 
 const loginUser = async (req, res) => {
   console.log("POST");
@@ -77,8 +79,8 @@ const loginUser = async (req, res) => {
         userEmail: foundUser.userEmail,
       };
       let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
-      
-      let newSession = {token: authToken, userId: foundUser.userId};
+
+      let newSession = { token: authToken, userId: foundUser.userId };
       sessions.push(newSession);
       console.log("CURRENT SESSIONS", sessions);
 
@@ -132,9 +134,9 @@ const addNewUser = async (req, res, status) => {
         let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
         console.log("login too 2", authToken);
 
-        let newSession = {token: authToken, userId: body.userId};
-      sessions.push(newSession);
-      console.log("CURRENT SESSIONS FROM SIGNUP", sessions);
+        let newSession = { token: authToken, userId: body.userId };
+        sessions.push(newSession);
+        console.log("CURRENT SESSIONS FROM SIGNUP", sessions);
 
         // let { userPassword, ...userWithoutPassword } = body;
 
@@ -147,9 +149,7 @@ const addNewUser = async (req, res, status) => {
         );
       } else if (status === "add") {
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify(userWithoutPassword)
-        );
+        res.end(JSON.stringify(userWithoutPassword));
       }
     }
     // res.writeHead(201, { "Content-Type": "application/json" });

@@ -20,46 +20,60 @@ import users from "../data/users.json" assert { type: "json" };
 let projectsData = projects;
 
 export default async (req, res) => {
-  // let userId, projectId;
-  if (req.url.split("/")[3] === "user")
-    var userId = Number(req.url.split("/")[4]);
-  if (req.url.split("/")[3] === "project")
-    var projectId = Number(req.url.split("/")[4]);
+  if (req.url.split("/")[5] === undefined) {
+    // let userId, projectId;
+    if (req.url.split("/")[3] === "user")
+      var userId = Number(req.url.split("/")[4]);
+    if (req.url.split("/")[3] === "project")
+      var projectId = Number(req.url.split("/")[4]);
 
-  console.log(userId, projectId);
+    console.log(userId, projectId);
 
-  // get all projects
-  if (req.url === "/api/projects" && req.method === "GET") {
-    projectControllers.getAllProjects(req, res);
-  } // get single project based on projectId
-  else if (projectId && req.method === "GET") {
-    projectControllers.getProjectByProjectId(req, res, projectId);
-  } // get multiple projects based on userId
-  else if (userId && req.method === "GET") {
-    projectControllers.getProjectsByUserId(req, res, userId);
-  } // post new project
-  else if (userId && req.method === "POST") {
-    projectControllers.addProjectByUserId(req, res, userId);
-  } // delete single project based on projectId
-  else if (projectId && req.method === "DELETE") {
-    projectControllers.deleteProjectByProjectId(req, res, projectId);
-  } // delete multiple projects based on userId
-  else if (userId && req.method === "DELETE") {
-    projectControllers.deleteProjectByUserId(req, res, userId);
-  } // update project
-  else if (projectId && req.method === "PUT") {
-    projectControllers.updateProjectByProjectId(req, res, projectId);
-  } // if user enters a non numeric project/user id
-  else if (!userId && !projectId) {
-    console.log("FAILED TO GET VALID ID");
+    // get all projects
+    if (req.url === "/api/projects" && req.method === "GET") {
+      projectControllers.getAllProjects(req, res);
+      // projectControllers.getProjects(req, res, null);
+    } // get single project based on projectId
+    else if (projectId && req.method === "GET") {
+      projectControllers.getProjectByProjectId(req, res, projectId);
+    } // get multiple projects based on userId
+    else if (userId && req.method === "GET") {
+      projectControllers.getProjectsByUserId(req, res, userId);
+      // projectControllers.getProjects(req, res, userId);
+    } // post new project
+    else if (userId && req.method === "POST") {
+      projectControllers.addProjectByUserId(req, res, userId);
+    } // delete single project based on projectId
+    else if (projectId && req.method === "DELETE") {
+      projectControllers.deleteProjectByProjectId(req, res, projectId);
+    } // delete multiple projects based on userId
+    else if (userId && req.method === "DELETE") {
+      projectControllers.deleteProjectByUserId(req, res, userId);
+    } // update project
+    else if (projectId && req.method === "PUT") {
+      projectControllers.updateProjectByProjectId(req, res, projectId);
+    } // if user enters a non numeric project/user id
+    else if (
+      (!userId &&
+        !projectId &&
+        req.url === `/api/projects/user/${req.url.split("/")[4]}`) ||
+      req.url === `/api/projects/project/${req.url.split("/")[4]}`
+    ) {
+      console.log("FAILED TO GET VALID ID");
 
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        title: "Validation Failed",
-        message: "ID is not valid, so can't find user/project based on id",
-      })
-    );
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          title: "Validation Failed",
+          message: "ID is not valid, so can't find user/project based on id",
+        })
+      );
+    } else {
+      res.writeHead(404, { "Content-type": "application/json" });
+      res.end(
+        JSON.stringify({ title: "No route", message: "Route not found!" })
+      );
+    }
   } else {
     res.writeHead(404, { "Content-type": "application/json" });
     res.end(

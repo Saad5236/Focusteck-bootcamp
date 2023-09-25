@@ -2,6 +2,7 @@ const PORT = 3000;
 import http from "http";
 import cors from "cors";
 import authenticationRequests from "./routes/authentication-requests.js";
+import authenticationControllers from "./controllers/users.js";
 import usersRequests from "./routes/users-requests.js";
 import projectsRequests from "./routes/projects-requests.js";
 import educationsRequests from "./routes/educations-requests.js";
@@ -23,9 +24,18 @@ let server = http.createServer((req, res) => {
     if (req.url.split("/")[1] === "api") {
       let urlType = req.url.split("/")[2];
 
-      if (urlType === "login" || urlType === "signup" || urlType === "logout") {
-        authenticationRequests(req, res);
-      } else {
+      // if (urlType === "login" || urlType === "signup" || urlType === "logout") {
+      //   authenticationRequests(req, res);
+      // } 
+      if (req.url.split("/")[2] === "login" && req.method === "POST") {
+        authenticationControllers.loginUser(req, res);
+      } else if (req.url.split("/")[2] === "signup" && req.method === "POST") {
+        console.log("SIGNUP user 1");
+        authenticationControllers.signupUser(req, res, "signup");
+      } else if (req.url.split("/")[2] === "logout" && req.method === "DELETE") {
+        authenticationControllers.logoutUser(req, res);
+      }
+      else {
         if (urlType === "users") {
           usersRequests(req, res);
         } else if (urlType === "projects") {
