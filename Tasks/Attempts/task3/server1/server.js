@@ -23,7 +23,7 @@ let server = http.createServer((req, res) => {
     if (req.url.split("/")[1] === "api") {
       let urlType = req.url.split("/")[2];
 
-      if (urlType === "login" || urlType === "signup") {
+      if (urlType === "login" || urlType === "signup" || urlType === "logout") {
         authenticationRequests(req, res);
       } else {
         if (urlType === "users") {

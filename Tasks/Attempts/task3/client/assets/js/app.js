@@ -1,5 +1,6 @@
 // import authenticationRequests from "../requests/authentication.js";
 import projectsRequests from "../requests/projects.js";
+import usersRequests from "../requests/users.js";
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const authToken = JSON.parse(localStorage.getItem("authToken"));
 // let userProjectsData = JSON.parse(localStorage.getItem("userProjectsData"));
@@ -27,16 +28,37 @@ try {
 // const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const navbarLogoutBtn = document.querySelector(".navbar-logout-btn");
 
-if (loggedInUser) {
+if (loggedInUser && loggedInUser.userRole === "user") {
   console.log("userLoggedIn", loggedInUser);
 } else {
   window.location.href = "./authentication.html";
 }
 
-navbarLogoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("loggedInUser");
-  localStorage.removeItem("authToken");
-  window.location.href = "./authentication.html";
+navbarLogoutBtn.addEventListener("click", async () => {
+  try {
+    let logoutUserResponse = await usersRequests.logoutUser(authToken);
+
+    if (
+      logoutUserResponse.status === 200 ||
+      logoutUserResponse.status === 201
+    ) {
+      let deletedUser = await logoutUserResponse.json();
+      console.log("LOGGED OUT SUCCESSFULL", deletedUser);
+
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("authToken");
+      window.location.href = "./authentication.html";
+    } else {
+      console.log("User session not updated");
+    }
+  } catch (error) {
+    console.log("error sending User session deletion request", error);
+  }
+
+  // localStorage.removeItem("loggedInUser");
+  // localStorage.removeItem("authToken");
+
+  // window.location.href = "./authentication.html";
 });
 
 // __________APPENDING PROJECTS DYNAMICALLY__________
@@ -352,10 +374,11 @@ const refreshProjects = (itemsContainer, items) => {
       console.log(userProjectsData);
 
       try {
-        let deleteProjectResponse = await projectsRequests.deleteProjectByProjectId(
-          projectDelBtn.id,
-          authToken
-        );
+        let deleteProjectResponse =
+          await projectsRequests.deleteProjectByProjectId(
+            projectDelBtn.id,
+            authToken
+          );
 
         if (
           deleteProjectResponse.status === 201 ||

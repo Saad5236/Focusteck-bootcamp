@@ -2,6 +2,8 @@
 import projectsRequests from "../requests/projects.js";
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const navbarLogoutBtn = document.querySelector(".navbar-logout-btn");
+import usersRequests from "../requests/users.js";
+
 
 if (loggedInUser && loggedInUser.userRole === "admin") {
   console.log("userLoggedIn", loggedInUser);
@@ -9,10 +11,33 @@ if (loggedInUser && loggedInUser.userRole === "admin") {
   window.location.href = "./authentication.html";
 }
 
-navbarLogoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("loggedInUser");
-  localStorage.removeItem("authToken");
-  window.location.href = "./authentication.html";
+
+navbarLogoutBtn.addEventListener("click", async () => {
+  // localStorage.removeItem("loggedInUser");
+  // localStorage.removeItem("authToken");
+  // window.location.href = "./authentication.html";
+  try {
+    let logoutUserResponse =
+      await usersRequests.logoutUser(
+        authToken
+      );
+
+    if (
+      logoutUserResponse.status === 200 ||
+      logoutUserResponse.status === 201
+    ) {
+      let deletedUser = await logoutUserResponse.json();
+      console.log("LOGGED OUT SUCCESSFULL", deletedUser);
+
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("authToken");
+      window.location.href = "./authentication.html";
+    } else {
+      console.log("User session not updated");
+    }
+  } catch (error) {
+    console.log("error sending User session deletion request", error);
+  }
 });
 
 // ____________REFRESH PROJECTS____________

@@ -13,10 +13,32 @@ if (loggedInUser && loggedInUser.userRole === "admin") {
   window.location.href = "./authentication.html";
 }
 
-navbarLogoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("loggedInUser");
-  localStorage.removeItem("authToken");
-  window.location.href = "./authentication.html";
+navbarLogoutBtn.addEventListener("click", async () => {
+  // localStorage.removeItem("loggedInUser");
+  // localStorage.removeItem("authToken");
+  // window.location.href = "./authentication.html";
+  try {
+    let logoutUserResponse =
+      await usersRequests.logoutUser(
+        authToken
+      );
+
+    if (
+      logoutUserResponse.status === 200 ||
+      logoutUserResponse.status === 201
+    ) {
+      let deletedUser = await logoutUserResponse.json();
+      console.log("LOGGED OUT SUCCESSFULL", deletedUser);
+
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("authToken");
+      window.location.href = "./authentication.html";
+    } else {
+      console.log("User session not updated");
+    }
+  } catch (error) {
+    console.log("error sending User session deletion request", error);
+  }
 });
 
 // navbarLogoutBtn.addEventListener("click", () => {
@@ -87,6 +109,7 @@ const refreshUsers = (filteredUsers) => {
     userDeleteBtn.addEventListener("click", async (e) => {
       e.stopPropagation();
       let userId = userDeleteBtn.parentNode.parentNode.id;
+      let foundUser = allUsersData.find((u) => u.userId === Number(userId));
       console.log("chidvochd", allUsersData);
       try {
         let deleteUserResponse = await usersRequests.deleteUser(
@@ -105,7 +128,10 @@ const refreshUsers = (filteredUsers) => {
           allUsersData = allUsersData.filter(
         (user) => user.userId !== Number(userId)
       );
-            deleteUserAllData(Number(userId), authToken);
+      console.log("CHECKING USER ROLE", foundUser.userRole, foundUser);
+            if (foundUser.userRole === "user") {
+            deleteUserAllData(Number(userId), authToken);              
+            }
           filterAndRefreshUsers(allUsersData);
         } else {
           console.log("UNABLE TO DELETE DATA FROM BACKEND");
@@ -159,7 +185,9 @@ const refreshUsers = (filteredUsers) => {
       document.querySelector("#update-fullname").value = user.userName;
       document.querySelector("#update-phonenumber").value = user.userNumber;
       document.querySelector("#update-email").value = user.userEmail;
-      document.querySelector("#update-password").value = user.userPassword;
+      // document.querySelector("#update-password").value = user.userPassword;
+      document.querySelector("#update-password").value = "";
+      console.log("UPDATE USER PASS", user.userPassword);
 
       updateUserModal.showModal();
     });
@@ -444,5 +472,6 @@ const filterUsers = (searchQuery) => {
     );
   });
 
-  refreshUsers(filteredUsers);
+  filterAndRefreshUsers(filteredUsers);
+  // refreshUsers(filteredUsers);
 };

@@ -44,6 +44,21 @@ const deleteUser = (userId, token) => {
   );
 };
 
+const logoutUser = (token) => {
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`,
+  });
+
+  const requestOptions = {
+    method: "DELETE",
+    headers: headers,
+  };
+  return fetch(
+    `http://localhost:3000/api/logout`,
+    requestOptions
+  );
+};
+
 const addUser = (user, token) => {
   const headers = new Headers({
     "Content-Type": "application/json",
@@ -62,4 +77,4 @@ const addUser = (user, token) => {
   );
 };
 
-export default { getAllUsers, updateUser, deleteUser, addUser };
+export default { getAllUsers, updateUser, deleteUser, logoutUser, addUser };

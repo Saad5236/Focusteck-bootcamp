@@ -9,10 +9,20 @@ import authenticationControllers from "../controllers/users.js";
 export default async (req, res) => {
   console.log("POST HELO");
 
+  if (req.url.split("/")[5] === undefined) {
+
   if (req.url.split("/")[2] === "login" && req.method === "POST") {
     authenticationControllers.loginUser(req, res);
-  } else {
+  } else if (req.url.split("/")[2] === "signup" && req.method === "POST") {
     console.log("SIGNUP user 1");
     authenticationControllers.signupUser(req, res, "signup");
+  } else if (req.url.split("/")[2] === "logout" && req.method === "DELETE") {
+    authenticationControllers.logoutUser(req, res);
   }
+} else {
+  res.writeHead(404, { "Content-type": "application/json" });
+    res.end(
+      JSON.stringify({ title: "Invalid route!", message: "Route not found!" })
+    );
+}
 };

@@ -1,5 +1,18 @@
 import authenticationRequests from "../requests/authentication.js";
 // ___________LOGIN SIGNUP SWITCH___________
+const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+if (loggedInUser) {
+  console.log("userLoggedIn", loggedInUser);
+  if(loggedInUser.userRole === "admin") {
+    window.location.href = "./index1.html";
+  } else if(loggedInUser.userRole === "user") {
+    window.location.href = "./index.html";
+  }
+} 
+// else {
+//   window.location.href = "./authentication.html";
+// }
+
 
 const loginFormSection = document.querySelector(".login-form-section");
 const signupFormSection = document.querySelector(".signup-form-section");

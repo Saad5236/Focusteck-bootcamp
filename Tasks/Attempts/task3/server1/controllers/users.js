@@ -16,8 +16,39 @@ const generateUserId = () => {
 import jwt from "jsonwebtoken";
 import requestBodyParser from "../utils/body-parser.js";
 import middlewares from "../utils/middleware.js";
+import sessions from "../data/sessions.json" assert { type: "json" };
 import users from "../data/users.json" assert { type: "json" };
 let usersData = users;
+
+const logoutUser = (req, res) => {
+  try {
+    middlewares.authenticateToken(req, res, () => {
+      let index = sessions.findIndex((session) => session.userId === req.user.userId);
+      if(index !== -1) {
+        sessions.splice(index, 1);
+        console.log("AFTER DELETION SESSION", sessions);
+        res.writeHead(200, { "Content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          title: "Logged out successfully!",
+          message: "Token is also deleted from backend.",
+        })
+      );
+      } else {
+        console.log("COULDN;t delete session")
+        res.writeHead(404, { "Content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          title: "Logged out Unsucessful",
+          message: "Couldn't loout.",
+        })
+      );
+      }
+    })
+  } catch (error) {
+    console.log("ERROR LOGGING OUT", error);
+  }
+}
 
 const loginUser = async (req, res) => {
   console.log("POST");
@@ -46,6 +77,11 @@ const loginUser = async (req, res) => {
         userEmail: foundUser.userEmail,
       };
       let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
+      
+      let newSession = {token: authToken, userId: foundUser.userId};
+      sessions.push(newSession);
+      console.log("CURRENT SESSIONS", sessions);
+
       let { userPassword, ...userWithoutPassword } = foundUser;
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(
@@ -95,6 +131,10 @@ const addNewUser = async (req, res, status) => {
         };
         let authToken = jwt.sign(user, "my-secret-key", { expiresIn: "1h" });
         console.log("login too 2", authToken);
+
+        let newSession = {token: authToken, userId: body.userId};
+      sessions.push(newSession);
+      console.log("CURRENT SESSIONS FROM SIGNUP", sessions);
 
         // let { userPassword, ...userWithoutPassword } = body;
 
@@ -362,6 +402,7 @@ const returnError = (req, res, statusCode, title, message) => {
 
 export default {
   loginUser,
+  logoutUser,
   signupUser,
   getAllUsers,
   getUser,
