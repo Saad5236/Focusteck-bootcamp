@@ -1,0 +1,46 @@
+GET http://localhost:3000/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJSb2xlIjoiYWRtaW4iLCJ1c2VyRW1haWwiOiJkQGQuY29tIiwiaWF0IjoxNjk1Nzk5NzAxLCJleHAiOjE2OTU4MDMzMDF9.Uhe_xp4cJKC_l_gPNEpBSsRBC6IuGzJngjFT9u5_-Ig
+
+###
+
+GET http://localhost:3000/api/users/779944
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJSb2xlIjoiYWRtaW4iLCJ1c2VyRW1haWwiOiJkQGQuY29tIiwiaWF0IjoxNjk1Nzk5NzAxLCJleHAiOjE2OTU4MDMzMDF9.Uhe_xp4cJKC_l_gPNEpBSsRBC6IuGzJngjFT9u5_-Ig
+
+###
+
+DELETE http://localhost:3000/api/users/779944
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJSb2xlIjoiYWRtaW4iLCJ1c2VyRW1haWwiOiJkQGQuY29tIiwiaWF0IjoxNjk1Nzk5NzAxLCJleHAiOjE2OTU4MDMzMDF9.Uhe_xp4cJKC_l_gPNEpBSsRBC6IuGzJngjFT9u5_-Ig
+
+###
+
+POST http://localhost:3000/api/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJSb2xlIjoiYWRtaW4iLCJ1c2VyRW1haWwiOiJkQGQuY29tIiwiaWF0IjoxNjk1Nzk5NzAxLCJleHAiOjE2OTU4MDMzMDF9.Uhe_xp4cJKC_l_gPNEpBSsRBC6IuGzJngjFT9u5_-Ig
+
+{
+    "userRole": "user",
+    "userName": "CHANGEZ",
+    "userNumber": "103803",
+    "userEmail": "h@h.com",
+    "userPassword": "h",
+    "userProfession": "huo",
+    "userAbout": "djif",
+    "userImgSrc": "cjdho"
+}
+
+###
+
+PUT http://localhost:3000/api/users/779944
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJSb2xlIjoiYWRtaW4iLCJ1c2VyRW1haWwiOiJkQGQuY29tIiwiaWF0IjoxNjk1Nzk5NzAxLCJleHAiOjE2OTU4MDMzMDF9.Uhe_xp4cJKC_l_gPNEpBSsRBC6IuGzJngjFT9u5_-Ig
+
+{
+    "userRole": "user",
+    "userName": "RUPERT",
+    "userNumber": "9999",
+    "userEmail": "h@h.com",
+    "userPassword": "h",
+    "userProfession": "huo",
+    "userAbout": "BRO",
+    "userImgSrc": "cjdho"
+}

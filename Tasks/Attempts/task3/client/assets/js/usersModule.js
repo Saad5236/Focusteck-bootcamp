@@ -18,10 +18,7 @@ navbarLogoutBtn.addEventListener("click", async () => {
   // localStorage.removeItem("authToken");
   // window.location.href = "./authentication.html";
   try {
-    let logoutUserResponse =
-      await usersRequests.logoutUser(
-        authToken
-      );
+    let logoutUserResponse = await usersRequests.logoutUser(authToken);
 
     if (
       logoutUserResponse.status === 200 ||
@@ -50,30 +47,31 @@ navbarLogoutBtn.addEventListener("click", async () => {
 
 const deleteUserAllData = async (userId, authToken) => {
   try {
-    // let deleteUserResponse = await usersRequests.deleteUser(
-    //   userId,
-    //   authToken
-    // );
-    const [projectsDelRes, educationsDelRes, experiencesDelRes, skillsDelRes] = await Promise.all([
-      projectsRequests.deleteProjectsByUserId(userId, authToken),
-      educationsRequests.deleteEducationsByUserId(userId, authToken),
-      experiencesRequests.deleteExperiencesByUserId(userId, authToken),
-      skillsRequests.deleteSkillsByUserId(userId, authToken),
-    ]);
-    if (
-      projectsDelRes.status === 200 &&
-      educationsDelRes.status === 200 &&
-      experiencesDelRes.status === 200 &&
-      skillsDelRes.status === 200
-    ) {
-      alert("ALL DATA DELETED OF USER");
+    const [projectsDelRes, educationsDelRes, experiencesDelRes, skillsDelRes] =
+      await Promise.all([
+        projectsRequests.deleteProjects(userId, authToken),
+        educationsRequests.deleteEducation(userId, authToken),
+        // experiencesRequests.deleteExperiencesByUserId(userId, authToken),
+        experiencesRequests.deleteExperiences(userId, authToken),
+        // skillsRequests.deleteSkillsByUserId(userId, authToken),
+        skillsRequests.deleteSkills(userId, authToken),
+      ]);
+    if (projectsDelRes.status === 200) {
       let delProjects = await projectsDelRes.json();
-      let delEducations = await educationsDelRes.json();
-      let delExperiences = await experiencesDelRes.json();
-      let delSkills = await skillsDelRes.json();
-
-      console.log("deleted data", delProjects, delEducations, delExperiences, delSkills);
+      console.log("deleted projects", delProjects);
       // filterAndRefreshUsers(allUsersData);
+    }
+    if (educationsDelRes.status === 200) {
+      let delEducations = await educationsDelRes.json();
+      console.log("deleted educations", delEducations);
+    }
+    if (experiencesDelRes.status === 200) {
+      let delExperiences = await experiencesDelRes.json();
+      console.log("deleted experiences", delExperiences);
+    }
+    if (skillsDelRes.status === 200) {
+      let delSkills = await skillsDelRes.json();
+      console.log("deleted skills", delSkills);
     } else {
       console.log("UNABLE TO DELETE DATA FROM BACKEND");
       alert("UNABLE TO DELETE DATA FROM BACKEND");
@@ -82,7 +80,7 @@ const deleteUserAllData = async (userId, authToken) => {
     console.log("ERROR SENDING DELETE USER REQUEST");
     alert("ERROR SENDING DELETE USER REQUEST");
   }
-}
+};
 
 const refreshUsers = (filteredUsers) => {
   allUsersContainer.innerHTML = "";
@@ -119,20 +117,19 @@ const refreshUsers = (filteredUsers) => {
         if (
           deleteUserResponse.status === 201 ||
           deleteUserResponse.status === 200 ||
-          deleteUserResponse.status === 204 
+          deleteUserResponse.status === 204
         ) {
           alert("USER DELETED");
-          // usersEducationData = usersEducationData.filter(
-          //   (edu) => edu.userEducationId !== Number(userEducationId)
-          // );
           allUsersData = allUsersData.filter(
-        (user) => user.userId !== Number(userId)
-      );
-      console.log("CHECKING USER ROLE", foundUser.userRole, foundUser);
-            if (foundUser.userRole === "user") {
-            deleteUserAllData(Number(userId), authToken);              
-            }
+            (user) => user.userId !== Number(userId)
+          );
+          console.log("CHECKING USER ROLE", foundUser.userRole, foundUser);
+          if (foundUser.userRole === "user") {
+            deleteUserAllData(Number(userId), authToken);
+          }
           filterAndRefreshUsers(allUsersData);
+        } else if (deleteUserResponse.status === 403) {
+          logoutAfterTokenExp();
         } else {
           console.log("UNABLE TO DELETE DATA FROM BACKEND");
           alert("UNABLE TO DELETE DATA FROM BACKEND");
@@ -168,8 +165,6 @@ const refreshUsers = (filteredUsers) => {
       //   JSON.stringify(allUsersExperiences)
       // );
 
-      // console.log("chidvochd", allUsersData);
-
       // refreshUsers(allUsersData);
     });
 
@@ -193,26 +188,33 @@ const refreshUsers = (filteredUsers) => {
     });
   });
 };
+const logoutAfterTokenExp = () => {
+  localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("authToken");
+      window.location.href = "./authentication.html";
+}
 
 const filterAndRefreshUsers = (allUsers) => {
   let currentLoggedInAdmin = JSON.parse(localStorage.getItem("loggedInUser"));
-  refreshUsers(allUsers.filter((u) => u.userId !== currentLoggedInAdmin.userId) || []);
-}
-
-const generateId = () => {
-  let id;
-  while (true) {
-    id = Math.floor(Math.random() * (999999 - 100000) + 100000);
-    let usersData = JSON.parse(localStorage.getItem("usersData"));
-
-    if (usersData && usersData.find((i) => i.userId === id)) {
-      continue;
-    } else {
-      break;
-    }
-  }
-  return id;
+  refreshUsers(
+    allUsers.filter((u) => u.userId !== currentLoggedInAdmin.userId) || []
+  );
 };
+
+// const generateId = () => {
+//   let id;
+//   while (true) {
+//     id = Math.floor(Math.random() * (999999 - 100000) + 100000);
+//     let usersData = JSON.parse(localStorage.getItem("usersData"));
+
+//     if (usersData && usersData.find((i) => i.userId === id)) {
+//       continue;
+//     } else {
+//       break;
+//     }
+//   }
+//   return id;
+// };
 
 const addUserBtn = document.querySelector(".add-user-btn button");
 const addUserCloseBtn = document.querySelector(".add-user-close-btn");
@@ -232,16 +234,13 @@ const updateUserModalFormBtn = document.querySelector(
 let authToken = JSON.parse(localStorage.getItem("authToken"));
 let allUsersData;
 try {
-  let getUsersResponse = await usersRequests.getAllUsers(
-    authToken
-  );
+  let getUsersResponse = await usersRequests.getAllUsers(authToken);
   console.log("HEY", getUsersResponse.status);
-  if (
-    getUsersResponse.status === 200 ||
-    getUsersResponse.status === 201
-  ) {
+  if (getUsersResponse.status === 200 || getUsersResponse.status === 201) {
     allUsersData = await getUsersResponse.json();
     console.log("HEY2", allUsersData);
+  } else if (getUsersResponse.status === 403) {
+    logoutAfterTokenExp();
   } else {
     console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
     allUsersData = [];
@@ -288,74 +287,74 @@ updateUserModalForm.addEventListener("submit", async (e) => {
     alert("SOME FIELDS ARE EMPTY");
   } else {
     // if (!allUsersData.find((data) => data.userEmail === updateUserEmail)) {
-      let index = allUsersData.findIndex((u) => {
-        return u.userId === userIdForUpdate;
-      });
+    let index = allUsersData.findIndex((u) => {
+      return u.userId === userIdForUpdate;
+    });
 
-      let user = allUsersData[index];
-      let previousUserRole = user.userRole;
-      user.userName = updateUserName;
-      user.userNumber = updateUserNumber;
-      user.userEmail = updateUserEmail;
-      user.userPassword = updateUserPassword;
-      user.userRole = updateUserRole;
+    let user = allUsersData[index];
+    let previousUserRole = user.userRole;
+    user.userName = updateUserName;
+    user.userNumber = updateUserNumber;
+    user.userEmail = updateUserEmail;
+    user.userPassword = updateUserPassword;
+    user.userRole = updateUserRole;
 
-      // let authToken = JSON.parse(localStorage.getItem("authToken"));
-      try {
-        let updateUserResponse = await usersRequests.updateUser(
-          user,
-          user.userId,
-          authToken
-        );
+    // let authToken = JSON.parse(localStorage.getItem("authToken"));
+    try {
+      let updateUserResponse = await usersRequests.updateUser(
+        user,
+        user.userId,
+        authToken
+      );
 
-        if (
-          updateUserResponse.status === 201 ||
-          updateUserResponse.status === 200
-        ) {
-          user = await updateUserResponse.json();
-          allUsersData[index] = user;
-          if(previousUserRole === "user" && user.userRole === "admin") {
-            console.log("deleted user's data since he's ana dmin now")
-            deleteUserAllData(user.userId, authToken)
-          }
-          filterAndRefreshUsers(allUsersData);
-
-      updateUserModal.close();
-
-
-        } else {
-          alert("user not updated");
-          console.log("user not updated");
+      if (
+        updateUserResponse.status === 201 ||
+        updateUserResponse.status === 200
+      ) {
+        user = await updateUserResponse.json();
+        allUsersData[index] = user;
+        if (previousUserRole === "user" && user.userRole === "admin") {
+          console.log("deleted user's data since he's ana dmin now");
+          deleteUserAllData(user.userId, authToken);
         }
-      } catch (error) {
-        console.log("ERROR UPDATING USER", error);
-        alert("ERROR UPDATING USER");
+        filterAndRefreshUsers(allUsersData);
+
+        updateUserModal.close();
+      } else if (updateUserResponse.status === 403) {
+        logoutAfterTokenExp();
+      } else {
+        alert("user not updated");
+        console.log("user not updated");
       }
+    } catch (error) {
+      console.log("ERROR UPDATING USER", error);
+      alert("ERROR UPDATING USER");
+    }
 
-      console.log("old", allUsersData, index);
+    console.log("old", allUsersData, index);
 
-      // allUsersData[index].userName = updateUserName;
-      // allUsersData[index].userNumber = updateUserNumber;
-      // allUsersData[index].userEmail = updateUserEmail;
-      // allUsersData[index].userPassword = updateUserPassword;
-      // allUsersData[index].userRole = updateUserRole;
+    // allUsersData[index].userName = updateUserName;
+    // allUsersData[index].userNumber = updateUserNumber;
+    // allUsersData[index].userEmail = updateUserEmail;
+    // allUsersData[index].userPassword = updateUserPassword;
+    // allUsersData[index].userRole = updateUserRole;
 
-      // console.log("new", allUsersData, index);
+    // console.log("new", allUsersData, index);
 
-      // localStorage.setItem("usersData", JSON.stringify(allUsersData));
+    // localStorage.setItem("usersData", JSON.stringify(allUsersData));
 
-      // let user = JSON.parse(localStorage.getItem("loggedInUser"));
-      // if (user.userId === allUsersData[index].userId) {
-      //   user.userName = allUsersData[index].userName;
-      //   user.userNumber = allUsersData[index].userNumber;
-      //   user.userEmail = allUsersData[index].userEmail;
-      //   user.userPassword = allUsersData[index].userPassword;
-      //   user.userRole = allUsersData[index].userRole;
-      //   localStorage.setItem("loggedInUser", JSON.stringify(user));
-      // }
+    // let user = JSON.parse(localStorage.getItem("loggedInUser"));
+    // if (user.userId === allUsersData[index].userId) {
+    //   user.userName = allUsersData[index].userName;
+    //   user.userNumber = allUsersData[index].userNumber;
+    //   user.userEmail = allUsersData[index].userEmail;
+    //   user.userPassword = allUsersData[index].userPassword;
+    //   user.userRole = allUsersData[index].userRole;
+    //   localStorage.setItem("loggedInUser", JSON.stringify(user));
+    // }
 
-      // refreshUsers(allUsersData);
-      // updateUserModal.close();
+    // refreshUsers(allUsersData);
+    // updateUserModal.close();
     // } else {
     //   alert("Email already exists for someone.");
     // }
@@ -397,7 +396,7 @@ addUserModalForm.addEventListener("submit", async (e) => {
       !allUsersData.find((data) => data.userEmail === addUserEmail)
     ) {
       let newUserData = {
-        userId: generateId(),
+        // userId: generateId(),
         userRole: addUserRole, // alternatively admin
         userName: addUserName,
         userNumber: addUserNumber,
@@ -406,7 +405,6 @@ addUserModalForm.addEventListener("submit", async (e) => {
         userProfession: "",
         userAbout: "",
         userImgSrc: "",
-        userSkills: [],
       };
 
       try {
@@ -414,20 +412,19 @@ addUserModalForm.addEventListener("submit", async (e) => {
           newUserData,
           authToken
         );
-        if (
-          addUserResponse.status === 201 ||
-          addUserResponse.status === 200
-        ) {
+        if (addUserResponse.status === 201 || addUserResponse.status === 200) {
           let addUserData = await addUserResponse.json();
           // usersExperienceData.push(addUserData);
           allUsersData.push(addUserData);
           alert("SUCCESSFULLY ADDED USER");
           console.log("OH GOD YES");
-  
+
           filterAndRefreshUsers(allUsersData);
           // refreshExperienceContainer();
 
-      addUserModal.close();
+          addUserModal.close();
+        } else if (addUserResponse.status === 403) {
+          logoutAfterTokenExp();
         } else {
           alert("COULDN'T ADD USER");
         }

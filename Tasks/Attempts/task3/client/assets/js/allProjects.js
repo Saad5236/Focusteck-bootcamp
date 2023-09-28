@@ -4,27 +4,22 @@ const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const navbarLogoutBtn = document.querySelector(".navbar-logout-btn");
 import usersRequests from "../requests/users.js";
 
-
 if (loggedInUser && loggedInUser.userRole === "admin") {
   console.log("userLoggedIn", loggedInUser);
 } else {
   window.location.href = "./authentication.html";
 }
 
-
 navbarLogoutBtn.addEventListener("click", async () => {
   // localStorage.removeItem("loggedInUser");
   // localStorage.removeItem("authToken");
   // window.location.href = "./authentication.html";
   try {
-    let logoutUserResponse =
-      await usersRequests.logoutUser(
-        authToken
-      );
+    let logoutUserResponse = await usersRequests.logoutUser(authToken);
 
     if (
       logoutUserResponse.status === 200 ||
-      logoutUserResponse.status === 201
+      logoutUserResponse.status === 201 
     ) {
       let deletedUser = await logoutUserResponse.json();
       console.log("LOGGED OUT SUCCESSFULL", deletedUser);
@@ -40,25 +35,34 @@ navbarLogoutBtn.addEventListener("click", async () => {
   }
 });
 
+const logoutAfterTokenExp = () => {
+  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("authToken");
+  window.location.href = "./authentication.html";
+};
+
 // ____________REFRESH PROJECTS____________
 let authToken = JSON.parse(localStorage.getItem("authToken"));
 let allProjectsContainer = document.querySelector(".projects-container");
 // let userProjects = JSON.parse(localStorage.getItem("userProjectsData"));
 let userProjects;
 try {
-  let projectsDataResponse = await projectsRequests.getAllProjects(
-    authToken
-  );
-  if (!projectsDataResponse.status === 201 || !projectsDataResponse.status === 200) {
+  let projectsDataResponse = await projectsRequests.getAllProjects(authToken);
+  if (
+    !projectsDataResponse.status === 201 ||
+    !projectsDataResponse.status === 200
+  ) {
     alert(`ERROR GETTING DATA`);
+  } else if (projectsDataResponse.status === 403) {
+    logoutAfterTokenExp();
   } else {
-  userProjects = await projectsDataResponse.json();
+    userProjects = await projectsDataResponse.json();
 
-  if (userProjects.title) {
-    userProjects = [];
+    if (userProjects.title) {
+      userProjects = [];
+    }
+    console.log("ALL USERS DATA", userProjects);
   }
-  console.log("ALL USERS DATA", userProjects);
-}
 } catch (e) {
   console.log("ERROR GETTING PROJECTS", e);
 }

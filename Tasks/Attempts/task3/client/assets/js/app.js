@@ -3,22 +3,33 @@ import projectsRequests from "../requests/projects.js";
 import usersRequests from "../requests/users.js";
 const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 const authToken = JSON.parse(localStorage.getItem("authToken"));
+
+const logoutAfterTokenExp = () => {
+  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("authToken");
+  window.location.href = "./authentication.html";
+};
+
 // let userProjectsData = JSON.parse(localStorage.getItem("userProjectsData"));
 let userProjectsData;
 try {
-  let projectsDataResponse = await projectsRequests.getProjectsByUserId(
-    loggedInUser.userId,
-    authToken
-  );
+  // let projectsDataResponse = await projectsRequests.getProjectsByUserId(
+  //   loggedInUser.userId,
+  //   authToken
+  // );
+  let projectsDataResponse = await projectsRequests.getAllProjects(authToken);
   if (!projectsDataResponse.status === 201) {
     alert(`ERROR GETTING DATA`);
-  }
-  userProjectsData = await projectsDataResponse.json();
+  } else if (projectsDataResponse.status === 403) {
+    logoutAfterTokenExp();
+  } else {
+    userProjectsData = await projectsDataResponse.json();
 
-  if (userProjectsData.title) {
-    userProjectsData = [];
+    if (userProjectsData.length <= 0) {
+      userProjectsData = [];
+    }
+    console.log("ALL USERS DATA", userProjectsData);
   }
-  console.log("ALL USERS DATA", userProjectsData);
 } catch (e) {
   console.log("ERROR GETTING PROJECTS", e);
 }
@@ -40,7 +51,9 @@ navbarLogoutBtn.addEventListener("click", async () => {
 
     if (
       logoutUserResponse.status === 200 ||
-      logoutUserResponse.status === 201
+      logoutUserResponse.status === 201 ||
+      logoutUserResponse.status === 401 ||
+      logoutUserResponse.status === 403
     ) {
       let deletedUser = await logoutUserResponse.json();
       console.log("LOGGED OUT SUCCESSFULL", deletedUser);
@@ -323,6 +336,8 @@ const refreshProjects = (itemsContainer, items) => {
                 userProjectsData[i] = userProjectData.value;
                 // userProjectsData.push(userProjectData.value)
                 console.log(userProjectData.value, "project data");
+              } else if (updateProjectResponse.status === 403) {
+                logoutAfterTokenExp();
               } else {
                 alert("Project not updated");
                 console.log("Project not updated");
@@ -374,8 +389,13 @@ const refreshProjects = (itemsContainer, items) => {
       console.log(userProjectsData);
 
       try {
+        // let deleteProjectResponse =
+        //   await projectsRequests.deleteProjectByProjectId(
+        //     projectDelBtn.id,
+        //     authToken
+        //   );
         let deleteProjectResponse =
-          await projectsRequests.deleteProjectByProjectId(
+          await projectsRequests.deleteProjects(
             projectDelBtn.id,
             authToken
           );
@@ -388,6 +408,8 @@ const refreshProjects = (itemsContainer, items) => {
           userProjectsData = userProjectsData.filter(
             (project) => project.projectId !== Number(projectDelBtn.id)
           );
+        } else if (deleteProjectResponse.status === 403) {
+          logoutAfterTokenExp();
         } else {
           alert("Project not updated");
           console.log("Project not updated");
@@ -500,7 +522,9 @@ const addNewProjectCloseBtn = document.querySelector(
 
 addNewProjectBtn.addEventListener("click", () => {
   addNewProjectModal.showModal();
+  console.log("HEY ADD PROJECT");
 });
+console.log("ADNEWPROJBTN", addNewProjectBtn);
 
 addNewProjectCloseBtn.addEventListener("click", () => {
   addNewProjectModal.close();
@@ -657,9 +681,14 @@ addNewProjectForm.addEventListener("submit", async (e) => {
       //   JSON.stringify(userProjectsData)
       // );
       try {
+        // let addProjectResponse = await projectsRequests.addProject(
+        //   projectData,
+        //   loggedInUser.userId,
+        //   authToken
+        // );
+
         let addProjectResponse = await projectsRequests.addProject(
           projectData,
-          loggedInUser.userId,
           authToken
         );
         // let addProjectResponse = await projectsRequests.addProject(projectData, 33, authToken);
@@ -671,6 +700,8 @@ addNewProjectForm.addEventListener("submit", async (e) => {
           projectData = await addProjectResponse.json();
           userProjectsData.push(projectData);
           console.log(projectData, "project data");
+        } else if (addProjectResponse.status === 403) {
+          logoutAfterTokenExp();
         } else {
           alert("Project not added");
           console.log("Project not added");

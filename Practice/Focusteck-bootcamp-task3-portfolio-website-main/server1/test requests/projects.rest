@@ -1,0 +1,65 @@
+GET http://localhost:3000/api/projects
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJSb2xlIjoiYWRtaW4iLCJ1c2VyRW1haWwiOiJkQGQuY29tIiwiaWF0IjoxNjk1ODAwNjE0LCJleHAiOjE2OTU4MDQyMTR9.sHcmDmEedHrbk3OQduHaHFwLfd7dBeJigh2WhJpUcm8
+
+###
+
+GET http://localhost:3000/api/projects/user/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6InNAcy5zIiwiaWF0IjoxNjk1ODAxMjM5LCJleHAiOjE2OTU4MDQ4Mzl9.rIaHL_577nkGAJSgmpoRS8MzT8UISwctWPnh3qTcpus
+
+###
+
+GET http://localhost:3000/api/projects/project/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6InNAcy5zIiwiaWF0IjoxNjk1ODAwNjgzLCJleHAiOjE2OTU4MDQyODN9.8QMz-hSpZKTcVNCqnC4RXehhMBdshHpQPUIgFdOniYQ
+
+###
+
+DELETE http://localhost:3000/api/projects/project/820792
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6InNAcy5zIiwiaWF0IjoxNjk1ODAwNjgzLCJleHAiOjE2OTU4MDQyODN9.8QMz-hSpZKTcVNCqnC4RXehhMBdshHpQPUIgFdOniYQ
+
+###
+
+DELETE http://localhost:3000/api/projects/user/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJSb2xlIjoiYWRtaW4iLCJ1c2VyRW1haWwiOiJkQGQuY29tIiwiaWF0IjoxNjk1ODAxMTk3LCJleHAiOjE2OTU4MDQ3OTd9.x17w0aFdD-90KHArdNy-a79gizZQy47vT03SXxWxvk8
+
+###
+
+PUT http://localhost:3000/api/projects/project/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6InNAcy5zIiwiaWF0IjoxNjk1ODAwNjgzLCJleHAiOjE2OTU4MDQyODN9.8QMz-hSpZKTcVNCqnC4RXehhMBdshHpQPUIgFdOniYQ
+
+{
+    "userId": 2,
+  "projectHeading": "WEB",
+  "projectDescription": "It's a WEB",
+  "projectImageLink": "link",
+  "projectTags": [
+    "programming"
+  ],
+  "projectLanguages": [
+    "languages"
+  ],
+  "projectFrameworks": [
+    "frameworks"
+  ]
+}
+
+###
+
+POST http://localhost:3000/api/projects/user/2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6InNAcy5zIiwiaWF0IjoxNjk1ODAxMjM5LCJleHAiOjE2OTU4MDQ4Mzl9.rIaHL_577nkGAJSgmpoRS8MzT8UISwctWPnh3qTcpus
+
+{
+  "projectHeading": "CLOWN",
+  "projectDescription": "It's a CLOWN",
+  "projectImageLink": "link",
+  "projectTags": [
+    "programming"
+  ],
+  "projectLanguages": [
+    "languages"
+  ],
+  "projectFrameworks": [
+    "frameworks"
+  ]
+}

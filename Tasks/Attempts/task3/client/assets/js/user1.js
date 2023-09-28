@@ -35,10 +35,11 @@ const generateEducationId = () => {
 // _________GETTING DATA FROM BACKEND___________
 let usersEducationData;
 try {
-  let getEducationsResponse = await educationsRequests.getEducations(
-    loggedInUser.userId,
-    authToken
-  );
+  // let getEducationsResponse = await educationsRequests.getEducations(
+  //   loggedInUser.userId,
+  //   authToken
+  // );
+  let getEducationsResponse = await educationsRequests.getEducations(authToken);
   console.log("HEY", getEducationsResponse.status);
   if (
     getEducationsResponse.status === 200 ||
@@ -46,14 +47,21 @@ try {
   ) {
     usersEducationData = await getEducationsResponse.json();
     console.log("HEY2", usersEducationData);
+  } else if (getEducationsResponse.status === 403) {
+    logoutAfterTokenExp()
   } else {
     console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
     usersEducationData = [];
   }
 } catch (error) {
   console.log("ERROR GETTING EDUCATIONS", error);
-  alert("ERROR GETTING EDUCATIONS");
 }
+
+const logoutAfterTokenExp = () => {
+  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("authToken");
+  window.location.href = "./authentication.html";
+};
 
 // ______________EDUCATIONS______________
 
@@ -137,11 +145,16 @@ addEducationModalForm.addEventListener("submit", async (e) => {
     // );
 
     try {
+      // let addEducationResponse = await educationsRequests.addEducation(
+      //   userEducationData,
+      //   userEducationData.userId,
+      //   authToken
+      // );
       let addEducationResponse = await educationsRequests.addEducation(
         userEducationData,
-        userEducationData.userId,
         authToken
       );
+
       if (
         addEducationResponse.status === 201 ||
         addEducationResponse.status === 200
@@ -150,6 +163,8 @@ addEducationModalForm.addEventListener("submit", async (e) => {
         usersEducationData.push(addEducationData);
         alert("SUCCESSFULLY ADDED EDUCATION");
         refreshEducationContainer();
+      } else if (addEducationResponse.status === 403) {
+        logoutAfterTokenExp();
       } else {
         alert("COULDN'T ADD EDUCATION");
       }
@@ -227,6 +242,8 @@ updateEducationModalForm.addEventListener("submit", async (e) => {
       ) {
         alert("education updated!");
         refreshEducationContainer();
+      } else if (updateEducationResponse.status === 403) {
+        logoutAfterTokenExp();
       } else {
         alert("education not found or not able to updated");
       }
@@ -321,6 +338,8 @@ const refreshEducationContainer = () => {
             (edu) => edu.userEducationId !== Number(userEducationId)
           );
           refreshEducationContainer();
+        } else if (deleteEducationsResponse.status === 403) {
+          logoutAfterTokenExp()
         } else {
           console.log("UNABLE TO DELETE DATA FROM BACKEND");
           alert("UNABLE TO DELETE DATA FROM BACKEND");
@@ -345,10 +364,11 @@ refreshEducationContainer();
 // );
 let usersExperienceData;
 try {
-  let getExperiencesResponse = await experiencesRequests.getExperiences(
-    loggedInUser.userId,
-    authToken
-  );
+  // let getExperiencesResponse = await experiencesRequests.getExperiences(
+  //   loggedInUser.userId,
+  //   authToken
+  // );
+  let getExperiencesResponse = await experiencesRequests.getExperiences(authToken);
   console.log("HEY", getExperiencesResponse.status);
   if (
     getExperiencesResponse.status === 200 ||
@@ -356,6 +376,8 @@ try {
   ) {
     usersExperienceData = await getExperiencesResponse.json();
     console.log("HEY2", usersExperienceData);
+  } else if (getExperiencesResponse.status === 403) {
+    logoutAfterTokenExp()
   } else {
     console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
     usersExperienceData = [];
@@ -434,11 +456,17 @@ addExperienceModalForm.addEventListener("submit", async (e) => {
     // );
 
     try {
+      // let addExperienceResponse = await experiencesRequests.addExperience(
+      //   userExperienceData,
+      //   userExperienceData.userId,
+      //   authToken
+      // );
+
       let addExperienceResponse = await experiencesRequests.addExperience(
         userExperienceData,
-        userExperienceData.userId,
         authToken
       );
+
       if (
         addExperienceResponse.status === 201 ||
         addExperienceResponse.status === 200
@@ -449,6 +477,8 @@ addExperienceModalForm.addEventListener("submit", async (e) => {
         console.log("OH GOD YES");
 
         refreshExperienceContainer();
+      } else if (addExperienceResponse.status === 403) {
+        logoutAfterTokenExp()
       } else {
         alert("COULDN'T ADD EXPERIENCE");
       }
@@ -539,6 +569,8 @@ updateExperienceModalForm.addEventListener("submit", async (e) => {
         alert("experience updated!");
         // refreshExperienceContainer();
         refreshExperienceContainer();
+      } else if (updateExperienceResponse.status === 403) {
+        logoutAfterTokenExp()
       } else {
         alert("experience not found or not able to updated");
       }
@@ -625,8 +657,14 @@ const refreshExperienceContainer = () => {
       // refreshExperienceContainer();
 
       try {
+        // let deleteExperiencesResponse =
+        //   await experiencesRequests.deleteExperience(
+        //     userExperienceId,
+        //     authToken
+        //   );
+
         let deleteExperiencesResponse =
-          await experiencesRequests.deleteExperience(
+          await experiencesRequests.deleteExperiences(
             userExperienceId,
             authToken
           );
@@ -639,6 +677,8 @@ const refreshExperienceContainer = () => {
             (edu) => edu.userExperienceId !== Number(userExperienceId)
           );
           refreshExperienceContainer();
+        } else if (deleteExperiencesResponse.status === 403) {
+          logoutAfterTokenExp()
         } else {
           console.log("UNABLE TO DELETE DATA FROM BACKEND");
           alert("UNABLE TO DELETE DATA FROM BACKEND");
@@ -664,14 +704,18 @@ refreshExperienceContainer();
 // let userSkillsData = JSON.parse(localStorage.getItem("userSkillsData")) || []
 let userSkillsData;
 try {
-  let getSkillsResponse = await skillsRequests.getSkills(
-    loggedInUser.userId,
-    authToken
-  );
+  // let getSkillsResponse = await skillsRequests.getSkills(
+  //   loggedInUser.userId,
+  //   authToken
+  // );
+  let getSkillsResponse = await skillsRequests.getSkills(authToken);
+
   console.log("HEY", getSkillsResponse.status);
   if (getSkillsResponse.status === 200 || getSkillsResponse.status === 201) {
     userSkillsData = await getSkillsResponse.json();
     console.log("HEY2", userSkillsData);
+  } else if (getSkillsResponse.status === 403) {
+    logoutAfterTokenExp()
   } else {
     console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
     userSkillsData = [];
@@ -681,10 +725,10 @@ try {
   alert("ERROR GETTING EDUCATIONS");
 }
 
-let allUsersData = JSON.parse(localStorage.getItem("usersData"));
-let userIndex = allUsersData.findIndex(
-  (userData) => userData.userId === user.userId
-);
+// let allUsersData = JSON.parse(localStorage.getItem("usersData"));
+// let userIndex = allUsersData.findIndex(
+//   (userData) => userData.userId === user.userId
+// );
 
 const addSkillForm = document.querySelector(".add-new-skill-btn form");
 const addSkillFormInput = document.querySelector(
@@ -705,17 +749,25 @@ addSkillForm.addEventListener("submit", async (e) => {
     };
 
     try {
+      // let addSkillResponse = await skillsRequests.addSkill(
+      //   newSkill,
+      //   newSkill.userId,
+      //   authToken
+      // );
+
       let addSkillResponse = await skillsRequests.addSkill(
         newSkill,
-        newSkill.userId,
         authToken
       );
+
       if (addSkillResponse.status === 201 || addSkillResponse.status === 200) {
         let addSkillData = await addSkillResponse.json();
         userSkillsData.push(addSkillData);
         alert("SUCCESSFULLY ADDED SKILL");
         // refreshEducationContainer();
         refreshSkillsContainer();
+      } else if (addSkillResponse.status === 403) {
+        logoutAfterTokenExp()
       } else {
         alert("COULDN'T ADD SKILL");
       }
@@ -779,10 +831,16 @@ const refreshSkillsContainer = () => {
       //   return skill.userSkillId !== userSkillId;
       // });
       try {
-        let deleteSkillResponse = await skillsRequests.deleteSkill(
+        // let deleteSkillResponse = await skillsRequests.deleteSkill(
+        //   userSkillId,
+        //   authToken
+        // );
+
+        let deleteSkillResponse = await skillsRequests.deleteSkills(
           userSkillId,
           authToken
         );
+
         if (
           deleteSkillResponse.status === 201 ||
           deleteSkillResponse.status === 200
@@ -799,6 +857,8 @@ const refreshSkillsContainer = () => {
           // }
           // refreshExperienceContainer();
           refreshSkillsContainer();
+        } else if (deleteSkillResponse.status === 403) {
+          logoutAfterTokenExp()
         } else {
           console.log("UNABLE TO DELETE DATA FROM BACKEND");
           alert("UNABLE TO DELETE DATA FROM BACKEND");
@@ -943,7 +1003,11 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
           user = await updateUserResponse.json();
           localStorage.setItem("loggedInUser", JSON.stringify(user));
       refreshUserProfile();
+      updatePortfolioModal.close();
 
+
+        } else if (updateUserResponse.status === 403) {
+          logoutAfterTokenExp()
         } else {
           alert("user not updated");
           console.log("user not updated");
@@ -958,7 +1022,7 @@ updatePortfolioModalForm.addEventListener("submit", (e) => {
 
       // refreshUserProfile();
 
-      updatePortfolioModal.close();
+      // updatePortfolioModal.close();
     };
     // method reads the contents of the specified file and converts it to a data URL, which is a string representation of the file's data. This data URL can be used to display the image in an HTML
     reader.readAsDataURL(imgFile);
