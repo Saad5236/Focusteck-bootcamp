@@ -1,0 +1,65 @@
+GET http://localhost:3000/api/projects
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjg2NzU2NSwidXNlclJvbGUiOiJ1c2VyIiwidXNlckVtYWlsIjoickByLnJyIiwiaWF0IjoxNjk1OTA0NTQ0LCJleHAiOjE2OTU5MDgxNDR9.KotGHk88E_AH0ywNmdohMPYNY5w-dRnXh_IQGYi_Ei0
+
+###
+
+GET http://localhost:3000/api/projects/user/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6InNAcy5zIiwiaWF0IjoxNjk1ODE5NzQyLCJleHAiOjE2OTU4MjMzNDJ9.Fffor4QX-ABXTBsDK7l5-4IfErOyn3t8_m1u6bAi70w
+
+###
+
+GET http://localhost:3000/api/projects/project/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6ImhAaC5jb20iLCJpYXQiOjE2OTU4MDIzMjQsImV4cCI6MTY5NTgwNTkyNH0.nv2JUnxHsWiJlEx03zbP5WAcogSbOU0NDpCnDirMYps
+
+###
+
+DELETE http://localhost:3000/api/projects/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJSb2xlIjoiYWRtaW4iLCJ1c2VyRW1haWwiOiJkQGQuY29tIiwiaWF0IjoxNjk1ODM4MjYxLCJleHAiOjE2OTU4NDE4NjF9.TYCXXTbeozI3d1Eb-b11xu0cN3RmVrLMxsXbu2VjMpE
+
+###
+
+DELETE http://localhost:3000/api/projects/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6InNAcy5zIiwiaWF0IjoxNjk1ODQ0MTA5LCJleHAiOjE2OTU4NDc3MDl9.QMcmP-900ihYpT7WsX_PjUN39t3gunJ_NPThtkgiCEc
+
+###
+
+PUT http://localhost:3000/api/projects/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoidXNlciIsInVzZXJFbWFpbCI6InNAcy5zIiwiaWF0IjoxNjk1ODM3ODA2LCJleHAiOjE2OTU4NDE0MDZ9.nWnCVUv1uKt-rjlaLKg_vNpmFJ3DOngJ2Cj2aXrtfj0
+
+{
+    "userId": 2,
+  "projectHeading": "WEB-",
+  "projectDescription": "It's a chlo",
+  "projectImageLink": "nkc",
+  "projectTags": [
+    "programming"
+  ],
+  "projectLanguages": [
+    "NO"
+  ],
+  "projectFrameworks": [
+    "frameworks"
+  ]
+}
+
+###
+
+POST http://localhost:3000/api/projects
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjg2NzU2NSwidXNlclJvbGUiOiJ1c2VyIiwidXNlckVtYWlsIjoickByLnJyIiwiaWF0IjoxNjk1OTA0NTQ0LCJleHAiOjE2OTU5MDgxNDR9.KotGHk88E_AH0ywNmdohMPYNY5w-dRnXh_IQGYi_Ei0
+
+{
+  "projectHeading": "DEKHTE",
+  "projectDescription": "It's a DEKHTE",
+  "projectImageLink": "ye pic",
+  "projectTags": [
+    "programming"
+  ],
+  "projectLanguages": [
+    "languages"
+  ],
+  "projectFrameworks": [
+    "frameworks"
+  ]
+}

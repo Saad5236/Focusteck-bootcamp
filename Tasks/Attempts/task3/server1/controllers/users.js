@@ -128,77 +128,83 @@ const addNewUser = async (req, res, status) => {
     //   body.userRole &&
     //   body.userNumber
     // ) {
-      // if (
-      //   !validations.isValidUsername(body.userName) ||
-      //   !validations.isValidNumber(body.userNumber) ||
-      //   !validations.isValidEmail(body.userEmail)
-      // ) {
-      //   middlewares.returnError(
-      //     req,
-      //     res,
-      //     400,
-      //     "Incorrect format!",
-      //     "Input data is not in correct format."
-      //   );
-      // } 
-      // else {
-        if(validations.validateUser(body)) {
-          middlewares.returnError(req, res, 400, "Wrong input", "Either input data is in wrong format or it is incomplete.")
-        } else {
-        if (usersData.some((user) => user.userEmail === body.userEmail)) {
-          res.writeHead(409, { "Content-Type": "application/json" });
+    // if (
+    //   !validations.isValidUsername(body.userName) ||
+    //   !validations.isValidNumber(body.userNumber) ||
+    //   !validations.isValidEmail(body.userEmail)
+    // ) {
+    //   middlewares.returnError(
+    //     req,
+    //     res,
+    //     400,
+    //     "Incorrect format!",
+    //     "Input data is not in correct format."
+    //   );
+    // }
+    // else {
+    if (validations.validateUser(body)) {
+      middlewares.returnError(
+        req,
+        res,
+        400,
+        "Wrong input",
+        "Either input data is in wrong format or it is incomplete."
+      );
+    } else {
+      if (usersData.some((user) => user.userEmail === body.userEmail)) {
+        res.writeHead(409, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            title: "Duplicate email",
+            message: "A user already exists with same email.",
+          })
+        );
+      } else {
+        console.log("POST signup");
+        usersData.push(body);
+
+        let { userPassword, ...userWithoutPassword } = body;
+
+        console.log("login too 1", usersData);
+        if (status === "signup") {
+          let user = {
+            userId: body.userId,
+            userRole: body.userRole,
+            userEmail: body.userEmail,
+          };
+          let authToken = jwt.sign(user, "my-secret-key", {
+            expiresIn: "1h",
+          });
+          console.log("login too 2", authToken);
+
+          let newSession = { token: authToken, userId: body.userId };
+          sessions.push(newSession);
+          console.log("CURRENT SESSIONS FROM SIGNUP", sessions);
+
+          // let { userPassword, ...userWithoutPassword } = body;
+
+          res.writeHead(200, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              title: "Duplicate email",
-              message: "A user already exists with same email.",
+              authToken,
+              userData: userWithoutPassword,
             })
           );
-        } else {
-          console.log("POST signup");
-          usersData.push(body);
-
-          let { userPassword, ...userWithoutPassword } = body;
-
-          console.log("login too 1", usersData);
-          if (status === "signup") {
-            let user = {
-              userId: body.userId,
-              userRole: body.userRole,
-              userEmail: body.userEmail,
-            };
-            let authToken = jwt.sign(user, "my-secret-key", {
-              expiresIn: "1h",
-            });
-            console.log("login too 2", authToken);
-
-            let newSession = { token: authToken, userId: body.userId };
-            sessions.push(newSession);
-            console.log("CURRENT SESSIONS FROM SIGNUP", sessions);
-
-            // let { userPassword, ...userWithoutPassword } = body;
-
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({
-                authToken,
-                userData: userWithoutPassword,
-              })
-            );
-          } else if (status === "add") {
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(userWithoutPassword));
-          }
+        } else if (status === "add") {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(userWithoutPassword));
         }
       }
-      // }
+    }
+    // }
     // } else {
-      // res.writeHead(404, { "Content-Type": "application/json" });
-      // res.end(
-      //   JSON.stringify({
-      //     title: "Incomplete data!",
-      //     message: "Data Contents are not complete.",
-      //   })
-      // );
+    // res.writeHead(404, { "Content-Type": "application/json" });
+    // res.end(
+    //   JSON.stringify({
+    //     title: "Incomplete data!",
+    //     message: "Data Contents are not complete.",
+    //   })
+    // );
     // }
 
     // res.writeHead(201, { "Content-Type": "application/json" });
