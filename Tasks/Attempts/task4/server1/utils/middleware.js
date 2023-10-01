@@ -1,6 +1,7 @@
 // const jwt = require('jsonwebtoken');
 import jwt from "jsonwebtoken";
 import sessions from "../data/sessions.json" assert { type: "json" };
+import usersServices from "../services/users.js"
 
 const secretKey = "my-secret-key"; // Replace with your secret key
 
@@ -15,30 +16,37 @@ function authenticateToken(req, res, next) {
     res.end(JSON.stringify({ message: "Unauthorized: No token provided" }));
   } else {
     // Verify the token
-    jwt.verify(token, secretKey, (err, decodedUser) => {
+    jwt.verify(token, secretKey, async (err, decodedUser) => {
       if (err) {
         //   return res.status(403).json({ message: 'Forbidden: Invalid token' });
         res.writeHead(403, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message: "Forbidden: Invalid token" }));
-        let indexToDelete = sessions.findIndex((s) => s.token === token);
-        if (indexToDelete !== -1) {
-          sessions.splice(indexToDelete, 1);
-          console.log("REMAINING SESSIONS:", sessions);
+        // let indexToDelete = sessions.findIndex((s) => s.token === token);
+        // if (indexToDelete !== -1) {
+        //   sessions.splice(indexToDelete, 1);
+        //   console.log("REMAINING SESSIONS:", sessions);
+        // }
+
+        try {
+          await usersServices.logoutUser(token);         
+          console.log("Token was invalid but deleted from db"); 
+        } catch (error) {
+          console.log("Not valid token and couldn't delete from db");
         }
         console.log("YOUR TOKEN IS NOT VALID");
       } else {
-        // User details are available in the 'decoded' object
-        // req.userId = decoded.userId;
-        // req.userRole = decoded.userRole;
-        // req.userEmail = decoded.userEmail;
-
+        // if (
+        //   sessions.some(
+        //     (s) => s.token === token && s.userId === decodedUser.userId
+        //   )
+        // )
         if (
-          sessions.some(
-            (s) => s.token === token && s.userId === decodedUser.userId
-          )
-        ) {
-          console.log("YOURE IN");
+          await usersServices.userTokenExists(token, decodedUser.userId)
+        ) 
+        {
+          console.log("YOURE IN", token);
           req.user = decodedUser;
+          req.token = token;
           console.log("user", req.user);
           next();
         } else {

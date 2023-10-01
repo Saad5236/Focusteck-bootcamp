@@ -26,6 +26,12 @@ const getUsers = async () => {
 
   try {
     let [users] = await db.query(getUsersQuery);
+    if (users.length > 0) {
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].userImgSrc)
+          users[i].userImgSrc = users[i].userImgSrc.toString("base64");
+      }
+    }
     console.log("USERS DATA", users);
     return users;
   } catch (error) {
@@ -46,8 +52,75 @@ const getUsers = async () => {
   //   });
 };
 
+const getUser = async (credentials) => {
+  const getUserQuery = `SELECT * FROM users where userEmail = ? AND userPassword = ?`;
+
+  try {
+    let [user] = await db.query(getUserQuery, [
+      credentials.userEmail,
+      credentials.userPassword,
+    ]);
+    if (user[0].userImgSrc) {
+      user[0].userImgSrc = `data:image/png;base64,${Buffer.from(
+        user[0].userImgSrc
+      ).toString("base64")}`;
+    }
+    console.log("USER TO BE LOGGED IN DATA", user[0]);
+    return user[0];
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+const loginUser = async (userSession) => {
+  const loginUser = `INSERT INTO sessions (userId, token) values (?, ?);`;
+
+  try {
+    let [session] = await db.query(loginUser, [
+      userSession.userId,
+      userSession.token,
+    ]);
+
+    console.log("SESSION CREATED", session);
+    return session;
+  } catch (error) {
+    console.log("error creating session", error);
+  }
+};
+
+const logoutUser = async (token) => {
+  const deleteSessionQuery = "DELETE FROM sessions WHERE token = ?";
+
+  try {
+    const [result] = await db.query(deleteSessionQuery, [token]);
+
+    if (result.affectedRows > 0) {
+      console.log("Session removed successfully.");
+      return true; // Session removed
+    } else {
+      console.log("Session not found for the provided token.");
+      return false; // Session not found
+    }
+  } catch (error) {
+    console.log("error deleting session", error);
+  }
+};
+
+const userTokenExists = async (token, userId) => {
+  const selectTokenQuery =
+    "SELECT token FROM sessions WHERE token = ? AND userId = ?";
+
+  try {
+    const [rows] = await db.query(selectTokenQuery, [token, userId]);
+
+    return rows.length > 0; // if true then token exists; if false then it doesn't
+  } catch (error) {
+    console.log("FAILED TO FIND TOKEN", error);
+  }
+};
+
 const getUsersColumn = async (column) => {
-  const getUsersQuery = `SELECT ? FROM users`;
+  const getUsersQuery = `SELECT ?? FROM users`;
 
   try {
     let [usersCol] = await db.query(getUsersQuery, [column]);
@@ -68,10 +141,11 @@ const addUser = async (userData) => {
     console.log("NO ITS A DUPLICATE EMAIL YOU CANT DIE");
   } else {
     const addUserQuery = `INSERT INTO users (userId, userRole, userName, userEmail, userNumber, userPassword) values (?, ?, ?, ?, ?, ?);`;
-    const userId = await generateUserId();
-    console.log("USERID", userId);
+    // const userId = await generateUserId();
+    // console.log("USERID", userId);
     const values = [
-      userId,
+      // userId,
+      userData.userId,
       userData.userRole,
       userData.userName,
       userData.userEmail,
@@ -89,6 +163,27 @@ const addUser = async (userData) => {
 };
 
 const updateUser = async (userId, userData) => {
+  let binaryImgSrc;
+  if (userData.userImgSrc) {
+    binaryImgSrc = Buffer.from(
+      userData.userImgSrc.split(",")[1] || userData.userImgSrc,
+      "base64"
+    );
+  }
+
+  let allUsers = await getUsers();
+
+  if (
+    allUsers.length > 0 &&
+    allUsers.some((u) => {
+      if(u.userId !== userId)
+        return u.userEmail === userData.userEmail;
+      else 
+        return false;
+    })
+  ) {
+    console.log("NO ITS A DUPLICATE EMAIL YOU CANT ADD");
+  } else {
   const updateUserQuery = `
     UPDATE users
     SET userRole = ?, userName = ?, userEmail = ?, userNumber = ?, userPassword = ?, userImgSrc = ?, userAbout = ?, userProfession = ?
@@ -100,8 +195,11 @@ const updateUser = async (userId, userData) => {
     userData.userEmail,
     userData.userNumber,
     userData.userPassword,
-    userData.userImgSrc,
+    // userData.userImgSrc,
+    binaryImgSrc,
     userData.userAbout,
+    userData.userProfession,
+    userId,
   ];
 
   try {
@@ -118,6 +216,7 @@ const updateUser = async (userId, userData) => {
     console.error("Error updating user data:", error);
     return false;
   }
+}
 };
 
 const deleteUser = async (userId) => {
@@ -136,4 +235,14 @@ const deleteUser = async (userId) => {
   }
 };
 
-export default { getUsers, addUser, updateUser, deleteUser };
+export default {
+  getUsers,
+  getUsersColumn,
+  getUser,
+  addUser,
+  updateUser,
+  deleteUser,
+  loginUser,
+  logoutUser,
+  userTokenExists,
+};

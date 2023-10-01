@@ -112,6 +112,9 @@ const refreshUsers = (filteredUsers) => {
       let foundUser = allUsersData.find((u) => u.userId === Number(userId));
       console.log("chidvochd", allUsersData);
       try {
+        if (foundUser.userRole === "user") {
+          deleteUserAllData(Number(userId), authToken);
+        }
         let deleteUserResponse = await usersRequests.deleteUser(
           userId,
           authToken
@@ -126,9 +129,9 @@ const refreshUsers = (filteredUsers) => {
             (user) => user.userId !== Number(userId)
           );
           console.log("CHECKING USER ROLE", foundUser.userRole, foundUser);
-          if (foundUser.userRole === "user") {
-            deleteUserAllData(Number(userId), authToken);
-          }
+          // if (foundUser.userRole === "user") {
+          //   deleteUserAllData(Number(userId), authToken);
+          // }
           filterAndRefreshUsers(allUsersData);
         } else if (deleteUserResponse.status === 403) {
           logoutAfterTokenExp();

@@ -20,34 +20,61 @@ import middlewares from "../utils/middleware.js";
 import validations from "../utils/validations.js";
 import sessions from "../data/sessions.json" assert { type: "json" };
 import users from "../data/users.json" assert { type: "json" };
-let usersData = users;
+// let usersData = users;
+let usersData;
+try {
+  usersData = await usersServices.getUsers();  
+  if (usersData.length > 0) console.log("USERS AVAILABL");
+} catch (error) {
+  console.log("FAILED GETTING USERS");
+}
+
 
 const logoutUser = (req, res) => {
   try {
-    middlewares.authenticateToken(req, res, () => {
-      let index = sessions.findIndex(
-        (session) => session.userId === req.user.userId
-      );
-      if (index !== -1) {
-        sessions.splice(index, 1);
+    middlewares.authenticateToken(req, res, async () => {
+      // let index = sessions.findIndex(
+      //   (session) => session.userId === req.user.userId
+      // );
+      // if (index !== -1) {
+        // sessions.splice(index, 1);
         console.log("AFTER DELETION SESSION", sessions);
-        res.writeHead(200, { "Content-type": "application/json" });
+        try {
+          if(await usersServices.logoutUser(req.token)) console.log("TOKEN DELETED");   
+          res.writeHead(200, { "Content-type": "application/json" });
         res.end(
           JSON.stringify({
             title: "Logged out successfully!",
             message: "Token is also deleted from backend.",
           })
-        );
-      } else {
-        console.log("COULDN;t delete session");
-        res.writeHead(404, { "Content-type": "application/json" });
+        );       
+        } catch (error) {
+          console.log("COULDN't delete session");
+          res.writeHead(404, { "Content-type": "application/json" });
         res.end(
           JSON.stringify({
             title: "Logged out Unsucessful",
             message: "Couldn't logout.",
           })
         );
-      }
+        }
+      //   res.writeHead(200, { "Content-type": "application/json" });
+      //   res.end(
+      //     JSON.stringify({
+      //       title: "Logged out successfully!",
+      //       message: "Token is also deleted from backend.",
+      //     })
+      //   );
+      // } else {
+      //   console.log("COULDN;t delete session");
+      //   res.writeHead(404, { "Content-type": "application/json" });
+      //   res.end(
+      //     JSON.stringify({
+      //       title: "Logged out Unsucessful",
+      //       message: "Couldn't logout.",
+      //     })
+      //   );
+      // }
     });
   } catch (error) {
     console.log("ERROR LOGGING OUT", error);
@@ -68,11 +95,14 @@ const loginUser = async (req, res) => {
       );
     } else {
       console.log(body);
-      let foundUser = usersData.find(
-        (user) =>
-          user.userEmail === body.userEmail &&
-          user.userPassword === body.userPassword
-      );
+      // let foundUser = usersData.find(
+      //   (user) =>
+      //     user.userEmail === body.userEmail &&
+      //     user.userPassword === body.userPassword
+      // );
+      let foundUser = await usersServices.getUser(body);
+
+      console.log("found user database", await usersServices.getUser(body));
 
       if (!foundUser) {
         res.writeHead(401, { "Content-Type": "application/json" });
@@ -93,6 +123,7 @@ const loginUser = async (req, res) => {
 
         let newSession = { token: authToken, userId: foundUser.userId };
         sessions.push(newSession);
+        console.log("NEW SESSION CREATED", await usersServices.loginUser(newSession));
         console.log("CURRENT SESSIONS", sessions);
 
         let { userPassword, ...userWithoutPassword } = foundUser;
@@ -162,7 +193,7 @@ const addNewUser = async (req, res, status) => {
       } else {
         console.log("POST signup");
         usersData.push(body);
-        // usersServices.addUser(body);
+        await usersServices.addUser(body);
 
         let { userPassword, ...userWithoutPassword } = body;
 
@@ -180,6 +211,8 @@ const addNewUser = async (req, res, status) => {
 
           let newSession = { token: authToken, userId: body.userId };
           sessions.push(newSession);
+          console.log("NEW SESSION CREATED", await usersServices.loginUser(newSession));
+
           console.log("CURRENT SESSIONS FROM SIGNUP", sessions);
 
           // let { userPassword, ...userWithoutPassword } = body;
@@ -299,7 +332,7 @@ const getAllUsers = (req, res) => {
     console.log("role", req.user.userRole);
     if (req.user.userRole === "admin") {
       // usersData = await usersServices.getUsers();
-      // console.log(await usersServices.getUsers());
+      console.log("all users are here",await usersServices.getUsers());
       res.statusCode = 200;
       res.setHeader("Content-type", "application/json");
       let usersDataWithoutPassword = usersData.map(
@@ -328,6 +361,7 @@ const getUser = async (req, res, userId) => {
     if (req.user.userRole === "admin") {
       res.setHeader("Content-Type", "application/json");
       let user = usersData.find((u) => u.userId === userId);
+      
 
       if (user) {
         res.statusCode = 200;
@@ -357,8 +391,9 @@ const getUser = async (req, res, userId) => {
 };
 
 const deleteUser = async (req, res, userId) => {
-  middlewares.authenticateToken(req, res, () => {
+  middlewares.authenticateToken(req, res, async() => {
     if (req.user.userRole === "admin") {
+      await usersServices.deleteUser(86219158);
       res.setHeader("Content-Type", "application/json");
       let removedUser = usersData.find((u) => u.userId === userId);
       // usersData = usersData.filter((u) => u.userId !== userId);
@@ -382,6 +417,7 @@ const deleteUser = async (req, res, userId) => {
             break;
           }
         }
+        if (await usersServices.deleteUser(userId)) console.log("DELETED USER");
         res.writeHead(204, { "Content-Type": "application/json" });
         res.end(JSON.stringify(removedUser));
       } else {
@@ -409,6 +445,7 @@ const deleteUser = async (req, res, userId) => {
 const updateUser = async (req, res, userId) => {
   middlewares.authenticateToken(req, res, async () => {
     // if (req.user.userRole === "admin") {
+      
     try {
       let body = await requestBodyParser(req);
       if (
@@ -443,6 +480,8 @@ const updateUser = async (req, res, userId) => {
             console.log("YES");
             body.userId = userId;
             usersData[updateUserIndex] = body;
+        if (await usersServices.updateUser(userId, body)) console.log("updated USER");
+            
             let { userPassword, ...usersDataWithoutPassword } =
               usersData[updateUserIndex];
             res.writeHead(200, { "Content-Type": "application/json" });

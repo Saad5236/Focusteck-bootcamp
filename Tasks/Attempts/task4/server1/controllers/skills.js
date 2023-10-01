@@ -14,6 +14,7 @@ const generateSkillId = () => {
 };
 
 import requestBodyParser from "../utils/body-parser.js";
+import skillsServices from "../services/skills.js";
 import skills from "../data/skills.json" assert { type: "json" };
 import middlewares from "../utils/middleware.js";
 import users from "../data/users.json" assert { type: "json" };
@@ -50,24 +51,40 @@ let skillsData = skills;
 // };
 
 const getSkills = (req, res) => {
-  middlewares.authenticateToken(req, res, () => {
+  middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "user") {
-      let skills = skillsData.filter(
-        (skill) => skill.userId === req.user.userId
-      );
-      if (skills.length > 0) {
-        console.log("first", skills);
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(skills));
-        res.end();
-      } else {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            title: "skills not found",
-            message: "skills you're trying to find do not exist.",
-          })
-        );
+      // let skills = skillsData.filter(
+      //   (skill) => skill.userId === req.user.userId
+      // );
+      // if (skills.length > 0) {
+      //   console.log("first", skills);
+      //   res.writeHead(200, { "Content-Type": "application/json" });
+      //   res.write(JSON.stringify(skills));
+      //   res.end();
+      // } else {
+      //   res.writeHead(404, { "Content-Type": "application/json" });
+      //   res.end(
+      //     JSON.stringify({
+      //       title: "skills not found",
+      //       message: "skills you're trying to find do not exist.",
+      //     })
+      //   );
+      // }
+
+      try {
+        let skills = await skillsServices.getSkills(req.user.userId);
+
+        if (skills.length > 0) {
+          console.log("first", skills);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.write(JSON.stringify(skills));
+          res.end();
+        } else {
+          middlewares.returnError(req, res, 404, "No skills found.", "For given user, no Skill is found");
+        }
+      } catch (error) {
+        middlewares.returnError(req, res, 400, "Unable to request.", "Unable to send request to find skills.");
+        console.log("COULDN'T GET skills FROM DB", error);
       }
     } else {
       middlewares.returnError(
@@ -93,7 +110,7 @@ const getSkills = (req, res) => {
 //               })
 //             );
 //           } else {
-            
+
 //             try {
 //               let body = await requestBodyParser(req);
 //               body.userSkillId = generateSkillId();
@@ -111,7 +128,7 @@ const getSkills = (req, res) => {
 //                 "Request body is not valid"
 //               );
 //             }
-          
+
 //           }
 //     } else {
 //       middlewares.returnError(
@@ -128,34 +145,62 @@ const getSkills = (req, res) => {
 const addSkill = (req, res) => {
   middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "user") {
-      if (!users.find((u) => u.userId === req.user.userId)) {
-        res.writeHead(404, { "Content-Type": "application/json" });
+      // if (!users.find((u) => u.userId === req.user.userId)) {
+      //   res.writeHead(404, { "Content-Type": "application/json" });
+      //   res.end(
+      //     JSON.stringify({
+      //       title: "User not found",
+      //       message: "Your user data is not in db so you can't add new skill.",
+      //     })
+      //   );
+      // } else {
+      //   try {
+      //     let body = await requestBodyParser(req);
+      //     body.userSkillId = generateSkillId();
+      //     body.userId = req.user.userId;
+      //     skillsData.push(body);
+      //     res.writeHead(201, { "Content-Type": "application/json" });
+      //     res.end(JSON.stringify(body));
+      //   } catch (err) {
+      //     console.log(err);
+      //     res.writeHead(400, { "Content-Type": "application/json" });
+      //     res.end(
+      //       JSON.stringify({
+      //         title: "Validation Failed",
+      //         message: "Request body is not valid",
+      //       })
+      //     );
+      //   }
+      // }
+
+      try {
+        let body = await requestBodyParser(req);
+        body.userSkillId = generateSkillId();
+        body.userId = req.user.userId;
+        let addSkillRes = await skillsServices.addSkill(body);
+        if(addSkillRes) {
+          res.writeHead(201, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(body));  
+        } else {
+          res.writeHead(404, { "Content-Type": "application/json" });
         res.end(
           JSON.stringify({
             title: "User not found",
-            message:
-              "Your user data is not in db so you can't add new skill.",
+            message: "User not found for which you are entering Skill.",
           })
         );
-      } else {
-        try {
-          let body = await requestBodyParser(req);
-          body.userSkillId = generateSkillId();
-          body.userId = req.user.userId;
-          skillsData.push(body);
-          res.writeHead(201, { "Content-Type": "application/json" });
-          res.end(JSON.stringify(body));
-        } catch (err) {
-          console.log(err);
-          res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(
-            JSON.stringify({
-              title: "Validation Failed",
-              message: "Request body is not valid",
-            })
-          );
         }
+      } catch (err) {
+        console.log(err);
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            title: "Validation Failed",
+            message: "Request body is not valid",
+          })
+        );
       }
+
     } else {
       middlewares.returnError(
         req,
@@ -251,73 +296,139 @@ const addSkill = (req, res) => {
 // };
 
 const deleteSkills = async (req, res, id) => {
-  middlewares.authenticateToken(req, res, () => {
+  middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "admin") {
-      res.setHeader("Content-Type", "application/json");
+      // res.setHeader("Content-Type", "application/json");
 
-      let removedSkills = skillsData.filter(
-        (skill) => skill.userId === id
-      );
-      if (removedSkills.length > 0) {
-        for (let i = 0; i < skillsData.length; i++) {
-          if (skillsData[i].userId === id) {
-            skillsData.splice(i, 1);
-            i--;
-          }
-        }
+      // let removedSkills = skillsData.filter((skill) => skill.userId === id);
+      // if (removedSkills.length > 0) {
+      //   for (let i = 0; i < skillsData.length; i++) {
+      //     if (skillsData[i].userId === id) {
+      //       skillsData.splice(i, 1);
+      //       i--;
+      //     }
+      //   }
 
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(removedSkills));
-        res.end();
-      } else {
-        middlewares.returnError(
-          req,
-          res,
-          404,
-          "skills not found",
-          "User's skills not found in database"
-        );
-        res.end();
-      }
-    } else if (req.user.userRole === "user") {
-      let removedSkill = skillsData.find(
-        (skill) => skill.userSkillId === id
-      );
-      skillsData.forEach(
-        (skill) => console.log("CHECKING NA: ",skill.userSkillId, id)
-      );
-      if (removedSkill) {
-        if (removedSkill.userId === req.user.userId) {
-          for (let i = 0; i < skillsData.length; i++) {
-            if (skillsData[i].userSkillId === id) {
-              skillsData.splice(i, 1);
-              break;
-            }
-          }
+      //   res.writeHead(200, { "Content-Type": "application/json" });
+      //   res.write(JSON.stringify(removedSkills));
+      //   res.end();
+      // } else {
+      //   middlewares.returnError(
+      //     req,
+      //     res,
+      //     404,
+      //     "skills not found",
+      //     "User's skills not found in database"
+      //   );
+      //   res.end();
+      // }
 
+      try {
+        let removedSkills =
+          await skillsServices.deleteSkillsByUserId(id);
+        if (removedSkills) {
+          // res.writeHead(200, { "Content-Type": "application/json" });
+          // res.write(JSON.stringify(removedSkills));
+          // res.end();
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.write(JSON.stringify(removedSkill));
+          res.write(
+            JSON.stringify({
+              title: "Removed successfully",
+              message: "Skills has successfully been removed",
+            })
+          );
           res.end();
-          console.log("removedSkill", removedSkill);
         } else {
           middlewares.returnError(
             req,
             res,
-            401,
-            "User's unauthorized.",
-            "User is unauthorized to delete this skill."
+            404,
+            "Not found.",
+            "Skills not found in database to delete."
           );
         }
-      } else {
+      } catch (error) {
+        console.log("COULDN'T remove Skills for some reason", error);
         middlewares.returnError(
           req,
           res,
-          404,
-          "Not found.",
-          "skill not found in database."
+          400,
+          "Couldn't remove.",
+          "Couldn't remove Skills from backend."
         );
+      }
+    } else if (req.user.userRole === "user") {
+      // let removedSkill = skillsData.find((skill) => skill.userSkillId === id);
+      // skillsData.forEach((skill) =>
+      //   console.log("CHECKING NA: ", skill.userSkillId, id)
+      // );
+      // if (removedSkill) {
+      //   if (removedSkill.userId === req.user.userId) {
+      //     for (let i = 0; i < skillsData.length; i++) {
+      //       if (skillsData[i].userSkillId === id) {
+      //         skillsData.splice(i, 1);
+      //         break;
+      //       }
+      //     }
 
-        res.end();
+      //     res.writeHead(200, { "Content-Type": "application/json" });
+      //     res.write(JSON.stringify(removedSkill));
+      //     res.end();
+      //     console.log("removedSkill", removedSkill);
+      //   } else {
+      //     middlewares.returnError(
+      //       req,
+      //       res,
+      //       401,
+      //       "User's unauthorized.",
+      //       "User is unauthorized to delete this skill."
+      //     );
+      //   }
+      // } else {
+      //   middlewares.returnError(
+      //     req,
+      //     res,
+      //     404,
+      //     "Not found.",
+      //     "skill not found in database."
+      //   );
+
+      //   res.end();
+      // }
+
+      try {
+        let removedSkill =
+          await skillsServices.deleteSkillBySkillId(
+            id,
+            req.user.userId
+          );
+        if (removedSkill) {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.write(
+            JSON.stringify({
+              title: "Removed successfully",
+              message: "Skill has successfully been removed",
+            })
+          );
+          res.end();
+        } else {
+          middlewares.returnError(
+            req,
+            res,
+            404,
+            "Not found.",
+            "Skill not found in database or it's not logged in user's Skill."
+          );
+        }
+      } catch (error) {
+        console.log("ERROR DELETING", error);
+        middlewares.returnError(
+          req,
+          res,
+          400,
+          "Couldn't delete.",
+          "Unable to delete Skill from db."
+        );
       }
     }
   });
@@ -330,4 +441,4 @@ const deleteSkills = async (req, res, id) => {
 //   deleteSkillsByUserId,
 // };
 
-export default {getSkills, addSkill, deleteSkills}
+export default { getSkills, addSkill, deleteSkills };

@@ -15,6 +15,7 @@ const generateExperienceId = () => {
 
 import requestBodyParser from "../utils/body-parser.js";
 import experiences from "../data/experiences.json" assert { type: "json" };
+import experiencesServices from "../services/experiences.js";
 import middlewares from "../utils/middleware.js";
 import users from "../data/users.json" assert { type: "json" };
 let experiencesData = experiences;
@@ -82,24 +83,54 @@ let experiencesData = experiences;
 // };
 
 const getExperiences = (req, res) => {
-  middlewares.authenticateToken(req, res, () => {
+  middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "user") {
-      let experiences = experiencesData.filter(
-        (experience) => experience.userId === req.user.userId
-      );
-      if (experiences.length > 0) {
-        console.log("first", experiences);
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(experiences));
-        res.end();
-      } else {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            title: "experiences not found",
-            message: "experiences you're trying to find do not exist.",
-          })
+      // let experiences = experiencesData.filter(
+      //   (experience) => experience.userId === req.user.userId
+      // );
+      // if (experiences.length > 0) {
+      //   console.log("first", experiences);
+      //   res.writeHead(200, { "Content-Type": "application/json" });
+      //   res.write(JSON.stringify(experiences));
+      //   res.end();
+      // } else {
+      //   res.writeHead(404, { "Content-Type": "application/json" });
+      //   res.end(
+      //     JSON.stringify({
+      //       title: "experiences not found",
+      //       message: "experiences you're trying to find do not exist.",
+      //     })
+      //   );
+      // }
+
+      try {
+        let experiences = await experiencesServices.getExperiences(
+          req.user.userId
         );
+
+        if (experiences.length > 0) {
+          console.log("first", experiences);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.write(JSON.stringify(experiences));
+          res.end();
+        } else {
+          middlewares.returnError(
+            req,
+            res,
+            404,
+            "No experiences found.",
+            "For given user, no experience is found"
+          );
+        }
+      } catch (error) {
+        middlewares.returnError(
+          req,
+          res,
+          400,
+          "Unable to request.",
+          "Unable to send request to find experiences."
+        );
+        console.log("COULDN'T GET EXPERIENCES FROM DB", error);
       }
     } else {
       middlewares.returnError(
@@ -158,33 +189,61 @@ const getExperiences = (req, res) => {
 const addExperience = (req, res) => {
   middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "user") {
-      if (!users.find((u) => u.userId === req.user.userId)) {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            title: "User not found",
-            message:
-              "Your user data is not in db so you can't add new experience.",
-          })
-        );
-      } else {
-        try {
-          let body = await requestBodyParser(req);
-          body.userExperienceId = generateExperienceId();
-          body.userId = req.user.userId;
-          experiencesData.push(body);
+      // if (!users.find((u) => u.userId === req.user.userId)) {
+      //   res.writeHead(404, { "Content-Type": "application/json" });
+      //   res.end(
+      //     JSON.stringify({
+      //       title: "User not found",
+      //       message:
+      //         "Your user data is not in db so you can't add new experience.",
+      //     })
+      //   );
+      // } else {
+      //   try {
+      //     let body = await requestBodyParser(req);
+      //     body.userExperienceId = generateExperienceId();
+      //     body.userId = req.user.userId;
+      //     experiencesData.push(body);
+      //     res.writeHead(201, { "Content-Type": "application/json" });
+      //     res.end(JSON.stringify(body));
+      //   } catch (err) {
+      //     console.log(err);
+      //     res.writeHead(400, { "Content-Type": "application/json" });
+      //     res.end(
+      //       JSON.stringify({
+      //         title: "Validation Failed",
+      //         message: "Request body is not valid",
+      //       })
+      //     );
+      //   }
+      // }
+
+      try {
+        let body = await requestBodyParser(req);
+        body.userExperienceId = generateExperienceId();
+        body.userId = req.user.userId;
+        let addExperienceRes = await experiencesServices.addExperience(body);
+        if (addExperienceRes) {
           res.writeHead(201, { "Content-Type": "application/json" });
           res.end(JSON.stringify(body));
-        } catch (err) {
-          console.log(err);
-          res.writeHead(400, { "Content-Type": "application/json" });
+        } else {
+          res.writeHead(404, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({
-              title: "Validation Failed",
-              message: "Request body is not valid",
+              title: "User not found",
+              message: "User not found for which you are entering experience.",
             })
           );
         }
+      } catch (err) {
+        console.log(err);
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            title: "Validation Failed",
+            message: "Request body is not valid",
+          })
+        );
       }
     } else {
       middlewares.returnError(
@@ -333,70 +392,140 @@ const addExperience = (req, res) => {
 // };
 
 const deleteExperiences = async (req, res, id) => {
-  middlewares.authenticateToken(req, res, () => {
+  middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "admin") {
-      res.setHeader("Content-Type", "application/json");
+      // res.setHeader("Content-Type", "application/json");
 
-      let removedExperiences = experiencesData.filter(
-        (experience) => experience.userId === id
-      );
-      if (removedExperiences.length > 0) {
-        for (let i = 0; i < experiencesData.length; i++) {
-          if (experiencesData[i].userId === id) {
-            experiencesData.splice(i, 1);
-            i--;
-          }
-        }
+      // let removedExperiences = experiencesData.filter(
+      //   (experience) => experience.userId === id
+      // );
+      // if (removedExperiences.length > 0) {
+      //   for (let i = 0; i < experiencesData.length; i++) {
+      //     if (experiencesData[i].userId === id) {
+      //       experiencesData.splice(i, 1);
+      //       i--;
+      //     }
+      //   }
 
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(removedExperiences));
-        res.end();
-      } else {
-        middlewares.returnError(
-          req,
-          res,
-          404,
-          "Experiences not found",
-          "User's Experiences not found in database"
-        );
-        res.end();
-      }
-    } else if (req.user.userRole === "user") {
-      let removedExperience = experiencesData.find(
-        (experience) => experience.userExperienceId === id
-      );
-      if (removedExperience) {
-        if (removedExperience.userId === req.user.userId) {
-          for (let i = 0; i < experiencesData.length; i++) {
-            if (experiencesData[i].userExperienceId === id) {
-              experiencesData.splice(i, 1);
-              break;
-            }
-          }
+      //   res.writeHead(200, { "Content-Type": "application/json" });
+      //   res.write(JSON.stringify(removedExperiences));
+      //   res.end();
+      // } else {
+      //   middlewares.returnError(
+      //     req,
+      //     res,
+      //     404,
+      //     "Experiences not found",
+      //     "User's Experiences not found in database"
+      //   );
+      //   res.end();
+      // }
 
+      try {
+        let removedExperiences =
+          await experiencesServices.deleteExperiencesByUserId(id);
+        if (removedExperiences) {
+          // res.writeHead(200, { "Content-Type": "application/json" });
+          // res.write(JSON.stringify(removedExperiences));
+          // res.end();
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.write(JSON.stringify(removedExperience));
+          res.write(
+            JSON.stringify({
+              title: "Removed successfully",
+              message: "Experiences has successfully been removed",
+            })
+          );
           res.end();
-          console.log("removedExperience", removedExperience);
         } else {
           middlewares.returnError(
             req,
             res,
-            401,
-            "User's unauthorized.",
-            "User is unauthorized to delete this experience."
+            404,
+            "Not found.",
+            "experiences not found in database to delete."
           );
         }
-      } else {
+      } catch (error) {
+        console.log("COULDN'T remove experiences for some reason", error);
         middlewares.returnError(
           req,
           res,
-          404,
-          "Not found.",
-          "experience not found in database."
+          400,
+          "Couldn't remove.",
+          "Couldn't remove experiences from backend."
         );
+      }
+    } else if (req.user.userRole === "user") {
+      // let removedExperience = experiencesData.find(
+      //   (experience) => experience.userExperienceId === id
+      // );
+      // if (removedExperience) {
+      //   if (removedExperience.userId === req.user.userId) {
+      //     for (let i = 0; i < experiencesData.length; i++) {
+      //       if (experiencesData[i].userExperienceId === id) {
+      //         experiencesData.splice(i, 1);
+      //         break;
+      //       }
+      //     }
 
-        res.end();
+      //     res.writeHead(200, { "Content-Type": "application/json" });
+      //     res.write(JSON.stringify(removedExperience));
+      //     res.end();
+      //     console.log("removedExperience", removedExperience);
+      //   } else {
+      //     middlewares.returnError(
+      //       req,
+      //       res,
+      //       401,
+      //       "User's unauthorized.",
+      //       "User is unauthorized to delete this experience."
+      //     );
+      //   }
+      // } else {
+      //   middlewares.returnError(
+      //     req,
+      //     res,
+      //     404,
+      //     "Not found.",
+      //     "experience not found in database."
+      //   );
+
+      //   res.end();
+      // }
+
+      try {
+        let removedExperience =
+          await experiencesServices.deleteExperienceByExperienceId(
+            id,
+            req.user.userId
+          );
+        if (removedExperience) {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.write(
+            JSON.stringify({
+              title: "Removed successfully",
+              message: "Experience has successfully been removed",
+            })
+          );
+          res.end();
+        } else {
+          middlewares.returnError(
+            req,
+            res,
+            404,
+            "Not found.",
+            "experience not found in database or it's not logged in user's experience."
+          );
+        }
+      } catch (error) {
+        console.log("ERROR DELETING", error);
+        middlewares.returnError(
+          req,
+          res,
+          400,
+          "Couldn't delete.",
+          "Unable to delete experience from db."
+        );
       }
     }
   });
@@ -407,43 +536,70 @@ const updateExperience = (req, res, userExperienceId) => {
     if (req.user.userRole === "user") {
       try {
         let body = await requestBodyParser(req);
-        let updateExperienceIndex = experiencesData.findIndex(
-          (u) => u.userExperienceId === userExperienceId
-        );
 
-        if (updateExperienceIndex === -1) {
-          console.log("NOOO");
-          res.writeHead(404, { "Content-Type": "application/json" });
-          res.end(
-            JSON.stringify({
-              title: "experience not found",
-              message: "experience you're trying to update does not exist.",
-            })
+        try {
+          let updateExperienceData = await experiencesServices.updateExperience(
+            userExperienceId,
+            req.user.userId,
+            body
           );
-          // res.statusCode = 404;
-          // res.write(
-          //   JSON.stringify({ title: "Not Found", message: "experience not found" })
-          // );
-        } else {
-          if (
-            experiencesData[updateExperienceIndex].userId === req.user.userId
-          ) {
-            console.log("YES");
-            body.userId = req.user.userId;
-            body.userExperienceId = userExperienceId;
-            experiencesData[updateExperienceIndex] = body;
+          if (updateExperienceData) {
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(experiencesData[updateExperienceIndex]));
+            res.end(JSON.stringify(updateExperienceData));
           } else {
+            console.log("error updating experience", error);
             middlewares.returnError(
               req,
               res,
-              401,
-              "Not authorized",
-              "experience you're accessing doesn't belong to you."
+              404,
+              "Couldn't update.",
+              "Error updating experience's data."
             );
           }
+        } catch (error) {
+          console.log("error updating experience", error);
+          middlewares.returnError(
+            req,
+            res,
+            400,
+            "Couldn't update.",
+            "Error updating experience's data."
+          );
         }
+
+        // let updateExperienceIndex = experiencesData.findIndex(
+        //   (u) => u.userExperienceId === userExperienceId
+        // );
+
+        // if (updateExperienceIndex === -1) {
+        //   console.log("NOOO");
+        //   res.writeHead(404, { "Content-Type": "application/json" });
+        //   res.end(
+        //     JSON.stringify({
+        //       title: "experience not found",
+        //       message: "experience you're trying to update does not exist.",
+        //     })
+        //   );
+        // } else {
+        //   if (
+        //     experiencesData[updateExperienceIndex].userId === req.user.userId
+        //   ) {
+        //     console.log("YES");
+        //     body.userId = req.user.userId;
+        //     body.userExperienceId = userExperienceId;
+        //     experiencesData[updateExperienceIndex] = body;
+        //     res.writeHead(200, { "Content-Type": "application/json" });
+        //     res.end(JSON.stringify(experiencesData[updateExperienceIndex]));
+        //   } else {
+        //     middlewares.returnError(
+        //       req,
+        //       res,
+        //       401,
+        //       "Not authorized",
+        //       "experience you're accessing doesn't belong to you."
+        //     );
+        //   }
+        // }
       } catch (e) {
         console.log(e);
         res.writeHead(400, { "Content-Type": "application/json" });
