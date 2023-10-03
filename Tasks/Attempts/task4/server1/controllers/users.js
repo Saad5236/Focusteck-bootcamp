@@ -14,6 +14,7 @@ const generateUserId = () => {
 };
 
 import jwt from "jsonwebtoken";
+import url from "url";
 import usersServices from "../services/users.js";
 import requestBodyParser from "../utils/body-parser.js";
 import middlewares from "../utils/middleware.js";
@@ -23,12 +24,11 @@ import users from "../data/users.json" assert { type: "json" };
 // let usersData = users;
 let usersData;
 try {
-  usersData = await usersServices.getUsers();  
+  usersData = await usersServices.getUsers();
   if (usersData.length > 0) console.log("USERS AVAILABL");
 } catch (error) {
   console.log("FAILED GETTING USERS");
 }
-
 
 const logoutUser = (req, res) => {
   try {
@@ -37,27 +37,28 @@ const logoutUser = (req, res) => {
       //   (session) => session.userId === req.user.userId
       // );
       // if (index !== -1) {
-        // sessions.splice(index, 1);
-        console.log("AFTER DELETION SESSION", sessions);
-        try {
-          if(await usersServices.logoutUser(req.token)) console.log("TOKEN DELETED");   
-          res.writeHead(200, { "Content-type": "application/json" });
+      // sessions.splice(index, 1);
+      console.log("AFTER DELETION SESSION", sessions);
+      try {
+        if (await usersServices.logoutUser(req.token))
+          console.log("TOKEN DELETED");
+        res.writeHead(200, { "Content-type": "application/json" });
         res.end(
           JSON.stringify({
             title: "Logged out successfully!",
             message: "Token is also deleted from backend.",
           })
-        );       
-        } catch (error) {
-          console.log("COULDN't delete session");
-          res.writeHead(404, { "Content-type": "application/json" });
+        );
+      } catch (error) {
+        console.log("COULDN't delete session");
+        res.writeHead(404, { "Content-type": "application/json" });
         res.end(
           JSON.stringify({
             title: "Logged out Unsucessful",
             message: "Couldn't logout.",
           })
         );
-        }
+      }
       //   res.writeHead(200, { "Content-type": "application/json" });
       //   res.end(
       //     JSON.stringify({
@@ -123,7 +124,10 @@ const loginUser = async (req, res) => {
 
         let newSession = { token: authToken, userId: foundUser.userId };
         sessions.push(newSession);
-        console.log("NEW SESSION CREATED", await usersServices.loginUser(newSession));
+        console.log(
+          "NEW SESSION CREATED",
+          await usersServices.loginUser(newSession)
+        );
         console.log("CURRENT SESSIONS", sessions);
 
         let { userPassword, ...userWithoutPassword } = foundUser;
@@ -211,7 +215,10 @@ const addNewUser = async (req, res, status) => {
 
           let newSession = { token: authToken, userId: body.userId };
           sessions.push(newSession);
-          console.log("NEW SESSION CREATED", await usersServices.loginUser(newSession));
+          console.log(
+            "NEW SESSION CREATED",
+            await usersServices.loginUser(newSession)
+          );
 
           console.log("CURRENT SESSIONS FROM SIGNUP", sessions);
 
@@ -230,7 +237,6 @@ const addNewUser = async (req, res, status) => {
         }
       }
     }
-
 
     // }
     // } else {
@@ -328,11 +334,20 @@ const signupUser = async (req, res, status) => {
 };
 
 const getAllUsers = (req, res) => {
+   console.log("req.url controler", req.url);
   middlewares.authenticateToken(req, res, async () => {
     console.log("role", req.user.userRole);
     if (req.user.userRole === "admin") {
+      let passedUrl = url.parse(req.url, true);
       // usersData = await usersServices.getUsers();
-      console.log("all users are here",await usersServices.getUsers());
+      try {
+        console.log("chk kerne do", passedUrl.query.searchUsers, req.url)
+        usersData = await usersServices.filterAllUsers(passedUrl.query.searchUsers || "")
+        console.log("FILTERED USERS", usersData);
+      } catch (error) {
+        console.log("Couldn't find", error);
+      }
+      // console.log("all users are here", await usersServices.getUsers());
       res.statusCode = 200;
       res.setHeader("Content-type", "application/json");
       let usersDataWithoutPassword = usersData.map(
@@ -361,7 +376,6 @@ const getUser = async (req, res, userId) => {
     if (req.user.userRole === "admin") {
       res.setHeader("Content-Type", "application/json");
       let user = usersData.find((u) => u.userId === userId);
-      
 
       if (user) {
         res.statusCode = 200;
@@ -391,7 +405,7 @@ const getUser = async (req, res, userId) => {
 };
 
 const deleteUser = async (req, res, userId) => {
-  middlewares.authenticateToken(req, res, async() => {
+  middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "admin") {
       await usersServices.deleteUser(86219158);
       res.setHeader("Content-Type", "application/json");
@@ -445,7 +459,7 @@ const deleteUser = async (req, res, userId) => {
 const updateUser = async (req, res, userId) => {
   middlewares.authenticateToken(req, res, async () => {
     // if (req.user.userRole === "admin") {
-      
+
     try {
       let body = await requestBodyParser(req);
       if (
@@ -480,8 +494,9 @@ const updateUser = async (req, res, userId) => {
             console.log("YES");
             body.userId = userId;
             usersData[updateUserIndex] = body;
-        if (await usersServices.updateUser(userId, body)) console.log("updated USER");
-            
+            if (await usersServices.updateUser(userId, body))
+              console.log("updated USER");
+
             let { userPassword, ...usersDataWithoutPassword } =
               usersData[updateUserIndex];
             res.writeHead(200, { "Content-Type": "application/json" });

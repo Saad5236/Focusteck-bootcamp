@@ -51,7 +51,7 @@ const addExperience = async (userExperience) => {
       userExperience.userExperienceTitle,
       userExperience.userExperienceCompany,
       userExperience.userExperienceSkills,
-      userExperience.userExperienceYears
+      userExperience.userExperienceYears,
     ];
 
     try {
@@ -127,36 +127,36 @@ const updateExperience = async (userExperienceId, userId, userExperience) => {
   }
 
   if (foundExperience && foundExperience.userId === userId) {
-  const updateUserQuery = `
+    const updateUserQuery = `
       UPDATE experiences
       SET userExperienceTitle = ?, userExperienceCompany = ?, userExperienceSkills = ?, userExperienceYears = ?
       WHERE userExperienceId = ?
     `;
-  const values = [
-    userExperience.userExperienceTitle,
-    userExperience.userExperienceCompany,
-    userExperience.userExperienceSkills,
-    userExperience.userExperienceYears,
-    userExperienceId,
-  ];
+    const values = [
+      userExperience.userExperienceTitle,
+      userExperience.userExperienceCompany,
+      userExperience.userExperienceSkills,
+      userExperience.userExperienceYears,
+      userExperienceId,
+    ];
 
-  try {
-    const [result] = await db.query(updateUserQuery, values);
+    try {
+      const [result] = await db.query(updateUserQuery, values);
 
-    if (result.affectedRows === 1) {
-      console.log("User data updated successfully");
-      return true;
-    } else {
-      console.log("User data not updated");
+      if (result.affectedRows === 1) {
+        console.log("User data updated successfully");
+        return true;
+      } else {
+        console.log("User data not updated");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error);
       return false;
     }
-  } catch (error) {
-    console.error("Error updating user data:", error);
+  } else {
     return false;
   }
-} else {
-  return false;
-}
 };
 
 export default {

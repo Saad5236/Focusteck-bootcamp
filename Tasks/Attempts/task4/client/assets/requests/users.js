@@ -23,10 +23,23 @@ const getAllUsers = (token) => {
     method: "GET", // or 'POST', 'PUT', 'DELETE', etc.
     headers: headers,
   };
-  return fetch(
-    `http://localhost:3000/api/users`,
-    requestOptions
-  );
+  return fetch(`http://localhost:3000/api/users`, requestOptions);
+};
+
+const getFilteredUsers = (token, query) => {
+  console.log("GETTING USERS");
+  const headers = new Headers({
+    Authorization: `Bearer ${token}`,
+  });
+
+  // Create the request options object with headers
+  const requestOptions = {
+    method: "GET", // or 'POST', 'PUT', 'DELETE', etc.
+    headers: headers,
+  };
+  // return fetch(`http://localhost:3000/api/users`, requestOptions);
+  return fetch(`http://localhost:3000/api/users?searchUsers=${query}`, requestOptions);
+
 };
 
 const deleteUser = (userId, token) => {
@@ -38,10 +51,7 @@ const deleteUser = (userId, token) => {
     method: "DELETE",
     headers: headers,
   };
-  return fetch(
-    `http://localhost:3000/api/users/${userId}`,
-    requestOptions
-  );
+  return fetch(`http://localhost:3000/api/users/${userId}`, requestOptions);
 };
 
 const logoutUser = (token) => {
@@ -53,10 +63,7 @@ const logoutUser = (token) => {
     method: "DELETE",
     headers: headers,
   };
-  return fetch(
-    `http://localhost:3000/api/logout`,
-    requestOptions
-  );
+  return fetch(`http://localhost:3000/api/logout`, requestOptions);
 };
 
 const addUser = (user, token) => {
@@ -71,10 +78,7 @@ const addUser = (user, token) => {
     headers: headers,
     body: JSON.stringify(user),
   };
-  return fetch(
-    `http://localhost:3000/api/users`,
-    requestOptions
-  );
+  return fetch(`http://localhost:3000/api/users`, requestOptions);
 };
 
-export default { getAllUsers, updateUser, deleteUser, logoutUser, addUser };
+export default { getAllUsers, getFilteredUsers, updateUser, deleteUser, logoutUser, addUser };

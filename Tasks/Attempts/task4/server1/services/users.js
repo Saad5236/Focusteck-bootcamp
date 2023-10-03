@@ -37,19 +37,25 @@ const getUsers = async () => {
   } catch (error) {
     console.log("error", error);
   }
+};
 
-  //   db.query(getAllUsers, (error, result, fields) => {
-  //     if (error) console.log("ERROR GETTING USERS: ", error);
-  //     else {
-  //       console.log(
-  //         "ALL USERS DATA!",
-  //         result[0],
-  //         result[0].user_id,
-  //         result[0].user_role
-  //       );
-  //       return result;
-  //     }
-  //   });
+const filterAllUsers = async (searchQuery) => {
+  const getUsersQuery = `SELECT * FROM users WHERE userName LIKE ? OR userNumber LIKE ? OR userEmail LIKE ?`;
+  let searchQueryString = `%${searchQuery}%`;
+  try {
+    let [users] = await db.query(getUsersQuery, [searchQueryString, searchQueryString, searchQueryString]);
+    if (users.length > 0) {
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].userImgSrc)
+          users[i].userImgSrc = users[i].userImgSrc.toString("base64");
+      }
+      console.log("users DATA YAHAN HA", users);
+      return users;
+    }
+    return [];
+  } catch (error) {
+    console.log("error", error);
+  }
 };
 
 const getUser = async (credentials) => {
@@ -165,6 +171,7 @@ const addUser = async (userData) => {
 const updateUser = async (userId, userData) => {
   let binaryImgSrc;
   if (userData.userImgSrc) {
+    console.log("IMG SRC",userData.userImgSrc)
     binaryImgSrc = Buffer.from(
       userData.userImgSrc.split(",")[1] || userData.userImgSrc,
       "base64"
@@ -176,47 +183,45 @@ const updateUser = async (userId, userData) => {
   if (
     allUsers.length > 0 &&
     allUsers.some((u) => {
-      if(u.userId !== userId)
-        return u.userEmail === userData.userEmail;
-      else 
-        return false;
+      if (u.userId !== userId) return u.userEmail === userData.userEmail;
+      else return false;
     })
   ) {
     console.log("NO ITS A DUPLICATE EMAIL YOU CANT ADD");
   } else {
-  const updateUserQuery = `
+    const updateUserQuery = `
     UPDATE users
     SET userRole = ?, userName = ?, userEmail = ?, userNumber = ?, userPassword = ?, userImgSrc = ?, userAbout = ?, userProfession = ?
     WHERE userId = ?
   `;
-  const values = [
-    userData.userRole,
-    userData.userName,
-    userData.userEmail,
-    userData.userNumber,
-    userData.userPassword,
-    // userData.userImgSrc,
-    binaryImgSrc,
-    userData.userAbout,
-    userData.userProfession,
-    userId,
-  ];
+    const values = [
+      userData.userRole,
+      userData.userName,
+      userData.userEmail,
+      userData.userNumber,
+      userData.userPassword,
+      // userData.userImgSrc,
+      binaryImgSrc,
+      userData.userAbout,
+      userData.userProfession,
+      userId,
+    ];
 
-  try {
-    const [result] = await db.query(updateUserQuery, values);
+    try {
+      const [result] = await db.query(updateUserQuery, values);
 
-    if (result.affectedRows === 1) {
-      console.log("User data updated successfully");
-      return true;
-    } else {
-      console.log("User data not updated");
+      if (result.affectedRows === 1) {
+        console.log("User data updated successfully");
+        return true;
+      } else {
+        console.log("User data not updated");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error);
       return false;
     }
-  } catch (error) {
-    console.error("Error updating user data:", error);
-    return false;
   }
-}
 };
 
 const deleteUser = async (userId) => {
@@ -237,6 +242,7 @@ const deleteUser = async (userId) => {
 
 export default {
   getUsers,
+  filterAllUsers,
   getUsersColumn,
   getUser,
   addUser,

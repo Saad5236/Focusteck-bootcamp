@@ -24,13 +24,41 @@ const validateProject = (data) => {
     data.projectTags.length <= 0 ||
     data.projectFrameworks.length <= 0 ||
     data.projectLanguages.length <= 0 ||
-    !/^[a-zA-Z\d\-_ ]*$/.test(data.projectHeading)
+    !/^[a-zA-Z\d\-_ ]*$/.test(data.projectHeading) ||
+    !/^[\w\s\-()]+$/.test(data.projectDescription)
   );
 };
+
+const validateEducation = (data) => {
+  return (
+    !data.userEducationDegree ||
+    !data.userEducationInstitute ||
+    !data.userEducationProgram ||
+    !data.userEducationYears ||
+    !/^[a-zA-Z\d\-_ ]*$/.test(data.userEducationDegree) ||
+    !/^[a-zA-Z0-9\d\-_ ]*$/.test(data.userEducationInstitute) ||
+    !/^[a-zA-Z\d\-_ ]*$/.test(data.userEducationProgram) 
+  );
+};
+
+const validateExperience = (data) => {
+  return (
+    !data.userExperienceCompany ||
+    !data.userExperienceSkills ||
+    !data.userExperienceTitle ||
+    !data.userExperienceYears ||
+    !/^[a-zA-Z\d\-_ ]*$/.test(data.userExperienceCompany) ||
+    !/^[a-zA-Z\d\-_ ]*$/.test(data.userExperienceSkills) ||
+    !/^[a-zA-Z\d\-_ ]*$/.test(data.userExperienceTitle) 
+  );
+};
+
 export default {
   isValidUsername,
   isValidNumber,
   isValidEmail,
   validateUser,
   validateProject,
+  validateEducation,
+  validateExperience,
 };

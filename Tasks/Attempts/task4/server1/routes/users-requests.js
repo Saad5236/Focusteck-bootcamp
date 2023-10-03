@@ -20,8 +20,9 @@ let usersData = users;
 export default async (req, res) => {
   if (!req.url.split("/")[4]) {
     let userId = Number(req.url.split("/")[3]);
-
-    if (req.url === "/api/users" && req.method === "GET") {
+    console.log("req.url sdf", req.url);
+    // if (req.url === "/api/users" && req.method === "GET") {
+      if (req.url.startsWith("/api/users") && req.method === "GET") {
       userControllers.getAllUsers(req, res);
     } else if (req.method === "POST") {
       console.log("POST");

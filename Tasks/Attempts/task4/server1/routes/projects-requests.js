@@ -85,41 +85,47 @@ let projectsData = projects;
 
 export default async (req, res) => {
   let pathSegements = req.url.split("/");
-  console.log("SEGMENTS",pathSegements);
+  console.log("SEGMENTS", pathSegements);
 
-  if(pathSegements[4] === undefined) {
-    if(pathSegements[3] === undefined) {
-      if(req.method === "GET") {
+  if (pathSegements[4] === undefined) {
+    if (pathSegements[3] === undefined) {
+      if (req.method === "GET") {
+        console.log("new here");
         projectControllers.getAllProjects(req, res);
       } else if (req.method === "POST") {
         projectControllers.addProject(req, res);
-      } 
+      }
       // else if (req.method === "DELETE") {
-        
-      // } 
+
+      // }
       else {
         console.log("path", pathSegements);
         middlewares.returnError(req, res, 404, "not found", "Route not found");
       }
     } else {
       let id = Number(pathSegements[3]);
-      if(id) {
-        
-      // if (req.method === "GET") {
+      if (id) {
+        // if (req.method === "GET") {
 
-      // } 
-      if (req.method === "PUT") {
-        projectControllers.updateProjectByProjectId(req, res, id);
-      } else if (req.method === "DELETE") {
-        projectControllers.deleteProject(req, res, id);
-      }
+        // }
+        if (req.method === "PUT") {
+          projectControllers.updateProjectByProjectId(req, res, id);
+        } else if (req.method === "DELETE") {
+          projectControllers.deleteProject(req, res, id);
+        }
       } else {
         console.log("path", pathSegements);
-        middlewares.returnError(req, res, 400, "Invalid ID", "Invalid project/user Id");
+        middlewares.returnError(
+          req,
+          res,
+          400,
+          "Invalid ID",
+          "Invalid project/user Id"
+        );
       }
     }
   } else {
     console.log("path", pathSegements);
     middlewares.returnError(req, res, 404, "not found", "Route not found");
   }
-}
+};

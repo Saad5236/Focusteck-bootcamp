@@ -112,9 +112,10 @@ const refreshUsers = (filteredUsers) => {
       let foundUser = allUsersData.find((u) => u.userId === Number(userId));
       console.log("chidvochd", allUsersData);
       try {
-        if (foundUser.userRole === "user") {
-          deleteUserAllData(Number(userId), authToken);
-        }
+        // ON CASCADE DELETE REMOVED THE NEED FOR FOLLOWING CODE;
+        // if (foundUser.userRole === "user") {
+        //   deleteUserAllData(Number(userId), authToken);
+        // }
         let deleteUserResponse = await usersRequests.deleteUser(
           userId,
           authToken
@@ -195,9 +196,9 @@ const refreshUsers = (filteredUsers) => {
 };
 const logoutAfterTokenExp = () => {
   localStorage.removeItem("loggedInUser");
-      localStorage.removeItem("authToken");
-      window.location.href = "./authentication.html";
-}
+  localStorage.removeItem("authToken");
+  window.location.href = "./authentication.html";
+};
 
 const filterAndRefreshUsers = (allUsers) => {
   let currentLoggedInAdmin = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -318,10 +319,10 @@ updateUserModalForm.addEventListener("submit", async (e) => {
       ) {
         user = await updateUserResponse.json();
         allUsersData[index] = user;
-        if (previousUserRole === "user" && user.userRole === "admin") {
-          console.log("deleted user's data since he's ana dmin now");
-          deleteUserAllData(user.userId, authToken);
-        }
+        // if (previousUserRole === "user" && user.userRole === "admin") {
+        //   console.log("deleted user's data since he's ana dmin now");
+        //   deleteUserAllData(user.userId, authToken);
+        // }
         filterAndRefreshUsers(allUsersData);
 
         updateUserModal.close();
@@ -455,10 +456,59 @@ addUserModalForm.addEventListener("submit", async (e) => {
 
 // _____SEARCH USER______
 
+// async function refreshUsers(){
+//   const searchQuery = searchUserInput.value.toLowerCase();
+    
+//   try {
+//     let getUsersResponse = await usersRequests.getFilteredUsers(authToken, searchQuery);
+//     console.log("HEY", getUsersResponse.status);
+//     if (getUsersResponse.status === 200 || getUsersResponse.status === 201) {
+//       allUsersData = await getUsersResponse.json();
+//       console.log("HEY2", allUsersData);
+//     } else if (getUsersResponse.status === 403) {
+//       logoutAfterTokenExp();
+//     } else {
+//       console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
+//       allUsersData = [];
+//     }
+//   } catch (error) {
+//     console.log("ERROR GETTING EDUCATIONS", error);
+//     alert("ERROR GETTING EDUCATIONS");
+//   }
+
+//   filterAndRefreshUsers(allUsersData)
+// }
 const searchUserInput = document.querySelector(".users-search");
-searchUserInput.addEventListener("input", (e) => {
-  const searchQuery = searchUserInput.value.toLowerCase();
-  filterUsers(searchQuery);
+
+let timeid;
+
+searchUserInput.addEventListener("keyup", () => {
+
+  clearTimeout(timeid)
+  timeid=setTimeout(async () => {
+    const searchQuery = searchUserInput.value.toLowerCase();
+    
+  try {
+    let getUsersResponse = await usersRequests.getFilteredUsers(authToken, searchQuery);
+    console.log("HEY", getUsersResponse.status);
+    if (getUsersResponse.status === 200 || getUsersResponse.status === 201) {
+      allUsersData = await getUsersResponse.json();
+      console.log("HEY2", allUsersData);
+    } else if (getUsersResponse.status === 403) {
+      logoutAfterTokenExp();
+    } else {
+      console.log("NO DATA IN BACKEND OR COULDN'T FETCH");
+      allUsersData = [];
+    }
+  } catch (error) {
+    console.log("ERROR GETTING EDUCATIONS", error);
+    alert("ERROR GETTING EDUCATIONS");
+  }
+
+  filterAndRefreshUsers(allUsersData)
+  },1000)
+
+  // filterUsers(searchQuery);
 });
 
 const filterUsers = (searchQuery) => {

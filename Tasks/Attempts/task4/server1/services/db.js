@@ -11,14 +11,14 @@ const createDbTables = async () => {
         userPassword VARCHAR(255) NOT NULL,
         userProfession VARCHAR(255),
         userAbout TEXT,
-        userImgSrc LONGBLOB
+        userImgSrc LONGTEXT
       )
     `;
   const sessionTableQuery = `
     CREATE TABLE IF NOT EXISTS sessions (
         userId INT NOT NULL,
         token varchar(255) PRIMARY KEY,
-        FOREIGN KEY (userId) REFERENCES users(userId)
+        FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
       )
     `;
 
@@ -30,7 +30,7 @@ const createDbTables = async () => {
       userEducationInstitute VARCHAR(255) NOT NULL,
       userEducationProgram VARCHAR(255) NOT NULL,
       userEducationYears VARCHAR(255) NOT NULL,
-      FOREIGN KEY (userId) REFERENCES users(userId)
+      FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
       )
     `;
 
@@ -42,7 +42,7 @@ const createDbTables = async () => {
       userExperienceSkills VARCHAR(255) NOT NULL,
       userExperienceTitle VARCHAR(255) NOT NULL,
       userExperienceYears VARCHAR(255) NOT NULL,
-      FOREIGN KEY (userId) REFERENCES users(userId)
+      FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
       )
     `;
     
@@ -51,9 +51,37 @@ const createDbTables = async () => {
       userSkillId INT PRIMARY KEY,
       userId INT NOT NULL,
       userSkill VARCHAR(255) NOT NULL,
-      FOREIGN KEY (userId) REFERENCES users(userId)
+      FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
       )
     `;
+
+    const projectsTableQuery = `
+    CREATE TABLE IF NOT EXISTS projects (
+      projectId INT PRIMARY KEY,
+      userId INT NOT NULL,
+      projectHeading VARCHAR(255) NOT NULL,
+      projectDescription TEXT NOT NULL,
+      projectImageLink LONGTEXT,
+      projectTags VARCHAR(255) NOT NULL,
+      projectLanguages VARCHAR(255) NOT NULL,
+      projectFrameworks VARCHAR(255) NOT NULL,
+      FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
+      )
+    `;
+
+    const uponUpdateUserRole = `
+    CREATE TRIGGER after_user_role_update
+    AFTER UPDATE ON users
+    FOR EACH ROW
+    BEGIN
+      IF NEW.userRole = 'admin' AND OLD.userRole = 'user' THEN
+        DELETE FROM projects WHERE userId = NEW.userId;
+        DELETE FROM educations WHERE userId = NEW.userId;
+        DELETE FROM experiences WHERE userId = NEW.userId;
+        DELETE FROM skills WHERE userId = NEW.userId;
+      END IF;
+    END;
+  `;
 
   //   db.query(userTableQuery, (error, result, fields) => {
   //     if (error) console.log("ERROR CREATING USER TABLE: ", error);
@@ -91,6 +119,18 @@ const createDbTables = async () => {
   } catch (error) {
     console.log("ERROR CREATING SKILLS TABLE", error);
   }
+
+  try {
+    await db.query(projectsTableQuery);
+  } catch (error) {
+    console.log("ERROR CREATING PROJECTS TABLE", error);
+  }
+
+  // try {
+  //   await db.query(uponUpdateUserRole);
+  // } catch (error) {
+  //   console.log("ERROR CREATING PROJECTS TABLE", error);
+  // }
 };
 
 export default createDbTables;

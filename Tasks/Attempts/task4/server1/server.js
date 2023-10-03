@@ -1,6 +1,6 @@
 const PORT = 3000;
 import http from "http";
-import url from "url"
+import url from "url";
 import cors from "cors";
 import middlewares from "./utils/middleware.js";
 import authenticationRequests from "../../../../Resources/useless/authentication-requests.js";
@@ -10,7 +10,7 @@ import projectsRequests from "./routes/projects-requests.js";
 import educationsRequests from "./routes/educations-requests.js";
 import experiencesRequests from "./routes/experiences-requests.js";
 import skillsRequests from "./routes/skills-requests.js";
-import connection from "./config.js"
+import connection from "./config.js";
 import createDbTables from "./services/db.js";
 
 // connection.connect((err) => {
@@ -20,7 +20,7 @@ import createDbTables from "./services/db.js";
 // });
 
 try {
-  connection.connect();  
+  connection.connect();
   console.log("CONNECTION TO DATABASE SUCCESSFUL");
   createDbTables();
 } catch (error) {
@@ -36,9 +36,6 @@ let server = http.createServer((req, res) => {
   // };
   // Use the cors middleware with the configured options
   cors()(req, res, () => {
-    // res.writeHead(200, { 'Content-Type': 'application/json' });
-    // res.end(JSON.stringify({ message: 'Hello, CORS is configured!' }));
-
     if (req.url.split("/")[1] === "api") {
       let urlType = req.url.split("/")[2];
 
@@ -58,9 +55,12 @@ let server = http.createServer((req, res) => {
         authenticationControllers.logoutUser(req, res);
       } else {
         // middlewares.authenticateToken(req, res, () => {});
-        if (urlType === "users") {
+        // if (urlType === "users") {
+        if (urlType.startsWith("users")) {
+          console.log("req.url", req.url);
           usersRequests(req, res);
-        } else if (urlType === "projects") {
+          // } else if (urlType === "projects") {
+        } else if (urlType.startsWith("projects")) {
           projectsRequests(req, res);
         } else if (urlType === "experiences") {
           experiencesRequests(req, res);
@@ -69,7 +69,6 @@ let server = http.createServer((req, res) => {
         } else if (urlType === "skills") {
           skillsRequests(req, res);
         } else {
-          console.log("SHAT");
           res.statusCode = 404;
           res.setHeader("Content-Type", "application/json"); // to send our response in json format then
           // res.writeHead(404, { "Content-Type": "application/json" });

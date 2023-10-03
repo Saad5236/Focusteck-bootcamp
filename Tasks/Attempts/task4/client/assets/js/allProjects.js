@@ -49,7 +49,11 @@ let allProjectsContainer = document.querySelector(".projects-container");
 // let userProjects = JSON.parse(localStorage.getItem("userProjectsData"));
 let userProjects;
 try {
-  let projectsDataResponse = await projectsRequests.getAllProjects(authToken);
+  // let projectsDataResponse = await projectsRequests.getAllProjects(authToken);
+  let projectsDataResponse = await projectsRequests.getAdminProjects(
+    authToken,
+    ""
+  );
   if (
     !projectsDataResponse.status === 201 ||
     !projectsDataResponse.status === 200
@@ -94,9 +98,44 @@ refreshProjects(userProjects);
 // __________SEARCH PROJECTS FUNCTIONALITY____________
 
 const searchProjectsInput = document.querySelector(".search-projects input");
-searchProjectsInput.addEventListener("input", (e) => {
-  const searchQuery = searchProjectsInput.value.toLowerCase();
-  filterProjects(searchQuery);
+let timeid;
+searchProjectsInput.addEventListener("input", async (e) => {
+  // setTimeout(async () => {
+
+  clearTimeout(timeid)
+  timeid=setTimeout(async () => {
+    const searchQuery = searchProjectsInput.value.toLowerCase();
+
+    let filteredProjectsDataResponse;
+    try {
+      // let filteredProjectsDataResponse = await projectsRequests.getAllProjects(authToken);
+      filteredProjectsDataResponse = await projectsRequests.getAdminProjects(
+        authToken,
+        searchQuery
+      );
+      if (
+        !filteredProjectsDataResponse.status === 201 ||
+        !filteredProjectsDataResponse.status === 200
+      ) {
+        alert(`ERROR GETTING DATA`);
+      } else if (filteredProjectsDataResponse.status === 403) {
+        logoutAfterTokenExp();
+      } else {
+        userProjects = await filteredProjectsDataResponse.json();
+
+        if (userProjects.title) {
+          userProjects = [];
+        }
+        console.log("ALL USERS DATA", userProjects);
+      }
+    } catch (e) {
+      console.log("ERROR GETTING PROJECTS", e);
+    }
+
+    refreshProjects(userProjects);
+  }, 1500);
+
+  // filterProjects(searchQuery);
 });
 
 const filterProjects = (searchQuery) => {

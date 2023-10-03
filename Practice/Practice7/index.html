@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <script>
+        let a = [
+   {
+     "userId": 2,
+     "projectId": 1,
+     "projectHeading": "GAME",
+     "projectDescription": "It's a game",
+     "projectImageLink": "link",
+     "projectTags": "programming,a,c",
+     "projectLanguages": "languages,d,c",
+     "projectFrameworks": "frameworks,m,j"
+   },
+   {
+     "userId": 2,
+     "projectId": 1,
+     "projectHeading": "GAME",
+     "projectDescription": "It's a game",
+     "projectImageLink": "link",
+     "projectTags": "programming,a,c",
+     "projectLanguages": "languages,d,c",
+     "projectFrameworks": "frameworks,m,j"
+   }
+ ]
+ let b = a.map((i) => ({...i, projectTags: i.projectTags.split(","), projectLanguages: i.projectLanguages.split(","), projectFrameworks: i.projectFrameworks.split(",")}))
+ console.log("B", b);
+
+// const arrayOfObjects = [
+//   { data: "value1, value2, value3" },
+//   { data: "value4, value5, value6" },
+//   // ...
+// ];
+
+// // Iterate through each object and split the data property
+// const newArray = arrayOfObjects.map(obj => ({
+//   ...obj,
+//   data: obj.data.split(', ').map(value => value.trim()) // Split and remove spaces
+// }));
+
+// console.log(newArray);
+    </script>
+</body>
+</html>

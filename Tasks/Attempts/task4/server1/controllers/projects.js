@@ -14,9 +14,11 @@ const generateProjectId = () => {
 };
 
 import validations from "../utils/validations.js";
+import url from "url";
 import requestBodyParser from "../utils/body-parser.js";
 import projects from "../data/projects.json" assert { type: "json" };
 import middlewares from "../utils/middleware.js";
+import projectsServices from "../services/projects.js";
 import users from "../data/users.json" assert { type: "json" };
 let projectsData = projects;
 
@@ -69,30 +71,54 @@ let projectsData = projects;
 // };
 
 const getAllProjects = (req, res) => {
-  middlewares.authenticateToken(req, res, () => {
+  console.log("first baki khair ay");
+
+  middlewares.authenticateToken(req, res, async () => {
     let projects;
     console.log("role", req.user.userRole);
     if (req.user.userRole === "admin") {
       projects = projectsData;
 
       // projects = projectsData;
+      let passedUrl = url.parse(req.url, true);
+      try {
+        console.log("PASSEDURL", passedUrl.query.searchProjects);
+        projects = await projectsServices.filterAllProjects(
+          passedUrl.query.searchProjects || ""
+        );
+        console.log("PROJECTS DATA FOR ADMIN, i am here", projects);
+      } catch (error) {
+        console.log("Projects not get for users");
+      }
     } else if (req.user.userRole === "user") {
-      projects = projectsData.filter((p) => p.userId === req.user.userId);
+      // projects = projectsData.filter((p) => p.userId === req.user.userId);
+
+      try {
+        projects = await projectsServices.getProjects(req.user.userId);
+        console.log("PROJECTS DATA FOR USER", projects);
+      } catch (error) {
+        console.log("Projects not get for users");
+      }
     }
 
-    if (projects.length > 0) {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.write(JSON.stringify(projects));
-      res.end();
-    } else {
-      middlewares.returnError(
-        req,
-        res,
-        404,
-        "project not found",
-        "project you're trying to find does not exist."
-      );
-    }
+    // if (projects.length > 0) {
+    console.log("SENDING PROJS", projects);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.write(JSON.stringify(projects));
+    res.end();
+
+    // } else {
+    //   // middlewares.returnError(
+    //   //   req,
+    //   //   res,
+    //   //   404,
+    //   //   "project not found",
+    //   //   "project you're trying to find does not exist."
+    //   // );
+    //   res.writeHead(200, { "Content-Type": "application/json" });
+    //   res.write(JSON.stringify(projects));
+    //   res.end();
+    // }
   });
 };
 
@@ -237,48 +263,100 @@ const getProjectsByUserId = (req, res, userId) => {
 const addProject = async (req, res) => {
   middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "user") {
-      if (!users.find((u) => u.userId === req.user.userId)) {
-        console.log("USER IS NOT FOUND");
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            title: "User not found",
-            message: "User for which you are adding project does not exist.",
-          })
-        );
-      } else {
-        console.log(
-          "USER",
-          users.find((u) => u.userId === req.user.userId)
-        );
+      // if (!users.find((u) => u.userId === req.user.userId)) {
+      //   console.log("USER IS NOT FOUND");
+      //   res.writeHead(404, { "Content-Type": "application/json" });
+      //   res.end(
+      //     JSON.stringify({
+      //       title: "User not found",
+      //       message: "User for which you are adding project does not exist.",
+      //     })
+      //   );
+      // } else {
+      //   console.log(
+      //     "USER",
+      //     users.find((u) => u.userId === req.user.userId)
+      //   );
 
-        try {
-          let body = await requestBodyParser(req);
-          if (validations.validateProject(body)) {
-            middlewares.returnError(
-              req,
-              res,
-              400,
-              "Wrong input",
-              "Either input data is in wrong format or it is incomplete."
+      //   try {
+      //     let body = await requestBodyParser(req);
+      //     if (validations.validateProject(body)) {
+      //       middlewares.returnError(
+      //         req,
+      //         res,
+      //         400,
+      //         "Wrong input",
+      //         "Either input data is in wrong format or it is incomplete."
+      //       );
+      //     } else {
+      //       body.projectId = generateProjectId();
+      //       body.userId = req.user.userId;
+      //       projectsData.push(body);
+      //       res.writeHead(201, { "Content-Type": "application/json" });
+      //       res.end(JSON.stringify(body));
+      //     }
+      //   } catch (err) {
+      //     console.log(err);
+      //     res.writeHead(400, { "Content-Type": "application/json" });
+      //     res.end(
+      //       JSON.stringify({
+      //         title: "Validation Failed",
+      //         message: "Request body is not valid",
+      //       })
+      //     );
+      //   }
+      // }
+
+      try {
+        let body = await requestBodyParser(req);
+        if (validations.validateProject(body)) {
+          middlewares.returnError(
+            req,
+            res,
+            400,
+            "Wrong input",
+            "Either input data is in wrong format or it is incomplete."
+          );
+        } else {
+          body.projectId = generateProjectId();
+          body.userId = req.user.userId;
+          let addProjectRes;
+          try {
+            addProjectRes = await projectsServices.addProject(body);
+          } catch (error) {
+            console.log("ERROR POSTING PROJECT", error);
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                title: "Unable to post project.",
+                message: "For some reason, unable to add project.",
+              })
             );
-          } else {
-            body.projectId = generateProjectId();
-            body.userId = req.user.userId;
-            projectsData.push(body);
+          }
+          if (addProjectRes) {
             res.writeHead(201, { "Content-Type": "application/json" });
             res.end(JSON.stringify(body));
           }
-        } catch (err) {
-          console.log(err);
-          res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(
-            JSON.stringify({
-              title: "Validation Failed",
-              message: "Request body is not valid",
-            })
-          );
+          // else {
+          //   res.writeHead(404, { "Content-Type": "application/json" });
+          //   res.end(
+          //     JSON.stringify({
+          //       title: "User not found",
+          //       message:
+          //         "User not found for which you are entering experience.",
+          //     })
+          //   );
+          // }
         }
+      } catch (err) {
+        console.log(err);
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            title: "Validation Failed",
+            message: "Request body is not valid",
+          })
+        );
       }
     } else {
       middlewares.returnError(
@@ -397,70 +475,135 @@ const addProject = async (req, res) => {
 // };
 
 const deleteProject = async (req, res, id) => {
-  middlewares.authenticateToken(req, res, () => {
+  middlewares.authenticateToken(req, res, async () => {
     if (req.user.userRole === "admin") {
-      res.setHeader("Content-Type", "application/json");
+      // res.setHeader("Content-Type", "application/json");
 
-      let removedProjects = projectsData.filter(
-        (project) => project.userId === id
-      );
-      if (removedProjects.length > 0) {
-        for (let i = 0; i < projectsData.length; i++) {
-          if (projectsData[i].userId === id) {
-            projectsData.splice(i, 1);
-            i--;
-          }
-        }
+      // let removedProjects = projectsData.filter(
+      //   (project) => project.userId === id
+      // );
+      // if (removedProjects.length > 0) {
+      //   for (let i = 0; i < projectsData.length; i++) {
+      //     if (projectsData[i].userId === id) {
+      //       projectsData.splice(i, 1);
+      //       i--;
+      //     }
+      //   }
 
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.write(JSON.stringify(removedProjects));
-        res.end();
-      } else {
-        middlewares.returnError(
-          req,
-          res,
-          404,
-          "Projects not found",
-          "User's Projects not found in database"
-        );
-        res.end();
-      }
-    } else if (req.user.userRole === "user") {
-      let removedProject = projectsData.find(
-        (project) => project.projectId === id
-      );
-      if (removedProject) {
-        if (removedProject.userId === req.user.userId) {
-          for (let i = 0; i < projectsData.length; i++) {
-            if (projectsData[i].projectId === id) {
-              projectsData.splice(i, 1);
-              break;
-            }
-          }
+      //   res.writeHead(200, { "Content-Type": "application/json" });
+      //   res.write(JSON.stringify(removedProjects));
+      //   res.end();
+      // } else {
+      //   middlewares.returnError(
+      //     req,
+      //     res,
+      //     404,
+      //     "Projects not found",
+      //     "User's Projects not found in database"
+      //   );
+      //   res.end();
+      // }
 
+      try {
+        let removedProjects = await projectsServices.deleteProjectsByUserId(id);
+        if (removedProjects) {
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.write(JSON.stringify(removedProject));
+          res.write(
+            JSON.stringify({
+              title: "Removed successfully",
+              message: "Projects has successfully been removed",
+            })
+          );
           res.end();
-          console.log("removedProject", removedProject);
         } else {
           middlewares.returnError(
             req,
             res,
-            401,
-            "User's unauthorized.",
-            "User is unauthorized to delete this project."
+            404,
+            "Not found.",
+            "projects not found in database to delete."
           );
         }
-      } else {
+      } catch (error) {
+        console.log("COULDN'T remove experiences for some reason", error);
         middlewares.returnError(
           req,
           res,
-          404,
-          "Not found.",
-          "Project not found in database."
+          400,
+          "Couldn't remove.",
+          "Couldn't remove experiences from backend."
         );
+      }
+    } else if (req.user.userRole === "user") {
+      // let removedProject = projectsData.find(
+      //   (project) => project.projectId === id
+      // );
+      // if (removedProject) {
+      //   if (removedProject.userId === req.user.userId) {
+      //     for (let i = 0; i < projectsData.length; i++) {
+      //       if (projectsData[i].projectId === id) {
+      //         projectsData.splice(i, 1);
+      //         break;
+      //       }
+      //     }
 
-        res.end();
+      //     res.writeHead(200, { "Content-Type": "application/json" });
+      //     res.write(JSON.stringify(removedProject));
+      //     res.end();
+      //     console.log("removedProject", removedProject);
+      //   } else {
+      //     middlewares.returnError(
+      //       req,
+      //       res,
+      //       401,
+      //       "User's unauthorized.",
+      //       "User is unauthorized to delete this project."
+      //     );
+      //   }
+      // } else {
+      //   middlewares.returnError(
+      //     req,
+      //     res,
+      //     404,
+      //     "Not found.",
+      //     "Project not found in database."
+      //   );
+
+      //   res.end();
+      // }
+
+      try {
+        let removedProject = await projectsServices.deleteProjectByProjectId(
+          id,
+          req.user.userId
+        );
+        if (removedProject) {
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.write(
+            JSON.stringify({
+              title: "Removed successfully",
+              message: "PROJECT has successfully been removed",
+            })
+          );
+          res.end();
+        } else {
+          middlewares.returnError(
+            req,
+            res,
+            404,
+            "Not found.",
+            "project not found in database or it's not logged in user's project."
+          );
+        }
+      } catch (error) {
+        console.log("ERROR DELETING", error);
+        middlewares.returnError(
+          req,
+          res,
+          400,
+          "Couldn't delete.",
+          "Unable to delete project from db."
+        );
       }
     }
   });
@@ -559,37 +702,67 @@ const updateProjectByProjectId = (req, res, projectId) => {
             "Either input data is in wrong format or it is incomplete."
           );
         } else {
-          let updateProjectIndex = projectsData.findIndex(
-            (u) => u.projectId === projectId
-          );
-
-          if (updateProjectIndex === -1) {
-            console.log("NOOO");
-            middlewares.returnError(
-              req,
-              res,
-              404,
-              "project not found",
-              "project you're trying to update does not exist."
+          try {
+            let updateProjectData = await projectsServices.updateProject(
+              projectId,
+              req.user.userId,
+              body
             );
-          } else {
-            if (projectsData[updateProjectIndex].userId === req.user.userId) {
-              console.log("YES");
-              body.userId = req.user.userId;
-              body.projectId = projectId;
-              projectsData[updateProjectIndex] = body;
+            if (updateProjectData) {
               res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify(projectsData[updateProjectIndex]));
+              res.end(JSON.stringify(body));
             } else {
+              console.log("error updating project", error);
               middlewares.returnError(
                 req,
                 res,
-                401,
-                "Not authorized",
-                "project you're accessing doesn't belong to you."
+                404,
+                "Couldn't update.",
+                "Error updating project's data."
               );
             }
+          } catch (error) {
+            console.log("error updating project", error);
+            middlewares.returnError(
+              req,
+              res,
+              400,
+              "Couldn't update.",
+              "Error updating project's data."
+            );
           }
+
+          // let updateProjectIndex = projectsData.findIndex(
+          //   (u) => u.projectId === projectId
+          // );
+
+          // if (updateProjectIndex === -1) {
+          //   console.log("NOOO");
+          //   middlewares.returnError(
+          //     req,
+          //     res,
+          //     404,
+          //     "project not found",
+          //     "project you're trying to update does not exist."
+          //   );
+          // } else {
+          //   if (projectsData[updateProjectIndex].userId === req.user.userId) {
+          //     console.log("YES");
+          //     body.userId = req.user.userId;
+          //     body.projectId = projectId;
+          //     projectsData[updateProjectIndex] = body;
+          //     res.writeHead(200, { "Content-Type": "application/json" });
+          //     res.end(JSON.stringify(projectsData[updateProjectIndex]));
+          //   } else {
+          //     middlewares.returnError(
+          //       req,
+          //       res,
+          //       401,
+          //       "Not authorized",
+          //       "project you're accessing doesn't belong to you."
+          //     );
+          //   }
+          // }
         }
       } catch (e) {
         console.log(e);

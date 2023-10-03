@@ -23,7 +23,7 @@ try {
   } else if (projectsDataResponse.status === 403) {
     logoutAfterTokenExp();
   } else {
-    userProjectsData = await projectsDataResponse.json();
+    userProjectsData = await projectsDataResponse.json() || [];
 
     if (userProjectsData.length <= 0) {
       userProjectsData = [];
@@ -160,9 +160,94 @@ updateProjectTagsAdd.addEventListener("click", (e) => {
   );
 });
 
+let updateProjectForm = document.querySelector(
+  ".update-project-inner form"
+);
+updateProjectForm.addEventListener("submit", async (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  if (
+    updateProjectFormTitleInput.value === "" ||
+    updateProjectFormDescriptionInput.value === "" ||
+    updateProjectFormImgSrcInput.value === "" 
+    // ||
+    // userProjectDataForUpdate.value.projectTags.length === 0 ||
+    // userProjectDataForUpdate.value.projectLanguages.length === 0 ||
+    // userProjectDataForUpdate.value.projectFrameworks.length === 0
+  ) {
+    alert("Fill in the empty fields.");
+  } else {
+    userProjectDataForUpdate.value.projectHeading =
+      updateProjectFormTitleInput.value;
+    userProjectDataForUpdate.value.projectDescription =
+      updateProjectFormDescriptionInput.value;
+    let imgFile = updateProjectFormImgSrcInput.files[0];
+    let reader = new FileReader();
+    reader.onload = async function (e) {
+      userProjectDataForUpdate.value.projectImageLink = e.target.result;
+
+      let i = userProjectsData.findIndex(
+        (p) => p.projectId === userProjectDataForUpdate.value.projectId
+      );
+
+      try {
+        let updateProjectResponse = await projectsRequests.updateProject(
+          userProjectDataForUpdate.value,
+          userProjectDataForUpdate.value.projectId,
+          authToken
+        );
+
+        if (
+          updateProjectResponse.status === 201 ||
+          updateProjectResponse.status === 200
+        ) {
+          userProjectDataForUpdate.value = await updateProjectResponse.json();
+          userProjectsData[i] = userProjectDataForUpdate.value;
+          // userProjectsData.push(userProjectDataForUpdate.value)
+          console.log(userProjectDataForUpdate.value, "project data");
+        } else if (updateProjectResponse.status === 403) {
+          logoutAfterTokenExp();
+        } else {
+          alert("Project not updated");
+          console.log("Project not updated");
+        }
+      } catch (e) {
+        alert("update project request not send!");
+        console.log("error sending update project request", e);
+      }
+
+      addNewDataAndRefresh(userProjectDataForUpdate.value, allProjectsContainer);
+
+      document.querySelector("#update-project-modal").close();
+    };
+    reader.readAsDataURL(imgFile);
+
+    // let i = userProjectsData.findIndex(
+    //   (p) => p.projectId === userProjectDataForUpdate.value.projectId
+    // );
+    // userProjectsData[i] = userProjectDataForUpdate.value;
+    // localStorage.setItem(
+    //   "userProjectsData",
+    //   JSON.stringify(userProjectsData)
+    // );
+
+    // addNewDataAndRefresh(userProjectDataForUpdate.value, allProjectsContainer);
+
+    // updateProjectModal.close();
+
+    // updateProjectFormTitleInput.value = ""
+    //     updateProjectFormDescriptionInput.value = ""
+    //     updateProjectFormImgSrcInput.value = ""
+    updateProjectLanguagesContainer.innerHTML = "";
+    updateProjectFrameworksContainer.innerHTML = "";
+    updateProjectTagsContainer.innerHTML = "";
+  }
+});
+
 const refreshProjects = (itemsContainer, items) => {
-  if (items.length > 0)
-    items = items.filter((item) => item.userId === loggedInUser.userId);
+  // if (items.length > 0)
+  //   items = items.filter((item) => item.userId === loggedInUser.userId);
+  // if (items.length > 0){
   items.forEach((item) => {
     let newProject = document.createElement("article");
     newProject.classList.add("project");
@@ -233,6 +318,8 @@ const refreshProjects = (itemsContainer, items) => {
               );
             console.log(userProjectData.value.projectFrameworks);
 
+            // userProjectDataForUpdate.value.projectFrameworks = userProjectData.value.projectFrameworks;
+
             updateDialogRefreshExtrasList(
               updateProjectFrameworksContainer,
               userProjectData.value.projectFrameworks
@@ -253,6 +340,9 @@ const refreshProjects = (itemsContainer, items) => {
                 (framework) => framework !== spanContent
               );
             console.log(userProjectData.value.projectLanguages);
+
+            // userProjectDataForUpdate.value.projectFrameworks = userProjectData.value.projectFrameworks;
+
 
             updateDialogRefreshExtrasList(
               updateProjectLanguagesContainer,
@@ -275,6 +365,9 @@ const refreshProjects = (itemsContainer, items) => {
               );
             console.log(userProjectData.value.projectTags);
 
+            // userProjectDataForUpdate.value.projectFrameworks = userProjectData.value.projectFrameworks;
+
+
             updateDialogRefreshExtrasList(
               updateProjectTagsContainer,
               userProjectData.value.projectTags
@@ -284,96 +377,96 @@ const refreshProjects = (itemsContainer, items) => {
         });
       });
 
-      let updateProjectForm = document.querySelector(
-        ".update-project-inner form"
-      );
-      updateProjectForm.addEventListener("submit", async (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (
-          updateProjectFormTitleInput.value === "" ||
-          updateProjectFormDescriptionInput.value === "" ||
-          updateProjectFormImgSrcInput.value === "" ||
-          userProjectData.value.projectTags.length === 0 ||
-          userProjectData.value.projectLanguages.length === 0 ||
-          userProjectData.value.projectFrameworks.length === 0
-        ) {
-          alert("Fill in the empty fields.");
-        } else {
-          userProjectData.value.projectHeading =
-            updateProjectFormTitleInput.value;
-          userProjectData.value.projectDescription =
-            updateProjectFormDescriptionInput.value;
-          // userProjectData.value.projectImageLink =
-          //   updateProjectFormImgSrcInput.value;
-          let imgFile = updateProjectFormImgSrcInput.files[0];
-          let reader = new FileReader();
-          reader.onload = async function (e) {
-            userProjectData.value.projectImageLink = e.target.result;
+      // let updateProjectForm = document.querySelector(
+      //   ".update-project-inner form"
+      // );
+      // updateProjectForm.addEventListener("submit", async (e) => {
+      //   e.stopPropagation();
+      //   e.preventDefault();
+      //   if (
+      //     updateProjectFormTitleInput.value === "" ||
+      //     updateProjectFormDescriptionInput.value === "" ||
+      //     updateProjectFormImgSrcInput.value === "" ||
+      //     userProjectData.value.projectTags.length === 0 ||
+      //     userProjectData.value.projectLanguages.length === 0 ||
+      //     userProjectData.value.projectFrameworks.length === 0
+      //   ) {
+      //     alert("Fill in the empty fields.");
+      //   } else {
+      //     userProjectData.value.projectHeading =
+      //       updateProjectFormTitleInput.value;
+      //     userProjectData.value.projectDescription =
+      //       updateProjectFormDescriptionInput.value;
+      //     // userProjectData.value.projectImageLink =
+      //     //   updateProjectFormImgSrcInput.value;
+      //     let imgFile = updateProjectFormImgSrcInput.files[0];
+      //     let reader = new FileReader();
+      //     reader.onload = async function (e) {
+      //       userProjectData.value.projectImageLink = e.target.result;
 
-            let i = userProjectsData.findIndex(
-              (p) => p.projectId === userProjectData.value.projectId
-            );
+      //       let i = userProjectsData.findIndex(
+      //         (p) => p.projectId === userProjectData.value.projectId
+      //       );
 
-            // userProjectsData[i] = userProjectData.value;
-            // localStorage.setItem(
-            //   "userProjectsData",
-            //   JSON.stringify(userProjectsData)
-            // );
+      //       // userProjectsData[i] = userProjectData.value;
+      //       // localStorage.setItem(
+      //       //   "userProjectsData",
+      //       //   JSON.stringify(userProjectsData)
+      //       // );
 
-            try {
-              let updateProjectResponse = await projectsRequests.updateProject(
-                userProjectData.value,
-                projectId,
-                authToken
-              );
+      //       try {
+      //         let updateProjectResponse = await projectsRequests.updateProject(
+      //           userProjectData.value,
+      //           projectId,
+      //           authToken
+      //         );
 
-              if (
-                updateProjectResponse.status === 201 ||
-                updateProjectResponse.status === 200
-              ) {
-                userProjectData.value = await updateProjectResponse.json();
-                userProjectsData[i] = userProjectData.value;
-                // userProjectsData.push(userProjectData.value)
-                console.log(userProjectData.value, "project data");
-              } else if (updateProjectResponse.status === 403) {
-                logoutAfterTokenExp();
-              } else {
-                alert("Project not updated");
-                console.log("Project not updated");
-              }
-            } catch (e) {
-              alert("update project request not send!");
-              console.log("error sending update project request", e);
-            }
+      //         if (
+      //           updateProjectResponse.status === 201 ||
+      //           updateProjectResponse.status === 200
+      //         ) {
+      //           userProjectData.value = await updateProjectResponse.json();
+      //           userProjectsData[i] = userProjectData.value;
+      //           // userProjectsData.push(userProjectData.value)
+      //           console.log(userProjectData.value, "project data");
+      //         } else if (updateProjectResponse.status === 403) {
+      //           logoutAfterTokenExp();
+      //         } else {
+      //           alert("Project not updated");
+      //           console.log("Project not updated");
+      //         }
+      //       } catch (e) {
+      //         alert("update project request not send!");
+      //         console.log("error sending update project request", e);
+      //       }
 
-            addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
+      //       addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
 
-            updateProjectModal.close();
-          };
-          reader.readAsDataURL(imgFile);
+      //       updateProjectModal.close();
+      //     };
+      //     reader.readAsDataURL(imgFile);
 
-          // let i = userProjectsData.findIndex(
-          //   (p) => p.projectId === userProjectData.value.projectId
-          // );
-          // userProjectsData[i] = userProjectData.value;
-          // localStorage.setItem(
-          //   "userProjectsData",
-          //   JSON.stringify(userProjectsData)
-          // );
+      //     // let i = userProjectsData.findIndex(
+      //     //   (p) => p.projectId === userProjectData.value.projectId
+      //     // );
+      //     // userProjectsData[i] = userProjectData.value;
+      //     // localStorage.setItem(
+      //     //   "userProjectsData",
+      //     //   JSON.stringify(userProjectsData)
+      //     // );
 
-          // addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
+      //     // addNewDataAndRefresh(userProjectData.value, allProjectsContainer);
 
-          // updateProjectModal.close();
+      //     // updateProjectModal.close();
 
-          // updateProjectFormTitleInput.value = ""
-          //     updateProjectFormDescriptionInput.value = ""
-          //     updateProjectFormImgSrcInput.value = ""
-          updateProjectLanguagesContainer.innerHTML = "";
-          updateProjectFrameworksContainer.innerHTML = "";
-          updateProjectTagsContainer.innerHTML = "";
-        }
-      });
+      //     // updateProjectFormTitleInput.value = ""
+      //     //     updateProjectFormDescriptionInput.value = ""
+      //     //     updateProjectFormImgSrcInput.value = ""
+      //     updateProjectLanguagesContainer.innerHTML = "";
+      //     updateProjectFrameworksContainer.innerHTML = "";
+      //     updateProjectTagsContainer.innerHTML = "";
+      //   }
+      // });
 
       updateProjectModal.showModal();
     });
@@ -484,7 +577,10 @@ const refreshProjects = (itemsContainer, items) => {
       event.stopPropagation();
     });
   });
+// }
 };
+console.log("USERPROJECTSDATA BEDORE", userProjectsData)
+if(userProjectsData.length > 0)
 refreshProjects(allProjectsSection, userProjectsData);
 
 // __________Project's Modal to display all details of a project__________
@@ -520,6 +616,7 @@ const addNewProjectCloseBtn = document.querySelector(
   "#add-new-project-modal .add-new-project-close-btn"
 );
 
+console.log("Event listener added on project");
 addNewProjectBtn.addEventListener("click", () => {
   addNewProjectModal.showModal();
   console.log("HEY ADD PROJECT");
@@ -665,8 +762,8 @@ addNewProjectForm.addEventListener("submit", async (e) => {
     let reader = new FileReader();
     reader.onload = async function (e) {
       let projectData = {
-        userId: loggedInUser.userId,
-        projectId: generateId(),
+        // userId: loggedInUser.userId,
+        // projectId: generateId(),
         projectHeading: addNewProjectTitle.value,
         projectDescription: addNewProjectDescription.value,
         projectImageLink: e.target.result,
@@ -698,6 +795,7 @@ addNewProjectForm.addEventListener("submit", async (e) => {
           addProjectResponse.status === 200
         ) {
           projectData = await addProjectResponse.json();
+          console.log("USERSPROJECTSDATA", userProjectsData);
           userProjectsData.push(projectData);
           console.log(projectData, "project data");
         } else if (addProjectResponse.status === 403) {
@@ -724,11 +822,13 @@ const generateId = () => {
   let id;
   while (true) {
     id = Math.floor(Math.random() * (999999 - 100000) + 100000);
+    // if(userProjectsData.length > 0){
     if (userProjectsData.find((i) => i.projectId === id)) {
       continue;
     } else {
       break;
     }
+  // }
   }
   return id;
 };
